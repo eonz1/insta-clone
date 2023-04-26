@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# dev configuration file (sdk path, etc)
+application-dev.yml
