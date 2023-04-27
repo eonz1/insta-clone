@@ -24,6 +24,7 @@ spring:
         format_sql: true
 
 mybatis:
+  mapper-locations: classpath*:mapper/*.xml
   typeAliasesPackage: com.cgram.prom
   configuration:
     multipleResultSetsEnabled: false
