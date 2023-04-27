@@ -18,7 +18,6 @@ spring:
         rewriteBatchedStatements: true
   jpa:
     database-platform: org.hibernate.dialect.MySQL57Dialect
-    defer-datasource-initialization: true
     properties:
       hibernate:
         show_sql: true
