@@ -12,6 +12,7 @@ public class HelloController {
 
     private final HelloMapper helloMapper;
     private final HelloRepository helloRepository;
+    private final HelloService helloService;
 
     @GetMapping("")
     public String hello() {
@@ -23,5 +24,10 @@ public class HelloController {
         Hello hello = helloRepository.findByName("hello world")
             .orElseGet(() -> new Hello(3L, "hello3"));
         return hello.getName();
+    }
+
+    @GetMapping("/together")
+    public String mybatisAndJpa() {
+        return helloService.getHelloName();
     }
 }
