@@ -1,4 +1,4 @@
-package com.cgram.prom.config;
+package com.cgram.prom.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
