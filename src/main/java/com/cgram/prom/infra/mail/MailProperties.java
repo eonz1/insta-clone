@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix = "smtp.mail")
+@ConfigurationProperties(prefix = "letter.mail")
 public class MailProperties {
 
     private String id;

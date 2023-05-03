@@ -27,7 +27,7 @@ public class SmtpMail implements MailSender {
 
     @Override
     public void send(String fromName, List<String> recipientList, String title, String body) {
-        final String username = mailProperties.getId();
+        final String id = mailProperties.getId();
         final String password = mailProperties.getPwd();
         final String host = mailProperties.getHost();
         final String port = mailProperties.getPort();
@@ -48,7 +48,7 @@ public class SmtpMail implements MailSender {
             Session session = Session.getInstance(props, new Authenticator() {
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(username, password);
+                    return new PasswordAuthentication(id, password);
                 }
             });
 
@@ -58,7 +58,7 @@ public class SmtpMail implements MailSender {
             message.setSentDate(new Date());
 
             // 발신자 정보
-            message.setFrom(new InternetAddress(username, fromName));
+            message.setFrom(new InternetAddress(id, fromName));
 
             // 수신자 메일주소
             InternetAddress[] recipients = new InternetAddress[recipientList.size()];
