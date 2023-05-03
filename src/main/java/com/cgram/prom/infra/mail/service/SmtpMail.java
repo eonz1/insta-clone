@@ -1,5 +1,7 @@
-package com.cgram.prom.infra.mail;
+package com.cgram.prom.infra.mail.service;
 
+import com.cgram.prom.infra.mail.model.MailRequest;
+import com.cgram.prom.infra.mail.model.SmtpMailProperties;
 import jakarta.mail.Authenticator;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
@@ -14,7 +16,6 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -23,14 +24,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class SmtpMail implements MailSender {
 
-    private final MailProperties mailProperties;
+    private final SmtpMailProperties smtpMailProperties;
 
     @Override
-    public void send(String fromName, List<String> recipientList, String title, String body) {
-        final String id = mailProperties.getId();
-        final String password = mailProperties.getPwd();
-        final String host = mailProperties.getHost();
-        final String port = mailProperties.getPort();
+    public void send(MailRequest mailRequest) {
+        final String id = smtpMailProperties.getId();
+        final String password = smtpMailProperties.getPwd();
+        final String host = smtpMailProperties.getHost();
+        final String port = smtpMailProperties.getPort();
 
         Properties props = new Properties();
         props.put("mail.smtp.host", host);
@@ -58,12 +59,12 @@ public class SmtpMail implements MailSender {
             message.setSentDate(new Date());
 
             // 발신자 정보
-            message.setFrom(new InternetAddress(id, fromName));
+            message.setFrom(new InternetAddress(mailRequest.getSenderAddress(), mailRequest.getSenderName()));
 
             // 수신자 메일주소
-            InternetAddress[] recipients = new InternetAddress[recipientList.size()];
-            for(int i = 0; i < recipientList.size(); i++) {
-                recipients[i] = new InternetAddress(recipientList.get(i));
+            InternetAddress[] recipients = new InternetAddress[mailRequest.getRecipients().size()];
+            for(int i = 0; i < mailRequest.getRecipients().size(); i++) {
+                recipients[i] = new InternetAddress(mailRequest.getRecipients().get(i).getAddress());
             }
             message.setRecipients(Message.RecipientType.TO, recipients);
             // Message.RecipientType.TO : 받는 사람
@@ -71,14 +72,14 @@ public class SmtpMail implements MailSender {
             // Message.RecipientType.BCC : 숨은 참조
 
             // 메일 제목
-            message.setSubject(title, "UTF-8");
+            message.setSubject(mailRequest.getTitle(), "UTF-8");
 
             // 메일 내용
             Multipart multipart = new MimeMultipart( "alternative");
 
             MimeBodyPart htmlPart = new MimeBodyPart();
             htmlPart.setHeader("Content-Type", "text/html");
-            htmlPart.setContent(body, "text/html; charset=utf-8" );
+            htmlPart.setContent(mailRequest.getBody(), "text/html; charset=utf-8" );
 
             multipart.addBodyPart(htmlPart);
             message.setContent(multipart);
