@@ -9,7 +9,6 @@ import jakarta.mail.Multipart;
 import jakarta.mail.PasswordAuthentication;
 import jakarta.mail.Session;
 import jakarta.mail.Transport;
-import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
@@ -18,8 +17,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Properties;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class SmtpMail implements MailSender {
@@ -39,9 +40,9 @@ public class SmtpMail implements MailSender {
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.ssl.trust", host);
 
-        if(port.equals("587")) {
+        if (port.equals("587")) {
             props.put("mail.smtp.starttls.enable", "true");
-        } else if(port.equals("465")) {
+        } else if (port.equals("465")) {
             props.put("mail.smtp.ssl.enable", "true");
         }
 
@@ -59,12 +60,14 @@ public class SmtpMail implements MailSender {
             message.setSentDate(new Date());
 
             // 발신자 정보
-            message.setFrom(new InternetAddress(mailRequest.getSenderAddress(), mailRequest.getSenderName()));
+            message.setFrom(
+                new InternetAddress(mailRequest.getSenderAddress(), mailRequest.getSenderName()));
 
             // 수신자 메일주소
             InternetAddress[] recipients = new InternetAddress[mailRequest.getRecipients().size()];
-            for(int i = 0; i < mailRequest.getRecipients().size(); i++) {
-                recipients[i] = new InternetAddress(mailRequest.getRecipients().get(i).getAddress());
+            for (int i = 0; i < mailRequest.getRecipients().size(); i++) {
+                recipients[i] = new InternetAddress(
+                    mailRequest.getRecipients().get(i).getAddress());
             }
             message.setRecipients(Message.RecipientType.TO, recipients);
             // Message.RecipientType.TO : 받는 사람
@@ -75,23 +78,20 @@ public class SmtpMail implements MailSender {
             message.setSubject(mailRequest.getTitle(), "UTF-8");
 
             // 메일 내용
-            Multipart multipart = new MimeMultipart( "alternative");
+            Multipart multipart = new MimeMultipart("alternative");
 
             MimeBodyPart htmlPart = new MimeBodyPart();
             htmlPart.setHeader("Content-Type", "text/html");
-            htmlPart.setContent(mailRequest.getBody(), "text/html; charset=utf-8" );
+            htmlPart.setContent(mailRequest.getBody(), "text/html; charset=utf-8");
 
             multipart.addBodyPart(htmlPart);
             message.setContent(multipart);
 
             // 메일 전송
             Transport.send(message);
-        } catch (AddressException e) {
-            e.printStackTrace();
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            log.error("[message: {}, senderAddress: {}, recipientAddress: {}]", e.getMessage(),
+                mailRequest.getSenderAddress(), mailRequest.getRecipients().get(0).getAddress());
         }
     }
 }
