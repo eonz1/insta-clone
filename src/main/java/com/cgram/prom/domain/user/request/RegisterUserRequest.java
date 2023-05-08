@@ -1,4 +1,4 @@
-package com.cgram.prom.user.request;
+package com.cgram.prom.domain.user.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

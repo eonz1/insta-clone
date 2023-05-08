@@ -1,8 +1,8 @@
-package com.cgram.prom.user.controller;
+package com.cgram.prom.domain.user.controller;
 
-import com.cgram.prom.user.domain.User;
-import com.cgram.prom.user.request.RegisterUserRequest;
-import com.cgram.prom.user.service.UserService;
+import com.cgram.prom.domain.user.domain.User;
+import com.cgram.prom.domain.user.request.RegisterUserRequest;
+import com.cgram.prom.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

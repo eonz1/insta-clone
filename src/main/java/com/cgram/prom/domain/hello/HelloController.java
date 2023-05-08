@@ -1,4 +1,4 @@
-package com.cgram.prom.hello;
+package com.cgram.prom.domain.hello;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

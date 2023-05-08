@@ -1,11 +1,11 @@
-package com.cgram.prom.user.service;
+package com.cgram.prom.domain.user.service;
 
+import com.cgram.prom.domain.user.domain.User;
+import com.cgram.prom.domain.user.exception.UserException;
+import com.cgram.prom.domain.user.exception.UserExceptionType;
+import com.cgram.prom.domain.user.repository.UserRepository;
 import com.cgram.prom.infra.mail.model.MailRequest;
 import com.cgram.prom.infra.mail.service.MailSender;
-import com.cgram.prom.user.domain.User;
-import com.cgram.prom.user.exception.UserException;
-import com.cgram.prom.user.exception.UserExceptionType;
-import com.cgram.prom.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

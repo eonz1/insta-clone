@@ -1,9 +1,9 @@
-package com.cgram.prom.user.repository;
+package com.cgram.prom.domain.user.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.cgram.prom.user.domain.User;
+import com.cgram.prom.domain.user.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

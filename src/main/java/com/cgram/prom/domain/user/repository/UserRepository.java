@@ -1,6 +1,6 @@
-package com.cgram.prom.user.repository;
+package com.cgram.prom.domain.user.repository;
 
-import com.cgram.prom.user.domain.User;
+import com.cgram.prom.domain.user.domain.User;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;

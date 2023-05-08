@@ -1,4 +1,4 @@
-package com.cgram.prom.user.exception;
+package com.cgram.prom.domain.user.exception;
 
 import com.cgram.prom.global.base.exception.BaseException;
 import com.cgram.prom.global.base.exception.BaseExceptionType;

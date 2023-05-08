@@ -1,4 +1,4 @@
-package com.cgram.prom.user.controller;
+package com.cgram.prom.domain.user.controller;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.mockito.ArgumentMatchers.any;
@@ -8,9 +8,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.cgram.prom.user.domain.User;
-import com.cgram.prom.user.request.RegisterUserRequest;
-import com.cgram.prom.user.service.UserService;
+import com.cgram.prom.domain.user.domain.User;
+import com.cgram.prom.domain.user.request.RegisterUserRequest;
+import com.cgram.prom.domain.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import java.util.List;

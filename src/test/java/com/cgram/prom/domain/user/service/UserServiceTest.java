@@ -1,4 +1,4 @@
-package com.cgram.prom.user.service;
+package com.cgram.prom.domain.user.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -9,11 +9,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.cgram.prom.domain.user.domain.User;
+import com.cgram.prom.domain.user.exception.UserException;
+import com.cgram.prom.domain.user.repository.UserRepository;
 import com.cgram.prom.infra.mail.model.MailRequest;
 import com.cgram.prom.infra.mail.service.MailSender;
-import com.cgram.prom.user.domain.User;
-import com.cgram.prom.user.exception.UserException;
-import com.cgram.prom.user.repository.UserRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

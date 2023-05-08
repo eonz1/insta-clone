@@ -1,4 +1,4 @@
-package com.cgram.prom.hello;
+package com.cgram.prom.domain.hello;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

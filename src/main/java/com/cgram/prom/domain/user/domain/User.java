@@ -1,4 +1,4 @@
-package com.cgram.prom.user.domain;
+package com.cgram.prom.domain.user.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
