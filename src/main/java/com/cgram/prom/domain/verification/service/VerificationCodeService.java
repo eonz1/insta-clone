@@ -20,8 +20,7 @@ public class VerificationCodeService {
 
     public VerificationCode get(String email) {
         Optional<VerificationCode> verificationCode = verificationCodeRepository.findTopByEmailOrderByExpirationDateDesc(email);
-
-        return verificationCode.get();
+        return verificationCode.orElseThrow(() -> new VerificationException(VerificationExceptionType.NOT_FOUND));
     }
 
     public void add(String email) {
