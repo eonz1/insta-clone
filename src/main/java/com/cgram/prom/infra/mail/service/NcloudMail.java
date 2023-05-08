@@ -51,7 +51,7 @@ public class NcloudMail implements MailSender {
 
         SecretKeySpec signingKey = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8),
             "HmacSHA256");
-        log.info("{}, {}", accessKey, secretKey);
+
         Mac mac;
         try {
             mac = Mac.getInstance("HmacSHA256");
