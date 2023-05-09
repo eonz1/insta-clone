@@ -58,4 +58,22 @@ class UserRepositoryTest {
         // then
         assertEquals(email, byEmail.getEmail());
     }
+
+    @Test
+    @DisplayName("비밀번호 변경하기")
+    public void updatePassword() {
+        // given
+        userRepository.save(User.builder()
+                                .email(email)
+                                .password("123123")
+                                .build());
+
+        // when
+        User beforeUser = userRepository.findByEmail(email).get();
+        beforeUser.updatePassword("123456");
+
+        // then
+        User afterUser = userRepository.findByEmail(email).get();
+        assertThat(afterUser.getPassword()).isEqualTo("123456");
+    }
 }
