@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/verification")
-public class VerificationController {
+public class VerificationCodeController {
 
     private final VerificationCodeService verificationCodeService;
 
