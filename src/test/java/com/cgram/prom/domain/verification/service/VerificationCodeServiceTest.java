@@ -2,8 +2,11 @@ package com.cgram.prom.domain.verification.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 
+import com.cgram.prom.domain.user.exception.UserException;
+import com.cgram.prom.domain.user.exception.UserExceptionType;
+import com.cgram.prom.domain.user.repository.UserRepository;
 import com.cgram.prom.domain.verification.domain.VerificationCode;
 import com.cgram.prom.domain.verification.exception.VerificationException;
 import com.cgram.prom.domain.verification.exception.VerificationExceptionType;
@@ -26,10 +29,26 @@ class VerificationCodeServiceTest {
     private VerificationCodeRepository verificationCodeRepository;
 
     @Mock
+    private UserRepository userRepository;
+
+    @Mock
     private VerificationCodeGenerator verificationCodeGenerator;
 
     @InjectMocks
     VerificationCodeService verificationCodeService;
+
+    @Test
+    void 탈퇴하거나_존재하지_않는_회원은_코드를_받을_수_없다() {
+        // given
+        given(userRepository.findByEmailAndIsPresent("test@test.com", true)).willReturn(Optional.empty());
+
+        // when, then
+        UserException exception = assertThrows(UserException.class, () -> {
+            verificationCodeService.sendVerificationCode("test@test.com");
+        });
+        assertEquals(exception.getExceptionType(), UserExceptionType.USER_NOT_FOUND);
+        assertEquals(exception.getExceptionType().getStatus(), HttpStatus.NOT_FOUND);
+    }
 
     @Test
     void 받은지_5분지나면_만료되어_불가() {
@@ -40,7 +59,7 @@ class VerificationCodeServiceTest {
                                                     .expirationDate(LocalDateTime.now().minusMinutes(5))
                                                     .build();
         verificationCodeRepository.save(mockCode);
-        when(verificationCodeRepository.findTopByEmailOrderByExpirationDateDesc(mockCode.getEmail())).thenReturn(
+        given(verificationCodeRepository.findTopByEmailOrderByExpirationDateDesc(mockCode.getEmail())).willReturn(
             Optional.of(mockCode));
 
         // when, then
@@ -55,12 +74,12 @@ class VerificationCodeServiceTest {
     void 인증키가_다르면_불가() {
         // given
         VerificationCode mockCode = VerificationCode.builder()
-                                                    .email("test2@test.com")
+                                                    .email("test@test.com")
                                                     .code("1s5c36")
                                                     .expirationDate(LocalDateTime.now().plusMinutes(5))
                                                     .build();
         verificationCodeRepository.save(mockCode);
-        when(verificationCodeRepository.findTopByEmailOrderByExpirationDateDesc(mockCode.getEmail())).thenReturn(
+        given(verificationCodeRepository.findTopByEmailOrderByExpirationDateDesc(mockCode.getEmail())).willReturn(
             Optional.of(mockCode));
 
         // when, then
@@ -69,5 +88,15 @@ class VerificationCodeServiceTest {
         });
         assertEquals(exception.getExceptionType(), VerificationExceptionType.NOT_CORRECT);
         assertEquals(exception.getExceptionType().getStatus(), HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void 인증키_존재하지_않을때_예외처리() {
+        // when, then
+        VerificationException exception = assertThrows(VerificationException.class, () -> {
+            verificationCodeService.get("test@test.com");
+        });
+        assertEquals(exception.getExceptionType(), VerificationExceptionType.NOT_FOUND);
+        assertEquals(exception.getExceptionType().getStatus(), HttpStatus.NOT_FOUND);
     }
 }
