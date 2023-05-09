@@ -21,5 +21,8 @@ public class VerificationController {
         verificationCodeService.sendVerificationCode(verificationRequest.getEmail());
     }
 
-
+    @PostMapping("/code")
+    public void matchVerificationCode(@Valid @RequestBody VerificationRequest verificationRequest) {
+        verificationCodeService.matchVerificationCode(verificationRequest.getEmail(), verificationRequest.getCode());
+    }
 }

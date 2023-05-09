@@ -53,6 +53,11 @@ public class VerificationCodeService {
         return verificationCode.orElseThrow(() -> new VerificationException(VerificationExceptionType.NOT_FOUND));
     }
 
+    public void matchVerificationCode(String email, String code) {
+        validDate(email, LocalDateTime.now());
+        validCode(email, code);
+    }
+
     public void validCode(String email, String code) {
         VerificationCode verificationCode = get(email);
 
