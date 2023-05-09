@@ -51,7 +51,7 @@ class VerificationCodeServiceTest {
     }
 
     @Test
-    void 받은지_5분지나면_만료되어_불가() {
+    void 받은지_5분지나면_인증번호_만료_메세지를_보내야한다() {
         // given
         VerificationCode mockCode = VerificationCode.builder()
                                                     .email("test@test.com")
@@ -71,7 +71,7 @@ class VerificationCodeServiceTest {
     }
 
     @Test
-    void 인증키가_다르면_불가() {
+    void 인증키가_다르면_일치하지_않다는_메세지를_보내야한다() {
         // given
         VerificationCode mockCode = VerificationCode.builder()
                                                     .email("test@test.com")
@@ -91,7 +91,7 @@ class VerificationCodeServiceTest {
     }
 
     @Test
-    void 인증키_존재하지_않을때_예외처리() {
+    void 인증키_존재하지_않을때_메세지를_보내야한다() {
         // when, then
         VerificationException exception = assertThrows(VerificationException.class, () -> {
             verificationCodeService.get("test@test.com");
