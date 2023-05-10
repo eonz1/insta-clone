@@ -3,6 +3,7 @@ package com.cgram.prom.domain.verification.controller;
 import com.cgram.prom.domain.verification.request.VerificationRequest;
 import com.cgram.prom.domain.verification.service.VerificationCodeService;
 import jakarta.validation.Valid;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +24,7 @@ public class VerificationCodeController {
 
     @PostMapping("/code")
     public void matchVerificationCode(@Valid @RequestBody VerificationRequest verificationRequest) {
-        verificationCodeService.matchVerificationCode(verificationRequest.getEmail(), verificationRequest.getCode());
+        verificationCodeService.validDate(verificationRequest.getEmail(), LocalDateTime.now());
+        verificationCodeService.validCode(verificationRequest.getEmail(), verificationRequest.getCode());
     }
 }
