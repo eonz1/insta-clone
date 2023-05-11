@@ -30,6 +30,7 @@ public class SecurityConfig {
             .httpBasic().disable().authorizeHttpRequests()
             .requestMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
             .requestMatchers("/api/v1/verification").permitAll()
+            .requestMatchers("/api/v1/password/code").permitAll()
             .anyRequest().authenticated();
 
         return http.build();
