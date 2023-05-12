@@ -7,7 +7,10 @@ import com.cgram.prom.domain.user.repository.UserRepository;
 import com.cgram.prom.infra.mail.model.MailRequest;
 import com.cgram.prom.infra.mail.service.MailSender;
 import jakarta.transaction.Transactional;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,6 +19,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final MailSender ncloudMail;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
     public void register(User user) {
@@ -36,5 +40,25 @@ public class UserService {
         request.addRecipient(email);
 
         ncloudMail.send(request);
+    }
+
+    public User loginValidate(String email, String password) {
+        Optional<User> byEmail = userRepository.findByEmail(email);
+
+        if (byEmail.isEmpty()) {
+            return null;
+        }
+
+        boolean matches = passwordEncoder.matches(password, byEmail.get().getPassword());
+        if (!matches) {
+            return null;
+        }
+
+        return byEmail.get();
+    }
+
+    public User getUserById(String id) {
+        return userRepository.findById(UUID.fromString(id))
+            .orElseThrow(() -> new UserException(UserExceptionType.USER_NOT_FOUND));
     }
 }

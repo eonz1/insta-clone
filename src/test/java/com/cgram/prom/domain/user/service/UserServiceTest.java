@@ -2,6 +2,7 @@ package com.cgram.prom.domain.user.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
@@ -23,6 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -36,13 +38,16 @@ class UserServiceTest {
     @Mock
     MailSender mailSender;
 
+    @Mock
+    BCryptPasswordEncoder passwordEncoder;
+
     MailRequest mailRequest;
 
     private User user;
 
     @BeforeEach
     void setup() {
-        userService = new UserService(userRepository, mailSender);
+        userService = new UserService(userRepository, mailSender, passwordEncoder);
         user = User.builder()
             .email("a@gmail.com")
             .password("test1234!")
@@ -79,5 +84,22 @@ class UserServiceTest {
         // then
         verify(userRepository, times(1)).save(user);
         verify(mailSender, times(1)).send(any(MailRequest.class));
+    }
+
+    @Test
+    @DisplayName("비밀번호 확인")
+    public void checkPasswordMatching() throws Exception {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        // given
+        String password = "tests123123!!";
+        String encodedPassword = encoder.encode(password);
+
+        // when
+        boolean matches = encoder.matches(password, encodedPassword);
+
+        // then
+        System.out.println(password + ", " + encodedPassword);
+        assertTrue(matches);
     }
 }
