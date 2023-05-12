@@ -16,6 +16,8 @@ import com.cgram.prom.domain.user.repository.UserRepository;
 import com.cgram.prom.infra.mail.model.MailRequest;
 import com.cgram.prom.infra.mail.service.MailSender;
 import java.util.Optional;
+import java.util.UUID;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -101,5 +103,23 @@ class UserServiceTest {
         // then
         System.out.println(password + ", " + encodedPassword);
         assertTrue(matches);
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴테스트")
+    public void withdrawUser() throws Exception {
+        // given
+        UUID id = UUID.randomUUID();
+        User user = User.builder()
+            .id(id)
+            .isPresent(true)
+            .build();
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+
+        // when
+        userService.withdrawUser(id.toString());
+
+        // then
+        Assertions.assertThat(user.isPresent()).isEqualTo(false);
     }
 }

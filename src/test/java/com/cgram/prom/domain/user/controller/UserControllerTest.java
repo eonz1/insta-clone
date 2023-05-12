@@ -3,6 +3,10 @@ package com.cgram.prom.domain.user.controller;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -197,5 +201,39 @@ class UserControllerTest {
                         containsInAnyOrder("비밀번호 형식이 맞지 않습니다.")))
                 .andDo(print());
         }
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 - 인증된 사용자와 path로 받은 사용자 다르면 실패")
+    @WithMockUser(username = "jason", authorities = "[]")
+    public void withdrawFailed() throws Exception {
+        // given
+        mockMvc.perform(delete("/api/v1/users/{id}", "jason1")
+                .with(SecurityMockMvcRequestPostProcessors.csrf())
+                .header("Authorization", "jason")
+                .header("Refresh", "refresh")
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isUnauthorized())
+            .andDo(print());
+
+        // expected
+        verify(userService, never()).withdrawUser("jason");
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 - 성공")
+    @WithMockUser(username = "jason", authorities = "[]")
+    public void withdraw() throws Exception {
+        // given
+        mockMvc.perform(delete("/api/v1/users/{id}", "jason")
+                .with(SecurityMockMvcRequestPostProcessors.csrf())
+                .header("Authorization", "jason")
+                .header("Refresh", "refresh")
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andDo(print());
+
+        // expected
+        verify(userService, times(1)).withdrawUser("jason");
     }
 }
