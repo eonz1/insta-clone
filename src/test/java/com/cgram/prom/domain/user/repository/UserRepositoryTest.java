@@ -9,9 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 
 
 @DataJpaTest
+@ActiveProfiles("dev")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class UserRepositoryTest {
 
@@ -57,5 +59,23 @@ class UserRepositoryTest {
 
         // then
         assertEquals(email, byEmail.getEmail());
+    }
+
+    @Test
+    @DisplayName("비밀번호 변경하기")
+    public void updatePassword() {
+        // given
+        userRepository.save(User.builder()
+                                .email(email)
+                                .password("123123")
+                                .build());
+
+        // when
+        User beforeUser = userRepository.findByEmail(email).get();
+        beforeUser.updatePassword("123456");
+
+        // then
+        User afterUser = userRepository.findByEmail(email).get();
+        assertThat(afterUser.getPassword()).isEqualTo("123456");
     }
 }

@@ -37,4 +37,8 @@ public class User {
     public void withdraw() {
         this.isPresent = false;
     }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }

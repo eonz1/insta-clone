@@ -38,3 +38,6 @@ out/
 
 # dev configuration file (sdk path, etc)
 application-dev.yml
+
+# log folder
+logs/
