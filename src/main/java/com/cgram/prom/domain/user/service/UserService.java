@@ -61,4 +61,11 @@ public class UserService {
         return userRepository.findById(UUID.fromString(id))
             .orElseThrow(() -> new UserException(UserExceptionType.USER_NOT_FOUND));
     }
+
+    @Transactional
+    public void withdrawUser(String userId) {
+        User user = getUserById(userId);
+
+        user.withdraw();
+    }
 }

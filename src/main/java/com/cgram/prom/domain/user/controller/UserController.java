@@ -1,11 +1,16 @@
 package com.cgram.prom.domain.user.controller;
 
 import com.cgram.prom.domain.user.domain.User;
+import com.cgram.prom.domain.user.exception.UserException;
+import com.cgram.prom.domain.user.exception.UserExceptionType;
 import com.cgram.prom.domain.user.request.RegisterUserRequest;
 import com.cgram.prom.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,5 +32,16 @@ public class UserController {
             .isPresent(true)
             .build();
         userService.register(newUser);
+    }
+
+    @DeleteMapping("/{id}")
+    public void withdrawUser(@PathVariable String id,
+        @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+
+        if (!id.equals(user.getUsername())) {
+            throw new UserException(UserExceptionType.USER_UNAUTHORIZED);
+        }
+
+        userService.withdrawUser(user.getUsername());
     }
 }

@@ -33,4 +33,8 @@ public class User {
         this.password = password;
         this.isPresent = isPresent;
     }
+
+    public void withdraw() {
+        this.isPresent = false;
+    }
 }
