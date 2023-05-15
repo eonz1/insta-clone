@@ -68,4 +68,9 @@ public class UserService {
 
         user.withdraw();
     }
+
+    public User getUserByIdAndIsPresent(String id) {
+        return userRepository.findByIdAndIsPresent(UUID.fromString(id), true)
+            .orElseThrow(() -> new UserException(UserExceptionType.USER_NOT_FOUND));
+    }
 }
