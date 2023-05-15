@@ -2,8 +2,11 @@ package com.cgram.prom.domain.user.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.cgram.prom.domain.user.domain.User;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,9 +69,9 @@ class UserRepositoryTest {
     public void updatePassword() {
         // given
         userRepository.save(User.builder()
-                                .email(email)
-                                .password("123123")
-                                .build());
+            .email(email)
+            .password("123123")
+            .build());
 
         // when
         User beforeUser = userRepository.findByEmail(email).get();
@@ -77,5 +80,22 @@ class UserRepositoryTest {
         // then
         User afterUser = userRepository.findByEmail(email).get();
         assertThat(afterUser.getPassword()).isEqualTo("123456");
+    }
+
+    @Test
+    @DisplayName("아이디, 탈퇴여부 조건으로 회원 검색")
+    public void findByIdAndIsPresent() throws Exception {
+        // given
+        User user = userRepository.save(User.builder()
+            .id(UUID.randomUUID())
+            .isPresent(false)
+            .build());
+
+        // when
+        Optional<User> byIdAndIsPresent = userRepository.findByIdAndIsPresent(
+            user.getId(), true);
+
+        // then
+        assertTrue(byIdAndIsPresent.isEmpty());
     }
 }

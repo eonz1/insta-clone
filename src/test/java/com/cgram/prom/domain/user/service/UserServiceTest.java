@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -121,5 +122,19 @@ class UserServiceTest {
 
         // then
         Assertions.assertThat(user.isPresent()).isEqualTo(false);
+    }
+
+    @Test
+    @DisplayName("탈퇴한 회원 조회 시 예외 발생")
+    public void findUserByIdAndPresent() throws Exception {
+        // given
+        when(userRepository.findByIdAndIsPresent(any(UUID.class), eq(true))).thenReturn(
+            Optional.empty());
+
+        // expected
+        assertThrows(UserException.class, () -> {
+            userService.getUserByIdAndIsPresent(
+                UUID.randomUUID().toString());
+        });
     }
 }
