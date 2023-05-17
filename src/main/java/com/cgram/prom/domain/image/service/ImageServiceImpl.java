@@ -27,21 +27,23 @@ public class ImageServiceImpl implements ImageService {
 
         String extension = file.getAbsoluteFile().getName().split("\\.")[1];
 
-        BufferedImage bufferedImage = convertingToJpg(ImageIO.read(file), extension);
+        BufferedImage bufferedImage = newBufferedImageForSaveJpg(ImageIO.read(file), extension);
         ImageIO.write(bufferedImage, "jpg",
             new File(image.getPath() + File.separator + image.getId() + ".jpg"));
 
         return image;
     }
 
-    private BufferedImage convertingToJpg(BufferedImage bufferedImage, String extension) {
+    private BufferedImage newBufferedImageForSaveJpg(BufferedImage bufferedImage,
+        String extension) {
+
         if (extension.equals("jpg")) {
             return bufferedImage;
         }
 
         BufferedImage afterImg = new BufferedImage(bufferedImage.getWidth(),
-            bufferedImage.getHeight(),
-            BufferedImage.TYPE_3BYTE_BGR);
+            bufferedImage.getHeight()
+            , BufferedImage.TYPE_3BYTE_BGR);
         afterImg.createGraphics().drawImage(bufferedImage, 0, 0, null);
 
         return afterImg;
