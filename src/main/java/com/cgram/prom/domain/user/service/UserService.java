@@ -1,5 +1,7 @@
 package com.cgram.prom.domain.user.service;
 
+import com.cgram.prom.domain.profile.domain.Profile;
+import com.cgram.prom.domain.profile.repository.ProfileRepository;
 import com.cgram.prom.domain.user.domain.User;
 import com.cgram.prom.domain.user.exception.UserException;
 import com.cgram.prom.domain.user.exception.UserExceptionType;
@@ -20,6 +22,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final MailSender ncloudMail;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final ProfileRepository profileRepository;
 
     @Transactional
     public void register(User user) {
@@ -27,7 +30,9 @@ public class UserService {
             throw new UserException(UserExceptionType.USER_CONFLICT);
         }
 
-        userRepository.save(user);
+        User newUser = userRepository.save(user);
+        Profile profile = Profile.builder().user(newUser).isPublic(true).build();
+        profileRepository.save(profile);
         sendWelcomeEmail(user.getEmail());
     }
 
