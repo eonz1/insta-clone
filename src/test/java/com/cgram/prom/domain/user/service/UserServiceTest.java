@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -85,7 +86,7 @@ class UserServiceTest {
         // given
         Optional<User> returnUser = Optional.empty();
         when(userRepository.findByEmail(user.getEmail())).thenReturn(returnUser);
-//        doNothing().when(mailSender).send(any(MailRequest.class));
+        doNothing().when(mailSender).send(any(MailRequest.class));
 
         // when
         userService.register(user);
@@ -93,7 +94,7 @@ class UserServiceTest {
         // then
         verify(userRepository, times(1)).save(user);
         verify(profileRepository, times(1)).save(any(Profile.class));
-//        verify(mailSender, times(1)).send(any(MailRequest.class));
+        verify(mailSender, times(1)).send(any(MailRequest.class));
     }
 
     @Test
