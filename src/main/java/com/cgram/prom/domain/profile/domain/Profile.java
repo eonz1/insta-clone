@@ -1,6 +1,6 @@
 package com.cgram.prom.domain.profile.domain;
 
-import com.cgram.prom.domain.profile.CustomImage;
+import com.cgram.prom.domain.image.domain.Image;
 import com.cgram.prom.domain.profile.request.UpdateProfileServiceDto;
 import com.cgram.prom.domain.user.domain.User;
 import jakarta.persistence.Column;
@@ -36,10 +36,10 @@ public class Profile {
 
     @OneToOne
     @JoinColumn(name = "image_id")
-    private CustomImage image;
+    private Image image;
 
     @Builder
-    public Profile(UUID id, User user, String intro, boolean isPublic, CustomImage image) {
+    public Profile(UUID id, User user, String intro, boolean isPublic, Image image) {
         this.id = id;
         this.user = user;
         this.intro = intro;
@@ -47,9 +47,9 @@ public class Profile {
         this.image = image;
     }
 
-    public void update(UpdateProfileServiceDto dto, CustomImage customImage) {
+    public void update(UpdateProfileServiceDto dto, Image image) {
         this.intro = dto.getIntro() == null ? this.intro : dto.getIntro();
         this.isPublic = dto.getIsPublic() == null ? this.isPublic : dto.getIsPublic();
-        this.image = customImage == null ? this.image : customImage;
+        this.image = image == null ? this.image : image;
     }
 }
