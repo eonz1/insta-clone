@@ -6,6 +6,7 @@ import com.cgram.prom.domain.user.domain.User;
 import com.cgram.prom.domain.user.exception.UserException;
 import com.cgram.prom.domain.user.exception.UserExceptionType;
 import com.cgram.prom.domain.user.repository.UserRepository;
+import com.cgram.prom.domain.user.request.RegisterServiceDto;
 import com.cgram.prom.infra.mail.model.MailRequest;
 import com.cgram.prom.infra.mail.service.MailSender;
 import jakarta.transaction.Transactional;
@@ -25,10 +26,16 @@ public class UserService {
     private final ProfileRepository profileRepository;
 
     @Transactional
-    public void register(User user) {
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+    public void register(RegisterServiceDto dto) {
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new UserException(UserExceptionType.USER_CONFLICT);
         }
+
+        User user = User.builder()
+            .email(dto.getEmail())
+            .password(passwordEncoder.encode(dto.getPassword()))
+            .isPresent(true)
+            .build();
 
         User newUser = userRepository.save(user);
         Profile profile = Profile.builder().user(newUser).isPublic(true).build();

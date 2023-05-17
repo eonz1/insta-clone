@@ -12,14 +12,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.cgram.prom.domain.user.domain.User;
+import com.cgram.prom.domain.user.request.RegisterServiceDto;
 import com.cgram.prom.domain.user.request.RegisterUserRequest;
 import com.cgram.prom.domain.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import java.util.List;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -48,7 +50,7 @@ class UserControllerTest {
     @DisplayName("회원가입 성공")
     @WithMockUser
     public void registerTest() throws Exception {
-        doNothing().when(userService).register(any(User.class));
+        doNothing().when(userService).register(any(RegisterServiceDto.class));
 
         // given
         RegisterUserRequest request = RegisterUserRequest.builder()
@@ -63,6 +65,14 @@ class UserControllerTest {
                 .content(objectMapper.writeValueAsBytes(request)))
             .andExpect(status().isOk())
             .andDo(print());
+
+        ArgumentCaptor<RegisterServiceDto> registerCaptor = ArgumentCaptor.forClass(
+            RegisterServiceDto.class);
+        verify(userService).register(registerCaptor.capture());
+        RegisterServiceDto dto = registerCaptor.getValue();
+
+        Assertions.assertThat(dto.getEmail()).isEqualTo(request.getEmail());
+        Assertions.assertThat(dto.getPassword()).isEqualTo(request.getPassword());
     }
 
     @Test

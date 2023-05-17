@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
@@ -16,6 +17,7 @@ import com.cgram.prom.domain.profile.repository.ProfileRepository;
 import com.cgram.prom.domain.user.domain.User;
 import com.cgram.prom.domain.user.exception.UserException;
 import com.cgram.prom.domain.user.repository.UserRepository;
+import com.cgram.prom.domain.user.request.RegisterServiceDto;
 import com.cgram.prom.infra.mail.model.MailRequest;
 import com.cgram.prom.infra.mail.service.MailSender;
 import java.util.Optional;
@@ -67,12 +69,14 @@ class UserServiceTest {
     @DisplayName("이메일이 중복되면 회원가입 할 수 없다.")
     public void registerDuplicatedEmail() throws Exception {
         // given
+        RegisterServiceDto dto = RegisterServiceDto.builder().email("a@gmail.com")
+            .password("password").build();
         Optional<User> returnUser = Optional.of(new User());
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(returnUser);
+        when(userRepository.findByEmail(any(String.class))).thenReturn(returnUser);
 
         // expected
         UserException exception = assertThrows(UserException.class, () -> {
-            userService.register(user);
+            userService.register(dto);
         });
         assertEquals(exception.getExceptionType().getStatus(), HttpStatus.CONFLICT);
         verify(userRepository, never()).save(user);
@@ -84,15 +88,19 @@ class UserServiceTest {
     @DisplayName("이메일이 중복되지 않으면 회원가입에 성공한다.")
     public void registerEmail() throws Exception {
         // given
+        RegisterServiceDto dto = RegisterServiceDto.builder()
+            .email("email")
+            .password("password!12312")
+            .build();
         Optional<User> returnUser = Optional.empty();
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(returnUser);
+        when(userRepository.findByEmail(anyString())).thenReturn(returnUser);
         doNothing().when(mailSender).send(any(MailRequest.class));
 
         // when
-        userService.register(user);
+        userService.register(dto);
 
         // then
-        verify(userRepository, times(1)).save(user);
+        verify(userRepository, times(1)).save(any(User.class));
         verify(profileRepository, times(1)).save(any(Profile.class));
         verify(mailSender, times(1)).send(any(MailRequest.class));
     }
