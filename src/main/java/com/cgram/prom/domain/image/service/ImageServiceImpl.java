@@ -15,13 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class ImageServiceImpl implements ImageService {
 
     private final ImageRepository imageRepository;
-    private final ResizeImageGenerator ResizeProfileImageGenerator = new ResizeImageGenerator(110, 110);
-    private final ResizeImageGenerator ResizeFeedImageGenerator = new ResizeImageGenerator(1080, 1080);
-    private String path = System.getProperty("user.dir")+"/src/main/resources/static";
+    private final ResizeImageGenerator ResizeProfileImageGenerator = new ResizeImageGenerator(110,
+        110);
+    private final ResizeImageGenerator ResizeFeedImageGenerator = new ResizeImageGenerator(1080,
+        1080);
+    private String path = System.getProperty("user.dir") + "/src/main/resources/static";
 
     @Transactional
     public Image saveImage(File file) throws IOException {
-        Image image = imageRepository.save(Image.builder().path(path).build());
+        Image image = imageRepository.save(Image.builder().path(path).isPresent(true).build());
 
         String extension = file.getAbsoluteFile().getName().split("\\.")[1];
 
@@ -33,12 +35,14 @@ public class ImageServiceImpl implements ImageService {
     }
 
     private BufferedImage convertingToJpg(BufferedImage bufferedImage, String extension) {
-        if(extension.equals("jpg"))
+        if (extension.equals("jpg")) {
             return bufferedImage;
+        }
 
-        BufferedImage afterImg = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(),
+        BufferedImage afterImg = new BufferedImage(bufferedImage.getWidth(),
+            bufferedImage.getHeight(),
             BufferedImage.TYPE_3BYTE_BGR);
-        afterImg.createGraphics().drawImage(bufferedImage, 0, 0,null);
+        afterImg.createGraphics().drawImage(bufferedImage, 0, 0, null);
 
         return afterImg;
     }
