@@ -9,12 +9,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.cgram.prom.domain.following.service.FollowService;
+import com.cgram.prom.domain.image.domain.Image;
+import com.cgram.prom.domain.image.service.ImageService;
 import com.cgram.prom.domain.profile.domain.Profile;
 import com.cgram.prom.domain.profile.repository.ProfileRepository;
 import com.cgram.prom.domain.profile.request.UpdateProfileServiceDto;
 import com.cgram.prom.domain.user.domain.User;
 import com.cgram.prom.domain.user.exception.UserException;
 import com.cgram.prom.domain.user.service.UserService;
+import java.io.File;
 import java.io.FileInputStream;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,6 +41,8 @@ class ProfileServiceImplTest {
     ProfileRepository profileRepository;
     @Mock
     UserService userService;
+    @Mock
+    ImageService imageService;
 
     @Test
     @DisplayName("회원 팔로잉")
@@ -94,20 +99,86 @@ class ProfileServiceImplTest {
     }
 
     @Test
-    @DisplayName("프로필 업데이트")
+    @DisplayName("프로필 업데이트 - 사진, 인트로만 변경")
     public void updateProfile() throws Exception {
         // given
         UpdateProfileServiceDto dto = UpdateProfileServiceDto.builder().userId(UUID.randomUUID())
             .intro("intro")
             .image(
                 new MockMultipartFile("image", "image.png", "image/png",
-                    new FileInputStream("/Users/chaeyeon/Downloads/images.jpeg")))
+                    new FileInputStream(
+                        System.getProperty("user.dir") + "/src/test/resources/static/images.jpeg")))
             .build();
 
         Optional<Profile> profile = Optional.of(Profile.builder()
             .isPublic(true)
             .intro("소개")
             .build());
+        Image image = Image.builder()
+            .isPresent(true)
+            .id(UUID.randomUUID())
+            .build();
+        when(profileRepository.findByUserId(any(UUID.class))).thenReturn(
+            profile);
+
+        when(imageService.saveImage(any(File.class))).thenReturn(image);
+
+        // when
+        profileService.updateProfile(dto);
+
+        // then
+        assertThat(profile.get().getIntro()).isEqualTo("intro");
+        assertThat(profile.get().isPublic()).isEqualTo(true);
+        assertThat(profile.get().getImage().getId()).isEqualTo(image.getId());
+    }
+
+    @Test
+    @DisplayName("프로필 업데이트 - 사진만 변경")
+    public void updateProfileImage() throws Exception {
+        // given
+        UpdateProfileServiceDto dto = UpdateProfileServiceDto.builder().userId(UUID.randomUUID())
+            .image(
+                new MockMultipartFile("image", "image.png", "image/png",
+                    new FileInputStream(
+                        System.getProperty("user.dir") + "/src/test/resources/static/images.jpeg")))
+            .build();
+
+        Optional<Profile> profile = Optional.of(Profile.builder()
+            .isPublic(true)
+            .intro("소개")
+            .build());
+        Image image = Image.builder()
+            .isPresent(true)
+            .id(UUID.randomUUID())
+            .build();
+        when(profileRepository.findByUserId(any(UUID.class))).thenReturn(
+            profile);
+
+        when(imageService.saveImage(any(File.class))).thenReturn(image);
+
+        // when
+        profileService.updateProfile(dto);
+
+        // then
+        assertThat(profile.get().getIntro()).isEqualTo("소개");
+        assertThat(profile.get().isPublic()).isEqualTo(true);
+        assertThat(profile.get().getImage().getId()).isEqualTo(image.getId());
+    }
+
+    @Test
+    @DisplayName("프로필 업데이트 - 인트로, 공개여부만 변경")
+    public void updateProfileIntroAndPublic() throws Exception {
+        // given
+        UpdateProfileServiceDto dto = UpdateProfileServiceDto.builder().userId(UUID.randomUUID())
+            .intro("intro")
+            .isPublic(false)
+            .build();
+
+        Optional<Profile> profile = Optional.of(Profile.builder()
+            .isPublic(true)
+            .intro("소개")
+            .build());
+        
         when(profileRepository.findByUserId(any(UUID.class))).thenReturn(
             profile);
 
@@ -116,7 +187,7 @@ class ProfileServiceImplTest {
 
         // then
         assertThat(profile.get().getIntro()).isEqualTo("intro");
-        assertThat(profile.get().isPublic()).isEqualTo(true);
-        assertThat(profile.get().getImage()).isNotNull();
+        assertThat(profile.get().isPublic()).isEqualTo(false);
+        assertThat(profile.get().getImage()).isNull();
     }
 }
