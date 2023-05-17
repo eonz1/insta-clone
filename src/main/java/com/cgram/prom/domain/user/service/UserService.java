@@ -48,7 +48,7 @@ public class UserService {
     }
 
     public User loginValidate(String email, String password) {
-        Optional<User> byEmail = userRepository.findByEmail(email);
+        Optional<User> byEmail = userRepository.findByEmailAndIsPresent(email, true);
 
         if (byEmail.isEmpty()) {
             return null;
