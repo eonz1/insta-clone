@@ -2,6 +2,7 @@ package com.cgram.prom.domain.image.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import java.time.LocalDateTime;
@@ -9,12 +10,14 @@ import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Getter
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Image {
 
     @Id
@@ -24,10 +27,9 @@ public class Image {
     private UUID id;
 
     private String path;
-
-    @ColumnDefault("1")
     private boolean isPresent;
 
+    @CreatedDate
     private LocalDateTime createdAt;
 
     public void setPresent(boolean present) {
@@ -35,10 +37,9 @@ public class Image {
     }
 
     @Builder
-    public Image(UUID id, String path, boolean isPresent, LocalDateTime createdAt) {
+    public Image(UUID id, String path, boolean isPresent) {
         this.id = id;
         this.path = path;
         this.isPresent = isPresent;
-        this.createdAt = createdAt;
     }
 }
