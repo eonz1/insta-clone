@@ -10,6 +10,7 @@ import com.cgram.prom.domain.auth.request.LoginRequest;
 import com.cgram.prom.domain.auth.request.LoginServiceDto;
 import com.cgram.prom.domain.auth.request.LogoutServiceDto;
 import com.cgram.prom.domain.auth.service.AuthService;
+import com.cgram.prom.global.security.jwt.filter.WithAuthUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -64,16 +65,14 @@ class AuthControllerTest {
 
     @Test
     @DisplayName("로그아웃 테스트")
-    @WithMockUser(username = "6a12dw1qwr-ae12fwg9aw-weg2shlwwq-aw10a2doew", authorities = "[]")
-    public void logout() throws Exception {
+    @WithAuthUser(username = "6a12dw1qwr-ae12fwg9aw-weg2shlwwq-aw10a2doew", refreshToken = "refresh")
+    public void logoutTest() throws Exception {
         // given
 
         // when
         mockMvc.perform(post("/api/v1/auth/logout")
                 .with(SecurityMockMvcRequestPostProcessors.csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "access")
-                .header("Refresh", "refresh"))
+                .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andDo(print());
 
