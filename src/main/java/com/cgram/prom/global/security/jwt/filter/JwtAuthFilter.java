@@ -17,7 +17,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -41,12 +40,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String userId = tokenProvider.getTokenSubject(token.getAccessToken());
 
             // 인증 객체 만들어서 등록하기
-            Authentication authentication = getAuthentication(userId);
+            Authentication authentication = getAuthentication(userId, token.getRefreshToken());
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             // 재발급한 경우 response header에 넣어주기
             if (!accessToken.equals(token.getAccessToken()) && !refreshToken.equals(
-                token.getRefreshToken())) {
+                token.getRefreshToken()) && !request.getServletPath().contains("logout")) {
                 response.setHeader("Authorization", token.getAccessToken());
                 response.setHeader("Refresh", token.getRefreshToken());
             }
@@ -55,9 +54,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private Authentication getAuthentication(String userId) {
+    private Authentication getAuthentication(String userId, String refreshToken) {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        UserDetails principal = new User(userId, "", authorities);
+        UserDetails principal = AuthUser.builder()
+            .userId(userId)
+            .refreshToken(refreshToken)
+            .authorities(authorities)
+            .build();
+
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
