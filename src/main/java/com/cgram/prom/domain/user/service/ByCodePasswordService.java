@@ -6,6 +6,7 @@ import com.cgram.prom.domain.verification.service.VerificationCodeService;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class ByCodePasswordService implements PasswordService {
 
     private final VerificationCodeService verificationCodeService;
+    private final BCryptPasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
     @Transactional
@@ -22,6 +24,6 @@ public class ByCodePasswordService implements PasswordService {
         verificationCodeService.validCode(email, code);
 
         User user = userRepository.findByEmail(email).get();
-        user.updatePassword(password);
+        user.updatePassword(passwordEncoder.encode(password));
     }
 }
