@@ -37,6 +37,8 @@ public class SecurityConfig {
             .httpBasic().disable().authorizeHttpRequests()
             .requestMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/v1/verification/**").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/v1/password/code").permitAll()
             .requestMatchers(HttpMethod.OPTIONS).permitAll()
             .anyRequest()
             .authenticated()
