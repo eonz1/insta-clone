@@ -5,6 +5,7 @@ import com.cgram.prom.domain.user.exception.UserExceptionType;
 import com.cgram.prom.domain.user.request.RegisterServiceDto;
 import com.cgram.prom.domain.user.request.RegisterUserRequest;
 import com.cgram.prom.domain.user.service.UserService;
+import com.cgram.prom.global.security.jwt.filter.AuthUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,7 +34,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public void withdrawUser(@PathVariable String id,
-        @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+        @AuthenticationPrincipal AuthUser user) {
 
         if (!id.equals(user.getUsername())) {
             throw new UserException(UserExceptionType.USER_UNAUTHORIZED);

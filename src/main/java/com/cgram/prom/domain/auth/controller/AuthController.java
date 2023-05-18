@@ -5,14 +5,14 @@ import com.cgram.prom.domain.auth.request.LoginServiceDto;
 import com.cgram.prom.domain.auth.request.LogoutServiceDto;
 import com.cgram.prom.domain.auth.response.LoginResponse;
 import com.cgram.prom.domain.auth.service.AuthService;
+import com.cgram.prom.global.security.jwt.filter.AuthUser;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,9 +32,8 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public void logout(@AuthenticationPrincipal User user,
-        @RequestHeader("Refresh") String refreshToken) {
-        LogoutServiceDto dto = new LogoutServiceDto(user.getUsername(), refreshToken);
+    public void logout(@AuthenticationPrincipal AuthUser user, HttpServletResponse response) {
+        LogoutServiceDto dto = new LogoutServiceDto(user.getUsername(), user.getRefreshToken());
         authService.logout(dto);
     }
 }
