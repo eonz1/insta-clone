@@ -62,7 +62,8 @@ public class TokenProvider {
         if (!verifyToken(refreshToken) || !subject.equals(userId)) {
             throw new TokenException(TokenExceptionType.TOKEN_INVALID);
         }
-
+        refreshTokenService.deleteToken(refreshTokenEntity);
+        
         return issueToken(refreshTokenEntity.getUser());
     }
 
