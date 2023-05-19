@@ -6,7 +6,6 @@ import com.cgram.prom.domain.auth.request.LogoutServiceDto;
 import com.cgram.prom.domain.auth.response.LoginResponse;
 import com.cgram.prom.domain.auth.service.AuthService;
 import com.cgram.prom.global.security.jwt.filter.AuthUser;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +31,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public void logout(@AuthenticationPrincipal AuthUser user, HttpServletResponse response) {
+    public void logout(@AuthenticationPrincipal AuthUser user) {
         LogoutServiceDto dto = new LogoutServiceDto(user.getUsername(), user.getRefreshToken());
         authService.logout(dto);
     }
