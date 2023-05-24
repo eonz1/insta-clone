@@ -5,12 +5,11 @@ import com.cgram.prom.domain.profile.request.UpdateProfileServiceDto;
 import com.cgram.prom.domain.profile.service.ProfileService;
 import com.cgram.prom.domain.user.exception.UserException;
 import com.cgram.prom.domain.user.exception.UserExceptionType;
-import com.cgram.prom.global.security.jwt.filter.AuthUser;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -35,15 +34,15 @@ public class ProfileController {
     })
     public void updateProfile(
         @PathVariable String id,
-        @AuthenticationPrincipal AuthUser user,
+        Authentication authentication,
         @RequestPart(value = "image", required = false) MultipartFile image,
         @RequestPart(value = "request", required = false) UpdateProfileRequest request) {
-        if (!user.getUsername().equals(id)) {
+        if (!authentication.getName().equals(id)) {
             throw new UserException(UserExceptionType.USER_UNAUTHORIZED);
         }
 
         UpdateProfileServiceDto dto = UpdateProfileServiceDto.builder()
-            .userId(UUID.fromString(user.getUsername()))
+            .userId(UUID.fromString(authentication.getName()))
             .intro(request.getIntro())
             .isPublic(request.getIsPublic())
             .image(image)
@@ -52,13 +51,13 @@ public class ProfileController {
     }
 
     @PostMapping("/{id}/following")
-    public void follow(@AuthenticationPrincipal AuthUser user, @PathVariable String id) {
-        profileService.follow(id, user.getUsername());
+    public void follow(Authentication authentication, @PathVariable String id) {
+        profileService.follow(id, authentication.getName());
     }
 
     @DeleteMapping("/{id}/following")
-    public void unfollow(@AuthenticationPrincipal AuthUser user, @PathVariable String id) {
-        profileService.unfollow(id, user.getUsername());
+    public void unfollow(Authentication authentication, @PathVariable String id) {
+        profileService.unfollow(id, authentication.getName());
     }
 
     @GetMapping("/{id}/feeds")

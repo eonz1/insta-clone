@@ -1,6 +1,7 @@
 package com.cgram.prom.global.security.jwt.domain;
 
 import com.cgram.prom.domain.user.domain.User;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,6 +26,7 @@ public class RefreshToken {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(length = 500)
     private String refreshToken;
     private LocalDateTime createdAt;
 
