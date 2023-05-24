@@ -2,14 +2,14 @@ package com.cgram.prom.domain.auth.controller;
 
 import com.cgram.prom.domain.auth.request.LoginRequest;
 import com.cgram.prom.domain.auth.request.LoginServiceDto;
+import com.cgram.prom.domain.auth.request.LogoutRequest;
 import com.cgram.prom.domain.auth.request.LogoutServiceDto;
 import com.cgram.prom.domain.auth.response.LoginResponse;
 import com.cgram.prom.domain.auth.service.AuthService;
-import com.cgram.prom.global.security.jwt.filter.AuthUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,8 +31,9 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public void logout(@AuthenticationPrincipal AuthUser user) {
-        LogoutServiceDto dto = new LogoutServiceDto(user.getUsername(), user.getRefreshToken());
+    public void logout(Authentication authentication, @RequestBody LogoutRequest request) {
+        LogoutServiceDto dto = new LogoutServiceDto(authentication.getName(),
+            request.getRefreshToken());
         authService.logout(dto);
     }
 }

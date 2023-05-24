@@ -5,10 +5,8 @@ import java.lang.annotation.RetentionPolicy;
 import org.springframework.security.test.context.support.WithSecurityContext;
 
 @Retention(RetentionPolicy.RUNTIME)
-@WithSecurityContext(factory = WithAuthUserSecurityContextFactory.class)
-public @interface WithAuthUser {
+@WithSecurityContext(factory = WithAuthenticationSecurityContextFactory.class)
+public @interface WithAuthentication {
 
-    String username();
-
-    String refreshToken();
+    String name();
 }
