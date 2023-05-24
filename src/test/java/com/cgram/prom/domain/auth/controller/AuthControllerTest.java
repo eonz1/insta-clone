@@ -8,9 +8,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.cgram.prom.domain.auth.request.LoginRequest;
 import com.cgram.prom.domain.auth.request.LoginServiceDto;
+import com.cgram.prom.domain.auth.request.LogoutRequest;
 import com.cgram.prom.domain.auth.request.LogoutServiceDto;
 import com.cgram.prom.domain.auth.service.AuthService;
-import com.cgram.prom.global.security.jwt.filter.WithAuthUser;
+import com.cgram.prom.global.security.jwt.filter.WithAuthentication;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,7 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(value = AuthController.class)
+//@ActiveProfiles(value = "dev")
 class AuthControllerTest {
 
     @Autowired
@@ -65,13 +67,17 @@ class AuthControllerTest {
 
     @Test
     @DisplayName("로그아웃 테스트")
-    @WithAuthUser(username = "6a12dw1qwr-ae12fwg9aw-weg2shlwwq-aw10a2doew", refreshToken = "refresh")
+    @WithAuthentication(name = "6a12dw1qwr-ae12fwg9aw-weg2shlwwq-aw10a2doew")
     public void logoutTest() throws Exception {
         // given
+        LogoutRequest request = LogoutRequest.builder()
+            .refreshToken("refresh")
+            .build();
 
         // when
         mockMvc.perform(post("/api/v1/auth/logout")
                 .with(SecurityMockMvcRequestPostProcessors.csrf())
+                .content(objectMapper.writeValueAsBytes(request))
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andDo(print());

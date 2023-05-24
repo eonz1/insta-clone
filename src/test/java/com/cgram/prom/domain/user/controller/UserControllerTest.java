@@ -15,7 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.cgram.prom.domain.user.request.RegisterServiceDto;
 import com.cgram.prom.domain.user.request.RegisterUserRequest;
 import com.cgram.prom.domain.user.service.UserService;
-import com.cgram.prom.global.security.jwt.filter.WithAuthUser;
+import com.cgram.prom.global.security.jwt.filter.WithAuthentication;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import java.util.List;
@@ -216,13 +216,11 @@ class UserControllerTest {
 
     @Test
     @DisplayName("회원 탈퇴 - 인증된 사용자와 path로 받은 사용자 다르면 실패")
-    @WithAuthUser(username = "jason", refreshToken = "refresh")
+    @WithAuthentication(name = "jason")
     public void withdrawFailed() throws Exception {
         // given
         mockMvc.perform(delete("/api/v1/users/{id}", "jason1")
                 .with(SecurityMockMvcRequestPostProcessors.csrf())
-                .header("Authorization", "jason")
-                .header("Refresh", "refresh")
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isUnauthorized())
             .andDo(print());
@@ -233,7 +231,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("회원 탈퇴 - 성공")
-    @WithAuthUser(username = "jason", refreshToken = "refresh")
+    @WithAuthentication(name = "jason")
     public void withdraw() throws Exception {
         // given
         mockMvc.perform(delete("/api/v1/users/{id}", "jason")
