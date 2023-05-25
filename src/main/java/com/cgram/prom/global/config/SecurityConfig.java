@@ -1,6 +1,6 @@
 package com.cgram.prom.global.config;
 
-import com.cgram.prom.global.security.jwt.exception.CustomAuthenticationEntryPoint;
+import com.cgram.prom.global.security.jwt.service.CustomSubjectValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -19,11 +19,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 
 @EnableWebSecurity(debug = true)
@@ -64,11 +67,9 @@ public class SecurityConfig {
             .authenticated()
             .and()
             .oauth2ResourceServer(oauth2 -> oauth2
-                .authenticationEntryPoint(new CustomAuthenticationEntryPoint(objectMapper()))
-                .accessDeniedHandler(new BearerTokenAccessDeniedHandler())
+                .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
                 .jwt()
-                .decoder(decoder())
-            );
+                .decoder(decoder()));
 
         return http.build();
     }
@@ -80,7 +81,13 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder decoder() {
-        return NimbusJwtDecoder.withPublicKey(publicKey).build();
+        OAuth2TokenValidator<Jwt> withSubject = new DelegatingOAuth2TokenValidator<>(
+            new CustomSubjectValidator()
+        );
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(publicKey).build();
+        decoder.setJwtValidator(withSubject);
+
+        return decoder;
     }
 
     @Bean
