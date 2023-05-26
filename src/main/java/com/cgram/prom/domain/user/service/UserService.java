@@ -37,7 +37,7 @@ public class UserService {
             .build();
 
         User newUser = userRepository.save(user);
-        Profile profile = Profile.builder().user(newUser).isPublic(true).build();
+        Profile profile = Profile.builder().user(newUser).build();
         profileRepository.save(profile);
         sendWelcomeEmail(user.getEmail());
     }

@@ -48,7 +48,6 @@ class ProfileRepositoryTest {
         User user = userRepository.save(User.builder().build());
         Profile profile = Profile.builder()
             .intro("intro")
-            .isPublic(true)
             .user(user)
             .build();
         profileRepository.save(profile);
@@ -58,6 +57,7 @@ class ProfileRepositoryTest {
 
         // then
         Assertions.assertThat(profileByUserId.get().getUser().getId()).isEqualTo(user.getId());
+        Assertions.assertThat(profileByUserId.get().isPublic()).isEqualTo(true);
         Assertions.assertThat(profileByUserId.get().getIntro()).isEqualTo("intro");
     }
 
@@ -74,7 +74,6 @@ class ProfileRepositoryTest {
         Image image = imageRepository.save(Image.builder().id(UUID.randomUUID()).path("/test.png").isPresent(true).build());
         profileRepository.save(Profile.builder()
             .intro("intro")
-            .isPublic(true)
             .user(user)
             .image(image)
             .build());

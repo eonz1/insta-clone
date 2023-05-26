@@ -111,7 +111,6 @@ class ProfileServiceImplTest {
             .build();
 
         Optional<Profile> profile = Optional.of(Profile.builder()
-            .isPublic(true)
             .intro("소개")
             .build());
         Image image = Image.builder()
@@ -144,7 +143,6 @@ class ProfileServiceImplTest {
             .build();
 
         Optional<Profile> profile = Optional.of(Profile.builder()
-            .isPublic(true)
             .intro("소개")
             .build());
         Image image = Image.builder()
@@ -175,7 +173,6 @@ class ProfileServiceImplTest {
             .build();
 
         Optional<Profile> profile = Optional.of(Profile.builder()
-            .isPublic(true)
             .intro("소개")
             .build());
         
