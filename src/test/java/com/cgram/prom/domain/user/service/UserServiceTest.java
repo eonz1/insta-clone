@@ -129,7 +129,6 @@ class UserServiceTest {
         UUID id = UUID.randomUUID();
         User user = User.builder()
             .id(id)
-            .isPresent(true)
             .build();
         when(userRepository.findById(id)).thenReturn(Optional.of(user));
 

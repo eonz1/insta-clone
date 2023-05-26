@@ -34,7 +34,6 @@ public class UserService {
         User user = User.builder()
             .email(dto.getEmail())
             .password(passwordEncoder.encode(dto.getPassword()))
-            .isPresent(true)
             .build();
 
         User newUser = userRepository.save(user);

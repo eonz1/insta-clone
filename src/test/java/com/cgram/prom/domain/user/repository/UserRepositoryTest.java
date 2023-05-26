@@ -88,8 +88,8 @@ class UserRepositoryTest {
         // given
         User user = userRepository.save(User.builder()
             .id(UUID.randomUUID())
-            .isPresent(false)
             .build());
+        user.withdraw();
 
         // when
         Optional<User> byIdAndIsPresent = userRepository.findByIdAndIsPresent(

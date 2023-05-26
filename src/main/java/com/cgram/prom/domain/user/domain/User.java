@@ -27,11 +27,11 @@ public class User {
     private boolean isPresent;
 
     @Builder
-    public User(UUID id, String email, String password, boolean isPresent) {
+    public User(UUID id, String email, String password) {
         this.id = id;
         this.email = email;
         this.password = password;
-        this.isPresent = isPresent;
+        this.isPresent = true;
     }
 
     public void withdraw() {
