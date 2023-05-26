@@ -5,7 +5,9 @@ import com.cgram.prom.domain.image.domain.Image;
 import com.cgram.prom.domain.image.service.ImageService;
 import com.cgram.prom.domain.profile.domain.Profile;
 import com.cgram.prom.domain.profile.repository.ProfileRepository;
+import com.cgram.prom.domain.profile.repository.ProfileRepository.ProfileWithCounts;
 import com.cgram.prom.domain.profile.request.UpdateProfileServiceDto;
+import com.cgram.prom.domain.profile.response.ProfileResponse;
 import com.cgram.prom.domain.user.domain.User;
 import com.cgram.prom.domain.user.service.UserService;
 import jakarta.transaction.Transactional;
@@ -67,11 +69,29 @@ public class ProfileServiceImpl implements ProfileService {
 
     }
 
+    @Override
+    public ProfileResponse getProfile(String userId, String loginUserId) {
+        ProfileWithCounts profileDto = profileRepository.getProfileWithCountsByUserId(userId, loginUserId);
+        boolean isFollowing = (profileDto.getIsFollowing() != 0);
+
+        return ProfileResponse.builder()
+            .id(userId)
+            .email(profileDto.getEmail())
+            .imagePath(profileDto.getImagePath())
+            .intro(profileDto.getIntro())
+            .isPublic(profileDto.getIsPublic())
+            .followerCount(profileDto.getFollowerCount())
+            .followingCount(profileDto.getFollowingCount())
+            .feedCount(profileDto.getFeedCount())
+            .isFollowing(isFollowing)
+            .build();
+    }
+
     private File transferMultipartFileToFile(MultipartFile mFile) throws IOException {
         String path = System.getProperty("user.dir") + "/src/main/resources/static";
         File file = new File(path + File.separator + mFile.getOriginalFilename());
         mFile.transferTo(file);
-        
+
         return file;
     }
 }

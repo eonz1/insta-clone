@@ -2,6 +2,7 @@ package com.cgram.prom.domain.profile.controller;
 
 import com.cgram.prom.domain.profile.request.UpdateProfileRequest;
 import com.cgram.prom.domain.profile.request.UpdateProfileServiceDto;
+import com.cgram.prom.domain.profile.response.ProfileResponse;
 import com.cgram.prom.domain.profile.service.ProfileService;
 import com.cgram.prom.domain.user.exception.UserException;
 import com.cgram.prom.domain.user.exception.UserExceptionType;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,6 +29,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProfileController {
 
     private final ProfileService profileService;
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProfileResponse> getProfile(@PathVariable String id, Authentication authentication) {
+
+        return ResponseEntity.status(200).body(profileService.getProfile(id, authentication.getName()));
+    }
 
     @PatchMapping(value = "/{id}", consumes = {
         MediaType.APPLICATION_JSON_VALUE,
