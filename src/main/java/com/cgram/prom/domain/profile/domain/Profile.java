@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import java.util.UUID;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 @Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Profile {
 
     @Id
@@ -32,6 +33,7 @@ public class Profile {
 
     @Column(length = 150)
     private String intro;
+
     private boolean isPublic;
 
     @OneToOne
@@ -39,12 +41,11 @@ public class Profile {
     private Image image;
 
     @Builder
-    public Profile(UUID id, User user, String intro, boolean isPublic, Image image) {
-        this.id = id;
+    public Profile(User user, String intro, Image image) {
         this.user = user;
         this.intro = intro;
-        this.isPublic = isPublic;
         this.image = image;
+        this.isPublic = true;
     }
 
     public void update(UpdateProfileServiceDto dto, Image image) {
