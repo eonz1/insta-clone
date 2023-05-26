@@ -34,7 +34,7 @@ class RefreshTokenServiceTest {
     @DisplayName("refresh token 저장")
     public void saveRefreshToken() throws Exception {
         // given
-        RefreshToken savedRefreshToken = new RefreshToken();
+        RefreshToken savedRefreshToken = RefreshToken.builder().build();
         User user = User.builder()
             .id(UUID.randomUUID())
             .build();
@@ -72,7 +72,7 @@ class RefreshTokenServiceTest {
     @DisplayName("refresh token 조회")
     public void getRefreshToken() throws Exception {
         // given
-        Optional<RefreshToken> refreshToken = Optional.of(new RefreshToken());
+        Optional<RefreshToken> refreshToken = Optional.of(RefreshToken.builder().build());
         when(refreshTokenRepository.findByRefreshToken(anyString())).thenReturn(refreshToken);
 
         // when
