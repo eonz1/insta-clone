@@ -1,6 +1,6 @@
-package com.cgram.prom.domain.feed.domain.like;
+package com.cgram.prom.domain.comment.like;
 
-import com.cgram.prom.domain.feed.domain.comment.Comment;
+import com.cgram.prom.domain.comment.Comment;
 import com.cgram.prom.domain.user.domain.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

@@ -1,4 +1,4 @@
-package com.cgram.prom.domain.feed.domain.comment;
+package com.cgram.prom.domain.comment;
 
 import com.cgram.prom.domain.feed.domain.Feed;
 import com.cgram.prom.domain.user.domain.User;

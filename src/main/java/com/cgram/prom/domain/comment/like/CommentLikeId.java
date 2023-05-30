@@ -1,4 +1,4 @@
-package com.cgram.prom.domain.feed.domain.like;
+package com.cgram.prom.domain.comment.like;
 
 import java.io.Serializable;
 import java.util.UUID;
