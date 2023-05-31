@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import com.cgram.prom.domain.following.domain.Follow;
 import com.cgram.prom.domain.following.domain.FollowId;
 import com.cgram.prom.domain.following.repository.FollowRepository;
+import com.cgram.prom.domain.profile.domain.Profile;
 import com.cgram.prom.domain.user.domain.User;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,19 +34,17 @@ class FollowServiceImplTest {
     @DisplayName("팔로잉 성공")
     public void followUser() throws Exception {
         // given
-        User user = User.builder()
-            .id(UUID.randomUUID())
-            .build();
+        User user = User.builder().id(UUID.randomUUID()).build();
+        User followedUser = User.builder().id(UUID.randomUUID()).build();
 
-        User followedUser = User.builder()
-            .id(UUID.randomUUID())
-            .build();
+        Profile followedUserProfile = Profile.builder().user(followedUser).build();
+        Profile userProfile = Profile.builder().user(user).build();
 
         when(followRepository.findById(any(FollowId.class))).thenReturn(
             Optional.empty());
 
         // when
-        followService.follow(followedUser, user);
+        followService.follow(followedUserProfile, userProfile);
 
         // then
         verify(followRepository, times(1)).save(any(Follow.class));
@@ -55,22 +54,21 @@ class FollowServiceImplTest {
     @DisplayName("이미 팔로잉 기록이 있으면 팔로잉 상태만 활성화시킨다.")
     public void updateFollowingStatus() throws Exception {
         // given
-        User user = User.builder()
-            .id(UUID.randomUUID())
-            .build();
+        User user = User.builder().id(UUID.randomUUID()).build();
+        User followedUser = User.builder().id(UUID.randomUUID()).build();
 
-        User followedUser = User.builder()
-            .id(UUID.randomUUID())
-            .build();
+        Profile followedUserProfile = Profile.builder().user(followedUser).build();
+        Profile userProfile = Profile.builder().user(user).build();
+
         Optional<Follow> follow = Optional.of(Follow.builder()
-            .userId(user)
-            .followedId(followedUser)
+            .profileId(userProfile)
+            .followedId(followedUserProfile)
             .isPresent(false)
             .build());
         when(followRepository.findById(any(FollowId.class))).thenReturn(follow);
 
         // when
-        followService.follow(followedUser, user);
+        followService.follow(followedUserProfile, userProfile);
 
         // then
         verify(followRepository, never()).save(any(Follow.class));
@@ -81,17 +79,15 @@ class FollowServiceImplTest {
     @DisplayName("언팔로잉")
     public void unfollowUser() throws Exception {
         // given
-        User user = User.builder()
-            .id(UUID.randomUUID())
-            .build();
+        User user = User.builder().id(UUID.randomUUID()).build();
+        User followedUser = User.builder().id(UUID.randomUUID()).build();
 
-        User followedUser = User.builder()
-            .id(UUID.randomUUID())
-            .build();
+        Profile followedUserProfile = Profile.builder().user(followedUser).build();
+        Profile userProfile = Profile.builder().user(user).build();
 
         Optional<Follow> follow = Optional.of(Follow.builder()
-            .userId(user)
-            .followedId(followedUser)
+            .profileId(userProfile)
+            .followedId(followedUserProfile)
             .isPresent(true)
             .build());
 
@@ -99,7 +95,7 @@ class FollowServiceImplTest {
             follow);
 
         // when
-        followService.unfollow(followedUser, user);
+        followService.unfollow(followedUserProfile, userProfile);
 
         // then
         Assertions.assertThat(follow.get().isPresent()).isEqualTo(false);
