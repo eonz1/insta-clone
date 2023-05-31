@@ -1,7 +1,7 @@
-package com.cgram.prom.domain.comment;
+package com.cgram.prom.domain.comment.domain;
 
 import com.cgram.prom.domain.feed.domain.Feed;
-import com.cgram.prom.domain.user.domain.User;
+import com.cgram.prom.domain.profile.domain.Profile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -37,8 +37,8 @@ public class Comment {
     private Feed feed;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
 
     @Column(length = 150)
     private String content;
@@ -52,11 +52,11 @@ public class Comment {
     private boolean isPresent;
 
     @Builder
-    public Comment(UUID id, Feed feed, User user, String content, boolean isPresent) {
+    public Comment(UUID id, Feed feed, Profile profile, String content) {
         this.id = id;
         this.feed = feed;
-        this.user = user;
+        this.profile = profile;
         this.content = content;
-        this.isPresent = isPresent;
+        this.isPresent = true;
     }
 }
