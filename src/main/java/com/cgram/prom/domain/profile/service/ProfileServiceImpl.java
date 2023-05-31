@@ -4,16 +4,19 @@ import com.cgram.prom.domain.following.service.FollowService;
 import com.cgram.prom.domain.image.domain.Image;
 import com.cgram.prom.domain.image.service.ImageService;
 import com.cgram.prom.domain.profile.domain.Profile;
+import com.cgram.prom.domain.profile.exception.ProfileException;
+import com.cgram.prom.domain.profile.exception.ProfileExceptionType;
 import com.cgram.prom.domain.profile.repository.ProfileRepository;
 import com.cgram.prom.domain.profile.repository.ProfileRepository.ProfileWithCounts;
 import com.cgram.prom.domain.profile.request.UpdateProfileServiceDto;
 import com.cgram.prom.domain.profile.response.ProfileResponse;
-import com.cgram.prom.domain.user.domain.User;
-import com.cgram.prom.domain.user.service.UserService;
+import com.cgram.prom.domain.user.exception.UserException;
+import com.cgram.prom.domain.user.exception.UserExceptionType;
 import jakarta.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,24 +28,29 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProfileServiceImpl implements ProfileService {
 
     private final FollowService followService;
-    private final UserService userService;
     private final ProfileRepository profileRepository;
     private final ImageService imageService;
 
     @Override
-    public void follow(String followedId, String userId) {
-        User followedUser = userService.getUserByIdAndIsPresent(followedId);
-        User user = userService.getUserByIdAndIsPresent(userId);
+    public void follow(UUID followedProfileId, UUID userId) {
+        Profile followedProfile = profileRepository.findById(followedProfileId)
+            .orElseThrow(() -> new ProfileException(
+                ProfileExceptionType.NOT_FOUND));
+        Profile userProfile = profileRepository.findByUserId(userId)
+            .orElseThrow(() -> new ProfileException(ProfileExceptionType.NOT_FOUND));
 
-        followService.follow(followedUser, user);
+        followService.follow(followedProfile, userProfile);
     }
 
     @Override
-    public void unfollow(String followedId, String userId) {
-        User followedUser = userService.getUserByIdAndIsPresent(followedId);
-        User user = userService.getUserByIdAndIsPresent(userId);
+    public void unfollow(UUID followedProfileId, UUID userId) {
+        Profile followedProfile = profileRepository.findById(followedProfileId)
+            .orElseThrow(() -> new ProfileException(
+                ProfileExceptionType.NOT_FOUND));
+        Profile userProfile = profileRepository.findByUserId(userId)
+            .orElseThrow(() -> new ProfileException(ProfileExceptionType.NOT_FOUND));
 
-        followService.unfollow(followedUser, user);
+        followService.unfollow(followedProfile, userProfile);
     }
 
     @Override
@@ -70,12 +78,18 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public ProfileResponse getProfile(String userId, String loginUserId) {
-        ProfileWithCounts profileDto = profileRepository.getProfileWithCountsByUserId(userId, loginUserId);
+    public ProfileResponse getProfile(UUID profileId, UUID loginUserId) {
+        Profile userProfile = profileRepository.findByUserId(profileId).orElseThrow(
+            () -> new UserException(UserExceptionType.USER_NOT_FOUND));
+        Profile loginUserProfile = profileRepository.findByUserId(loginUserId).orElseThrow(
+            () -> new UserException(UserExceptionType.USER_NOT_FOUND));
+
+        ProfileWithCounts profileDto = profileRepository.getProfileWithCountsByProfileId(
+            userProfile.getId(), loginUserProfile.getId());
         boolean isFollowing = (profileDto.getIsFollowing() != 0);
 
         return ProfileResponse.builder()
-            .id(userId)
+            .id(userProfile.getId().toString())
             .email(profileDto.getEmail())
             .imagePath(profileDto.getImagePath())
             .intro(profileDto.getIntro())

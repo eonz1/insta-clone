@@ -10,8 +10,8 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,9 +31,11 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProfileResponse> getProfile(@PathVariable String id, Authentication authentication) {
+    public ResponseEntity<ProfileResponse> getProfile(@PathVariable String id,
+        Authentication authentication) {
 
-        return ResponseEntity.status(200).body(profileService.getProfile(id, authentication.getName()));
+        return ResponseEntity.status(200).body(profileService.getProfile(UUID.fromString(id),
+            UUID.fromString(authentication.getName())));
     }
 
     @PatchMapping(value = "/{id}", consumes = {
@@ -60,12 +62,12 @@ public class ProfileController {
 
     @PostMapping("/{id}/following")
     public void follow(Authentication authentication, @PathVariable String id) {
-        profileService.follow(id, authentication.getName());
+        profileService.follow(UUID.fromString(id), UUID.fromString(authentication.getName()));
     }
 
     @DeleteMapping("/{id}/following")
     public void unfollow(Authentication authentication, @PathVariable String id) {
-        profileService.unfollow(id, authentication.getName());
+        profileService.unfollow(UUID.fromString(id), UUID.fromString(authentication.getName()));
     }
 
     @GetMapping("/{id}/feeds")
