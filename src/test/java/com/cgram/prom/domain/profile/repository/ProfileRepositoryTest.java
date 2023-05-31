@@ -67,44 +67,60 @@ class ProfileRepositoryTest {
     public void getProfileWithCountsByUserId() {
         // given
         User loginUser = userRepository.save(User.builder().id(UUID.randomUUID()).build());
+        Profile loginUserProfile = profileRepository.save(
+            Profile.builder().user(loginUser).build());
+
         User followingUser = userRepository.save(User.builder().id(UUID.randomUUID()).build());
+        Profile followingUserProfile = profileRepository.save(
+            Profile.builder().user(followingUser).build());
+
         User followingUser2 = userRepository.save(User.builder().id(UUID.randomUUID()).build());
+        Profile followingUser2Profile = profileRepository.save(
+            Profile.builder().user(followingUser2).build());
+
         User followerUser = userRepository.save(User.builder().id(UUID.randomUUID()).build());
-        User user = userRepository.save(User.builder().id(UUID.randomUUID()).email("test@test.com").build());
-        Image image = imageRepository.save(Image.builder().id(UUID.randomUUID()).path("/test.png").isPresent(true).build());
-        profileRepository.save(Profile.builder()
+        Profile followerUserProfile = profileRepository.save(
+            Profile.builder().user(followerUser).build());
+
+        User user = userRepository.save(
+            User.builder().id(UUID.randomUUID()).email("test@test.com").build());
+        Image image = imageRepository.save(
+            Image.builder().id(UUID.randomUUID()).path("/test.png").isPresent(true).build());
+
+        Profile userProfile = profileRepository.save(Profile.builder()
             .intro("intro")
             .user(user)
             .image(image)
             .build());
-        feedRepository.save(Feed.builder().user(user).isPresent(true).build());
+        feedRepository.save(Feed.builder().profile(userProfile).isPresent(true).build());
 
         // add following
         followRepository.save(Follow.builder()
-            .userId(user)
-            .followedId(followingUser)
+            .profileId(userProfile)
+            .followedId(followingUserProfile)
             .isPresent(true)
             .build());
         followRepository.save(Follow.builder()
-            .userId(user)
-            .followedId(followingUser2)
+            .profileId(userProfile)
+            .followedId(followingUser2Profile)
             .isPresent(true)
             .build());
         // add follower
         followRepository.save(Follow.builder()
-            .userId(followerUser)
-            .followedId(user)
+            .profileId(followerUserProfile)
+            .followedId(userProfile)
             .isPresent(true)
             .build());
         // loginUser follow user
         followRepository.save(Follow.builder()
-            .userId(loginUser)
-            .followedId(user)
+            .profileId(loginUserProfile)
+            .followedId(userProfile)
             .isPresent(true)
             .build());
 
         // when
-        ProfileWithCounts profileWithCounts = profileRepository.getProfileWithCountsByUserId(user.getId().toString(), loginUser.getId().toString());
+        ProfileWithCounts profileWithCounts = profileRepository.getProfileWithCountsByProfileId(
+            userProfile.getId(), loginUserProfile.getId());
 
         // then
         Assertions.assertThat(profileWithCounts.getFeedCount()).isEqualTo(1L);
