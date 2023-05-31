@@ -1,6 +1,6 @@
 package com.cgram.prom.domain.following.domain;
 
-import com.cgram.prom.domain.user.domain.User;
+import com.cgram.prom.domain.profile.domain.Profile;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
@@ -26,12 +26,12 @@ public class Follow implements Persistable<FollowId> {
     @Id
     @ManyToOne
     @JoinColumn(name = "followed_id")
-    private User followedId;
+    private Profile followedId;
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User userId;
+    @JoinColumn(name = "profile_id")
+    private Profile profileId;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -39,9 +39,9 @@ public class Follow implements Persistable<FollowId> {
     private boolean isPresent;
 
     @Builder
-    public Follow(User followedId, User userId, boolean isPresent) {
+    public Follow(Profile followedId, Profile profileId, boolean isPresent) {
         this.followedId = followedId;
-        this.userId = userId;
+        this.profileId = profileId;
         this.isPresent = isPresent;
     }
 
@@ -51,7 +51,7 @@ public class Follow implements Persistable<FollowId> {
 
     @Override
     public FollowId getId() {
-        return new FollowId(followedId.getId(), userId.getId());
+        return new FollowId(followedId.getId(), profileId.getId());
     }
 
     @Override

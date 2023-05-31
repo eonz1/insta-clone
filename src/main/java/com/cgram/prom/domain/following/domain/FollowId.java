@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 public class FollowId implements Serializable {
 
     private UUID followedId;
-    private UUID userId;
+    private UUID profileId;
 
-    public FollowId(UUID followedId, UUID userId) {
+    public FollowId(UUID followedId, UUID profileId) {
         this.followedId = followedId;
-        this.userId = userId;
+        this.profileId = profileId;
     }
 
     @Override
