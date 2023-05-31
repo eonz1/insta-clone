@@ -3,7 +3,7 @@ package com.cgram.prom.domain.following.service;
 import com.cgram.prom.domain.following.domain.Follow;
 import com.cgram.prom.domain.following.domain.FollowId;
 import com.cgram.prom.domain.following.repository.FollowRepository;
-import com.cgram.prom.domain.user.domain.User;
+import com.cgram.prom.domain.profile.domain.Profile;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -17,18 +17,18 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     @Transactional
-    public void follow(User followedUser, User user) {
-        Optional<Follow> byUserIdAndFollowedId = followRepository.findById(
-            new FollowId(followedUser.getId(), user.getId()));
+    public void follow(Profile followedUserProfile, Profile userProfile) {
+        Optional<Follow> byId = followRepository.findById(
+            new FollowId(followedUserProfile.getId(), userProfile.getId()));
 
-        if (byUserIdAndFollowedId.isPresent()) {
-            byUserIdAndFollowedId.get().followStatusUpdate(true);
+        if (byId.isPresent()) {
+            byId.get().followStatusUpdate(true);
             return;
         }
 
         Follow follow = Follow.builder()
-            .userId(user)
-            .followedId(followedUser)
+            .profileId(userProfile)
+            .followedId(followedUserProfile)
             .isPresent(true)
             .build();
 
@@ -37,10 +37,10 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     @Transactional
-    public void unfollow(User followedUser, User user) {
-        Optional<Follow> byUserIdAndFollowedId = followRepository.findById(
-            new FollowId(followedUser.getId(), user.getId()));
+    public void unfollow(Profile followedUserProfile, Profile userProfile) {
+        Optional<Follow> byId = followRepository.findById(
+            new FollowId(followedUserProfile.getId(), userProfile.getId()));
 
-        byUserIdAndFollowedId.ifPresent(follow -> follow.followStatusUpdate(false));
+        byId.ifPresent(follow -> follow.followStatusUpdate(false));
     }
 }

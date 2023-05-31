@@ -1,10 +1,10 @@
 package com.cgram.prom.domain.following.service;
 
-import com.cgram.prom.domain.user.domain.User;
+import com.cgram.prom.domain.profile.domain.Profile;
 
 public interface FollowService {
 
-    void follow(User followedUser, User user);
+    void follow(Profile followedUserProfile, Profile userProfile);
 
-    void unfollow(User followedUser, User user);
+    void unfollow(Profile followedUserProfile, Profile userProfile);
 }
