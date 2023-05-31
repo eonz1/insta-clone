@@ -2,6 +2,8 @@ package com.cgram.prom.domain.following.repository;
 
 import com.cgram.prom.domain.following.domain.Follow;
 import com.cgram.prom.domain.following.domain.FollowId;
+import com.cgram.prom.domain.profile.domain.Profile;
+import com.cgram.prom.domain.profile.repository.ProfileRepository;
 import com.cgram.prom.domain.user.domain.User;
 import com.cgram.prom.domain.user.repository.UserRepository;
 import java.util.Optional;
@@ -20,6 +22,9 @@ import org.springframework.test.context.ActiveProfiles;
 class FollowRepositoryTest {
 
     @Autowired
+    ProfileRepository profileRepository;
+
+    @Autowired
     FollowRepository followRepository;
 
     @Autowired
@@ -30,21 +35,26 @@ class FollowRepositoryTest {
     public void getFollowingByFollowId() throws Exception {
         // given
         User user = userRepository.save(User.builder().id(UUID.randomUUID()).build());
+        Profile userProfile = profileRepository.save(Profile.builder().user(user).build());
+
         User followedUser = userRepository.save(User.builder().id(UUID.randomUUID()).build());
+        Profile followedUserProfile = profileRepository.save(
+            Profile.builder().user(followedUser).build());
 
         // when
         Follow follow = Follow.builder()
-            .userId(user)
-            .followedId(followedUser)
+            .profileId(userProfile)
+            .followedId(followedUserProfile)
             .isPresent(true)
             .build();
         followRepository.save(follow);
 
         // then
         Optional<Follow> byId = followRepository.findById(
-            new FollowId(followedUser.getId(), user.getId()));
+            new FollowId(followedUserProfile.getId(), userProfile.getId()));
 
-        Assertions.assertThat(byId.get().getUserId().getId()).isEqualTo(user.getId());
-        Assertions.assertThat(byId.get().getFollowedId().getId()).isEqualTo(followedUser.getId());
+        Assertions.assertThat(byId.get().getProfileId().getId()).isEqualTo(userProfile.getId());
+        Assertions.assertThat(byId.get().getFollowedId().getId())
+            .isEqualTo(followedUserProfile.getId());
     }
 }
