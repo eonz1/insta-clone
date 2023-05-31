@@ -1,6 +1,6 @@
 package com.cgram.prom.domain.feed.domain;
 
-import com.cgram.prom.domain.user.domain.User;
+import com.cgram.prom.domain.profile.domain.Profile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -32,8 +32,8 @@ public class Feed {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
 
     @Column(length = 2200)
     private String content;
@@ -47,9 +47,9 @@ public class Feed {
     private boolean isPresent;
 
     @Builder
-    public Feed(UUID id, User user, String content, boolean isPresent) {
+    public Feed(UUID id, Profile profile, String content, boolean isPresent) {
         this.id = id;
-        this.user = user;
+        this.profile = profile;
         this.content = content;
         this.isPresent = isPresent;
     }

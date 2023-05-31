@@ -2,7 +2,7 @@ package com.cgram.prom.domain.feed.domain.like;
 
 
 import com.cgram.prom.domain.feed.domain.Feed;
-import com.cgram.prom.domain.user.domain.User;
+import com.cgram.prom.domain.profile.domain.Profile;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -25,14 +25,14 @@ public class FeedLike {
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User userId;
+    @JoinColumn(name = "profile_id")
+    private Profile profileId;
 
     private boolean isPresent;
 
-    public FeedLike(Feed feedId, User userId, boolean isPresent) {
+    public FeedLike(Feed feedId, Profile profileId, boolean isPresent) {
         this.feedId = feedId;
-        this.userId = userId;
+        this.profileId = profileId;
         this.isPresent = isPresent;
     }
 }

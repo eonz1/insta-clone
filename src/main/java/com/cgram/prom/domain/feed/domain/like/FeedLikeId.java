@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 public class FeedLikeId implements Serializable {
 
     private UUID feedId;
-    private UUID userId;
+    private UUID profileId;
 
-    public FeedLikeId(UUID feedId, UUID userId) {
+    public FeedLikeId(UUID feedId, UUID profileId) {
         this.feedId = feedId;
-        this.userId = userId;
+        this.profileId = profileId;
     }
 
     @Override
