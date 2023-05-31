@@ -2,7 +2,6 @@ package com.cgram.prom.domain.profile.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -12,10 +11,9 @@ import com.cgram.prom.domain.following.service.FollowService;
 import com.cgram.prom.domain.image.domain.Image;
 import com.cgram.prom.domain.image.service.ImageService;
 import com.cgram.prom.domain.profile.domain.Profile;
+import com.cgram.prom.domain.profile.exception.ProfileException;
 import com.cgram.prom.domain.profile.repository.ProfileRepository;
 import com.cgram.prom.domain.profile.request.UpdateProfileServiceDto;
-import com.cgram.prom.domain.user.domain.User;
-import com.cgram.prom.domain.user.exception.UserException;
 import com.cgram.prom.domain.user.service.UserService;
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,54 +46,88 @@ class ProfileServiceImplTest {
     @DisplayName("회원 팔로잉")
     public void followUser() throws Exception {
         // given
-        User user = new User();
-        when(userService.getUserByIdAndIsPresent(anyString())).thenReturn(user);
+        Profile profile = Profile.builder().build();
+        Profile userProfile = Profile.builder().build();
+        when(profileRepository.findById(any(UUID.class))).thenReturn(Optional.of(profile));
+        when(profileRepository.findByUserId(any(UUID.class))).thenReturn(Optional.of(userProfile));
 
         // when
-        profileService.follow(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+        profileService.follow(UUID.randomUUID(), UUID.randomUUID());
 
         // then
-        verify(followService, times(1)).follow(any(User.class), any(User.class));
+        verify(followService, times(1)).follow(any(Profile.class), any(Profile.class));
     }
 
     @Test
-    @DisplayName("회원 팔로잉 - 팔로잉 당하는 회원, 팔로잉하는 회원이 둘 다 존재하지 않거나 탈퇴한 회원이면 팔로잉 불가")
-    public void followUserFailed() throws Exception {
+    @DisplayName("회원 팔로잉 - 팔로잉 당하는 회원이 존재하지 않으면 팔로잉 불가")
+    public void followFailedFollowedUserNotFound() throws Exception {
         // given
-        when(userService.getUserByIdAndIsPresent(anyString())).thenThrow(UserException.class);
+        when(profileRepository.findById(any(UUID.class))).thenThrow(ProfileException.class);
 
         // expected
-        Assertions.assertThrows(UserException.class, () -> {
-            profileService.follow(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+        Assertions.assertThrows(ProfileException.class, () -> {
+            profileService.follow(UUID.randomUUID(), UUID.randomUUID());
         });
-        verify(followService, never()).follow(any(User.class), any(User.class));
+        verify(followService, never()).follow(any(Profile.class), any(Profile.class));
+    }
+
+    @Test
+    @DisplayName("회원 팔로잉 - 팔로잉하는 회원이 존재하지 않으면 팔로잉 불가")
+    public void followFailedUserNotFound() throws Exception {
+        // given
+        Profile profile = Profile.builder().build();
+        when(profileRepository.findById(any(UUID.class))).thenReturn(Optional.of(profile));
+        when(profileRepository.findByUserId(any(UUID.class))).thenThrow(ProfileException.class);
+
+        // expected
+        Assertions.assertThrows(ProfileException.class, () -> {
+            profileService.follow(UUID.randomUUID(), UUID.randomUUID());
+        });
+        verify(followService, never()).follow(any(Profile.class), any(Profile.class));
     }
 
     @Test
     @DisplayName("회원 언팔로잉")
     public void unfollowUser() throws Exception {
         // given
-        User user = new User();
-        when(userService.getUserByIdAndIsPresent(anyString())).thenReturn(user);
+        Profile profile = Profile.builder().build();
+        Profile userProfile = Profile.builder().build();
+        when(profileRepository.findById(any(UUID.class))).thenReturn(Optional.of(profile));
+        when(profileRepository.findByUserId(any(UUID.class))).thenReturn(Optional.of(userProfile));
 
         // when
-        profileService.unfollow(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+        profileService.unfollow(UUID.randomUUID(), UUID.randomUUID());
 
         // then
-        verify(followService, times(1)).unfollow(any(User.class), any(User.class));
+        verify(followService, times(1)).unfollow(any(Profile.class), any(Profile.class));
     }
 
     @Test
-    @DisplayName("회원 언팔로잉 - 언팔로잉 당하는 회원, 언팔로잉하는 회원이 둘 다 존재하지 않거나 탈퇴한 회원이면 언팔로잉 불가")
-    public void unfollowUserFailed() throws Exception {
+    @DisplayName("회원 언팔로잉 - 언팔로잉 당하는 회원이 존재하지 않으면 언팔로잉 불가")
+    public void unfollowFailedFollowedUserNotFound() throws Exception {
         // given
-        when(userService.getUserByIdAndIsPresent(anyString())).thenThrow(UserException.class);
+        when(profileRepository.findById(any(UUID.class))).thenThrow(ProfileException.class);
 
         // expected
-        Assertions.assertThrows(UserException.class, () -> {
-            profileService.unfollow(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+        Assertions.assertThrows(ProfileException.class, () -> {
+            profileService.unfollow(UUID.randomUUID(), UUID.randomUUID());
         });
-        verify(followService, never()).unfollow(any(User.class), any(User.class));
+        verify(followService, never()).unfollow(any(Profile.class), any(Profile.class));
+    }
+
+    @Test
+    @DisplayName("회원 언팔로잉 - 언팔로잉하는 회원이 존재하지 않으면 언팔로잉 불가")
+    public void unfollowUserFailed() throws Exception {
+        // given
+        Profile profile = Profile.builder().build();
+        when(profileRepository.findById(any(UUID.class))).thenReturn(Optional.of(profile));
+        when(profileRepository.findByUserId(any(UUID.class))).thenThrow(ProfileException.class);
+
+        // expected
+        Assertions.assertThrows(ProfileException.class, () -> {
+            profileService.unfollow(UUID.randomUUID(), UUID.randomUUID());
+        });
+        verify(followService, never()).unfollow(any(Profile.class), any(Profile.class));
     }
 
     @Test
@@ -175,7 +207,7 @@ class ProfileServiceImplTest {
         Optional<Profile> profile = Optional.of(Profile.builder()
             .intro("소개")
             .build());
-        
+
         when(profileRepository.findByUserId(any(UUID.class))).thenReturn(
             profile);
 
