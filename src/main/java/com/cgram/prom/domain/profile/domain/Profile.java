@@ -41,7 +41,8 @@ public class Profile {
     private Image image;
 
     @Builder
-    public Profile(User user, String intro, Image image) {
+    public Profile(UUID id, User user, String intro, Image image) {
+        this.id = id;
         this.user = user;
         this.intro = intro;
         this.image = image;
