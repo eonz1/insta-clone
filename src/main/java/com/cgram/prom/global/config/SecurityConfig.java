@@ -74,10 +74,12 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /*
     @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper();
     }
+     */
 
     @Bean
     public JwtDecoder decoder() {
