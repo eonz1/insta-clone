@@ -1,6 +1,7 @@
 package com.cgram.prom.domain.comment.domain.like;
 
 import com.cgram.prom.domain.comment.domain.Comment;
+import com.cgram.prom.domain.profile.domain.Profile;
 import com.cgram.prom.domain.user.domain.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -20,8 +21,8 @@ public class CommentLike {
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User userId;
+    @JoinColumn(name = "profile_id")
+    private Profile profileId;
 
     @Id
     @ManyToOne
@@ -31,8 +32,8 @@ public class CommentLike {
     private boolean isPresent;
 
     @Builder
-    public CommentLike(User userId, Comment commentId, boolean isPresent) {
-        this.userId = userId;
+    public CommentLike(Profile profileId, Comment commentId, boolean isPresent) {
+        this.profileId = profileId;
         this.commentId = commentId;
         this.isPresent = isPresent;
     }
