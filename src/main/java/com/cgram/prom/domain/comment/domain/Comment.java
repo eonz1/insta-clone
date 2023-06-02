@@ -59,4 +59,12 @@ public class Comment {
         this.content = content;
         this.isPresent = true;
     }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updateStatus(boolean status) {
+        this.isPresent = status;
+    }
 }
