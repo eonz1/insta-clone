@@ -15,10 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ImageServiceImpl implements ImageService {
 
     private final ImageRepository imageRepository;
-    private final ResizeImageGenerator ResizeProfileImageGenerator = new ResizeImageGenerator(110,
-        110);
-    private final ResizeImageGenerator ResizeFeedImageGenerator = new ResizeImageGenerator(1080,
-        1080);
     private String path = System.getProperty("user.dir") + "/src/main/resources/static";
 
     @Transactional
@@ -47,5 +43,18 @@ public class ImageServiceImpl implements ImageService {
         afterImg.createGraphics().drawImage(bufferedImage, 0, 0, null);
 
         return afterImg;
+    }
+
+    public File resizeImage(File file, String prefix, int width, int height) throws IOException {
+        ResizeImageGenerator resizeImageGenerator = new ResizeImageGenerator(width, height);
+        BufferedImage resizeImage = resizeImageGenerator.generate(file);
+
+        String resizeImageName = prefix + file.getName();
+        String path = file.getPath().split(file.getName())[0];
+
+        File coverFile = new File(path + File.separator + resizeImageName);
+        ImageIO.write(resizeImage, file.getPath().split("\\.")[1], coverFile);
+
+        return coverFile;
     }
 }
