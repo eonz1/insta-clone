@@ -11,6 +11,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @RestControllerAdvice
 public class ExceptionController {
@@ -27,6 +28,17 @@ public class ExceptionController {
             .message("잘못된 요청입니다.")
             .code(400)
             .validation(validation)
+            .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ErrorResponse> missingServletRequestPartException(
+        MissingServletRequestPartException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+            .code(400)
+            .message(e.getMessage())
             .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
