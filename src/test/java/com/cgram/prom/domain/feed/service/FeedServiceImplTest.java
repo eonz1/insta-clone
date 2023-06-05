@@ -15,6 +15,7 @@ import com.cgram.prom.domain.feed.repository.FeedImageRepository;
 import com.cgram.prom.domain.feed.repository.FeedRepository;
 import com.cgram.prom.domain.feed.repository.HashTagRepository;
 import com.cgram.prom.domain.feed.request.DeleteFeedServiceDto;
+import com.cgram.prom.domain.feed.request.ModifyFeedServiceDto;
 import com.cgram.prom.domain.image.service.ImageService;
 import com.cgram.prom.domain.profile.domain.Profile;
 import com.cgram.prom.domain.profile.exception.ProfileException;
@@ -192,5 +193,71 @@ class FeedServiceImplTest {
         feedService.delete(dto);
 
         verify(feedRepository, times(1)).findById(any(UUID.class));
+    }
+
+    @Test
+    @DisplayName("피드 수정")
+    public void modifyFeed() throws Exception {
+        // given
+        UUID userId = UUID.randomUUID();
+        UUID feedId = UUID.randomUUID();
+        Set<String> tags = new HashSet<>();
+        tags.add("#tag1");
+        tags.add("#tag2");
+
+        ModifyFeedServiceDto dto = ModifyFeedServiceDto.builder()
+            .userId(userId)
+            .feedId(feedId)
+            .content("내용")
+            .hashTags(tags)
+            .build();
+
+        Profile profile = Profile.builder().id(UUID.randomUUID()).build();
+        Feed feed = Feed.builder()
+            .id(feedId)
+            .profile(profile)
+            .content("content")
+            .build();
+        when(profileRepository.findByUserId(any(UUID.class))).thenReturn(Optional.of(profile));
+        when(feedRepository.findById(any(UUID.class))).thenReturn(Optional.of(feed));
+
+        // when
+        feedService.modify(dto);
+
+        // then
+        verify(feedRepository, times(1)).findById(any(UUID.class));
+        verify(hashTagRepository, times(1)).deleteByFeedId(any(UUID.class));
+        assertThat(feed.getContent()).isEqualTo("내용");
+    }
+
+    @Test
+    @DisplayName("피드 내용만 수정")
+    public void modifyFeedWithoutHashtags() throws Exception {
+        // given
+        UUID userId = UUID.randomUUID();
+        UUID feedId = UUID.randomUUID();
+
+        ModifyFeedServiceDto dto = ModifyFeedServiceDto.builder()
+            .userId(userId)
+            .feedId(feedId)
+            .content("내용")
+            .build();
+
+        Profile profile = Profile.builder().id(UUID.randomUUID()).build();
+        Feed feed = Feed.builder()
+            .id(feedId)
+            .profile(profile)
+            .content("content")
+            .build();
+        when(profileRepository.findByUserId(any(UUID.class))).thenReturn(Optional.of(profile));
+        when(feedRepository.findById(any(UUID.class))).thenReturn(Optional.of(feed));
+
+        // when
+        feedService.modify(dto);
+
+        // then
+        verify(feedRepository, times(1)).findById(any(UUID.class));
+        verify(hashTagRepository, times(0)).deleteByFeedId(any(UUID.class));
+        assertThat(feed.getContent()).isEqualTo("내용");
     }
 }

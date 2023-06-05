@@ -9,6 +9,7 @@ import com.cgram.prom.domain.feed.repository.FeedImageRepository;
 import com.cgram.prom.domain.feed.repository.FeedRepository;
 import com.cgram.prom.domain.feed.repository.HashTagRepository;
 import com.cgram.prom.domain.feed.request.DeleteFeedServiceDto;
+import com.cgram.prom.domain.feed.request.ModifyFeedServiceDto;
 import com.cgram.prom.domain.feed.request.PostFeedServiceDto;
 import com.cgram.prom.domain.image.domain.Image;
 import com.cgram.prom.domain.image.service.ImageService;
@@ -139,5 +140,29 @@ public class FeedServiceImpl implements FeedService {
 
         // 프로필에 피드 수 감소
         statisticsService.updateStatistics(profile.getId(), StatisticType.FEED.label(), -1);
+    }
+
+
+    @Transactional
+    @Override
+    public void modify(ModifyFeedServiceDto dto) {
+        Profile profile = profileRepository.findByUserId(dto.getUserId())
+            .orElseThrow(() -> new ProfileException(ProfileExceptionType.NOT_FOUND));
+
+        Feed feed = feedRepository.findById(dto.getFeedId())
+            .orElseThrow(() -> new FeedException(FeedExceptionType.NOT_FOUND));
+
+        if (!feed.getProfile().getId().equals(profile.getId())) {
+            throw new FeedException(FeedExceptionType.UNAUTHORIZED);
+        }
+
+        if (dto.getHashTags() != null) {
+            // hashtag 다 지우는거
+            hashTagRepository.deleteByFeedId(feed.getId());
+
+            saveHashTags(dto.getHashTags(), feed);
+        }
+
+        feed.modify(dto.getContent());
     }
 }
