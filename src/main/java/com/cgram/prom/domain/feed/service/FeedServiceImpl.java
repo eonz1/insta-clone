@@ -49,6 +49,8 @@ public class FeedServiceImpl implements FeedService {
 
         // 해시태그 저장
         saveHashTags(dto.getHashtags(), feed);
+
+        // TODO: 2023/06/05 피드 작성 aop
     }
 
     @Transactional
@@ -66,14 +68,15 @@ public class FeedServiceImpl implements FeedService {
     public void saveFeedImages(List<File> images, Feed feed) {
         List<FeedImage> feedImages = new ArrayList<>();
         try {
-            for (File image : images) {
-                Image originalImage = imageService.saveImage(image);
+            for (int i = 0; i < images.size(); i++) {
+                Image originalImage = imageService.saveImage(images.get(i));
 
                 FeedImage feedImage = FeedImage.builder()
                     .imageId(originalImage)
                     .feedId(feed)
                     .isPresent(true)
                     .isCover(false)
+                    .imageIndex(i)
                     .build();
                 feedImages.add(feedImage);
             }
@@ -84,6 +87,7 @@ public class FeedServiceImpl implements FeedService {
                 .feedId(feed)
                 .isPresent(true)
                 .isCover(true)
+                .imageIndex(0)
                 .build();
             feedImages.add(feedCoverImage);
             feedImageRepository.saveAll(feedImages);
@@ -112,6 +116,7 @@ public class FeedServiceImpl implements FeedService {
 
         hashTagRepository.saveAll(hashTagEntities);
     }
+
 
     @Transactional
     @Override
