@@ -53,4 +53,8 @@ public class Feed {
         this.content = content;
         this.isPresent = isPresent;
     }
+
+    public void delete() {
+        this.isPresent = false;
+    }
 }
