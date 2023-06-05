@@ -1,7 +1,7 @@
-package com.cgram.prom.domain.comment;
+package com.cgram.prom.domain.comment.domain;
 
 import com.cgram.prom.domain.feed.domain.Feed;
-import com.cgram.prom.domain.user.domain.User;
+import com.cgram.prom.domain.profile.domain.Profile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -15,7 +15,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.annotations.UuidGenerator.Style;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -27,8 +28,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Comment {
 
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @GeneratedValue
+    @UuidGenerator(style = Style.TIME)
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
@@ -37,8 +38,8 @@ public class Comment {
     private Feed feed;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
 
     @Column(length = 150)
     private String content;
@@ -52,11 +53,19 @@ public class Comment {
     private boolean isPresent;
 
     @Builder
-    public Comment(UUID id, Feed feed, User user, String content, boolean isPresent) {
+    public Comment(UUID id, Feed feed, Profile profile, String content) {
         this.id = id;
         this.feed = feed;
-        this.user = user;
+        this.profile = profile;
         this.content = content;
-        this.isPresent = isPresent;
+        this.isPresent = true;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updateStatus(boolean status) {
+        this.isPresent = status;
     }
 }

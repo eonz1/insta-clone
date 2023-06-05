@@ -1,4 +1,4 @@
-package com.cgram.prom.domain.comment.like;
+package com.cgram.prom.domain.comment.domain.like;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CommentLikeId implements Serializable {
 
-    private UUID userId;
+    private UUID profileId;
     private UUID commentId;
 
     @Builder
-    public CommentLikeId(UUID userId, UUID commentId) {
-        this.userId = userId;
+    public CommentLikeId(UUID profileId, UUID commentId) {
+        this.profileId = profileId;
         this.commentId = commentId;
     }
 
