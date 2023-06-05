@@ -1,14 +1,17 @@
 package com.cgram.prom.domain.feed.controller;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.cgram.prom.domain.feed.request.DeleteFeedServiceDto;
 import com.cgram.prom.domain.feed.request.PostFeedRequest;
 import com.cgram.prom.domain.feed.request.PostFeedServiceDto;
 import com.cgram.prom.domain.feed.service.FeedService;
@@ -18,7 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.HashSet;
 import java.util.Set;
-import org.assertj.core.api.Assertions;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -142,9 +145,9 @@ class FeedControllerTest {
         verify(feedService).post(postFeedCaptor.capture());
         PostFeedServiceDto dto = postFeedCaptor.getValue();
 
-        Assertions.assertThat(dto.getContent()).isEqualTo("가나다라마바");
-        Assertions.assertThat(dto.getHashtags()).isNull();
-        Assertions.assertThat(dto.getImages().size()).isEqualTo(2);
+        assertThat(dto.getContent()).isEqualTo("가나다라마바");
+        assertThat(dto.getHashtags()).isNull();
+        assertThat(dto.getImages().size()).isEqualTo(2);
     }
 
     @Test
@@ -178,5 +181,29 @@ class FeedControllerTest {
             .andDo(print());
 
         verify(feedService, times(0)).post(any(PostFeedServiceDto.class));
+    }
+
+    @Test
+    @DisplayName("피드 삭제")
+    @WithAuthentication(name = "8df2c1f7-1bcc-4220-a01e-9dad95e87895")
+    public void deleteFeed() throws Exception {
+        // given
+        UUID feedId = UUID.randomUUID();
+
+        // when
+        mockMvc.perform(delete("/api/v1/feeds/{id}", feedId.toString())
+                .with(SecurityMockMvcRequestPostProcessors.csrf()))
+            .andExpect(status().isOk())
+            .andDo(print());
+
+        // then
+        ArgumentCaptor<DeleteFeedServiceDto> deleteFeedCaptor = ArgumentCaptor.forClass(
+            DeleteFeedServiceDto.class);
+        verify(feedService).delete(deleteFeedCaptor.capture());
+        DeleteFeedServiceDto dto = deleteFeedCaptor.getValue();
+
+        assertThat(dto.getUserId()).isEqualTo(
+            UUID.fromString("8df2c1f7-1bcc-4220-a01e-9dad95e87895"));
+        assertThat(dto.getFeedId()).isEqualTo(feedId);
     }
 }
