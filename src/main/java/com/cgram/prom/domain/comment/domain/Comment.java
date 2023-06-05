@@ -2,6 +2,7 @@ package com.cgram.prom.domain.comment.domain;
 
 import com.cgram.prom.domain.feed.domain.Feed;
 import com.cgram.prom.domain.profile.domain.Profile;
+import com.cgram.prom.domain.statistics.domain.Statistics;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -9,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -51,6 +53,10 @@ public class Comment {
     private LocalDateTime modifiedAt;
 
     private boolean isPresent;
+
+    @OneToOne
+    @JoinColumn(name = "uuid")
+    private Statistics statistics;
 
     @Builder
     public Comment(UUID id, Feed feed, Profile profile, String content) {
