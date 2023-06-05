@@ -16,6 +16,8 @@ import com.cgram.prom.domain.profile.domain.Profile;
 import com.cgram.prom.domain.profile.exception.ProfileException;
 import com.cgram.prom.domain.profile.exception.ProfileExceptionType;
 import com.cgram.prom.domain.profile.repository.ProfileRepository;
+import com.cgram.prom.domain.statistics.enums.StatisticType;
+import com.cgram.prom.domain.statistics.service.StatisticsService;
 import jakarta.transaction.Transactional;
 import java.io.File;
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ public class FeedServiceImpl implements FeedService {
     private final ImageService imageService;
     private final FeedImageRepository feedImageRepository;
     private final HashTagRepository hashTagRepository;
+    private final StatisticsService statisticsService;
 
     @Transactional
     @Override
@@ -50,7 +53,8 @@ public class FeedServiceImpl implements FeedService {
         // 해시태그 저장
         saveHashTags(dto.getHashtags(), feed);
 
-        // TODO: 2023/06/05 피드 작성 aop
+        // 프로필에 피드 수 추가
+        statisticsService.updateStatistics(profile.getId(), StatisticType.FEED.label(), 1);
     }
 
     @Transactional
@@ -133,6 +137,7 @@ public class FeedServiceImpl implements FeedService {
 
         feed.delete();
 
-        // TODO: 2023/06/05 피드 삭제 aop
+        // 프로필에 피드 수 감소
+        statisticsService.updateStatistics(profile.getId(), StatisticType.FEED.label(), -1);
     }
 }
