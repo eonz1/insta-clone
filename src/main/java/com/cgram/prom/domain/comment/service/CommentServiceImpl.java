@@ -9,10 +9,10 @@ import com.cgram.prom.domain.comment.response.CommentResponse;
 import com.cgram.prom.domain.feed.domain.Feed;
 import com.cgram.prom.domain.profile.domain.Profile;
 import com.cgram.prom.domain.profile.repository.ProfileRepository;
+import com.cgram.prom.domain.statistics.enums.StatisticType;
+import com.cgram.prom.domain.statistics.service.StatisticsService;
 import com.cgram.prom.domain.user.exception.UserException;
 import com.cgram.prom.domain.user.exception.UserExceptionType;
-import com.cgram.prom.global.annotation.aspect.DecreaseStatistics;
-import com.cgram.prom.global.annotation.aspect.IncreaseStatistics;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +28,7 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final ProfileRepository profileRepository;
+    private final StatisticsService statisticsService;
 
     @Override
     public List<CommentResponse> getComments(String feedId) {
@@ -36,13 +37,14 @@ public class CommentServiceImpl implements CommentService {
             UUID.fromString(feedId), true);
 
         List<CommentResponse> responseList = comments.stream().map(comment ->
-            CommentResponse.builder()
-                .id(comment.getId())
-                .profileId(comment.getProfile().getId())
-                .content(comment.getContent())
-                .createdAt(comment.getCreatedAt())
-                .modifiedAt(comment.getModifiedAt()) // TODO: likes
-                .build())
+                CommentResponse.builder()
+                    .id(comment.getId())
+                    .profileId(comment.getProfile().getId())
+                    .content(comment.getContent())
+                    .createdAt(comment.getCreatedAt())
+                    .modifiedAt(comment.getModifiedAt())
+                    .likes(comment.getStatistics().getCounts())
+                    .build())
             .collect(Collectors.toList());
 
         return responseList;
@@ -50,7 +52,6 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    @IncreaseStatistics(type = "comment", id = "feedId")
     public void reply(CommentServiceDTO dto) {
 
         Profile profile = profileRepository.findByUserId(UUID.fromString(dto.getUserId()))
@@ -63,6 +64,8 @@ public class CommentServiceImpl implements CommentService {
             .build();
 
         commentRepository.save(comment);
+
+        statisticsService.updateStatistics(profile.getId(), StatisticType.COMMENT.label(), 1);
     }
 
     @Override
@@ -75,11 +78,15 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    @DecreaseStatistics(type = "comment", id = "feedId")
     public void delete(CommentServiceDTO dto) {
+
+        Profile profile = profileRepository.findByUserId(UUID.fromString(dto.getUserId()))
+            .orElseThrow(() -> new UserException(UserExceptionType.USER_UNAUTHORIZED));
 
         Comment comment = getComment(dto);
         comment.updateStatus(false);
+
+        statisticsService.updateStatistics(profile.getId(), StatisticType.COMMENT.label(), -1);
     }
 
     private Comment getComment(CommentServiceDTO dto) {
@@ -96,6 +103,7 @@ public class CommentServiceImpl implements CommentService {
         if (!comment.getFeed().getId().equals(UUID.fromString(dto.getFeedId()))) {
             throw new CommentException(CommentExceptionType.NOT_MATCH_FEED);
         }
+
         return comment;
     }
 }
