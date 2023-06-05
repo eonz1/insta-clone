@@ -11,6 +11,8 @@ import com.cgram.prom.domain.profile.domain.Profile;
 import com.cgram.prom.domain.profile.repository.ProfileRepository;
 import com.cgram.prom.domain.user.exception.UserException;
 import com.cgram.prom.domain.user.exception.UserExceptionType;
+import com.cgram.prom.global.annotation.aspect.DecreaseStatistics;
+import com.cgram.prom.global.annotation.aspect.IncreaseStatistics;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
@@ -48,7 +50,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
+    @IncreaseStatistics(type = "comment", id = "feedId")
     public void reply(CommentServiceDTO dto) {
+
         Profile profile = profileRepository.findByUserId(UUID.fromString(dto.getUserId()))
             .orElseThrow(() -> new UserException(UserExceptionType.USER_UNAUTHORIZED));
 
@@ -64,25 +68,22 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public void modify(CommentServiceDTO dto) {
-        Profile reqProfile = profileRepository.findByUserId(UUID.fromString(dto.getUserId()))
-            .orElseThrow(() -> new CommentException(CommentExceptionType.NOT_MATCH_USER));
-        Comment comment = commentRepository.findById(UUID.fromString(dto.getCommentId()))
-            .orElseThrow(() -> new CommentException(CommentExceptionType.NOT_MATCH_FEED));
 
-        if (!comment.getProfile().getId().equals(reqProfile.getId())) {
-            throw new CommentException(CommentExceptionType.NOT_MATCH_USER);
-        }
-
-        if (!comment.getFeed().getId().equals(UUID.fromString(dto.getFeedId()))) {
-            throw new CommentException(CommentExceptionType.NOT_MATCH_FEED);
-        }
-
+        Comment comment = getComment(dto);
         comment.updateContent(dto.getContent());
     }
 
     @Override
     @Transactional
+    @DecreaseStatistics(type = "comment", id = "feedId")
     public void delete(CommentServiceDTO dto) {
+
+        Comment comment = getComment(dto);
+        comment.updateStatus(false);
+    }
+
+    private Comment getComment(CommentServiceDTO dto) {
+
         Profile reqProfile = profileRepository.findByUserId(UUID.fromString(dto.getUserId()))
             .orElseThrow(() -> new CommentException(CommentExceptionType.NOT_MATCH_USER));
         Comment comment = commentRepository.findById(UUID.fromString(dto.getCommentId()))
@@ -95,7 +96,6 @@ public class CommentServiceImpl implements CommentService {
         if (!comment.getFeed().getId().equals(UUID.fromString(dto.getFeedId()))) {
             throw new CommentException(CommentExceptionType.NOT_MATCH_FEED);
         }
-
-        comment.updateStatus(false);
+        return comment;
     }
 }
