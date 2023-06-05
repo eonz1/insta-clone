@@ -2,6 +2,7 @@ package com.cgram.prom.domain.feed.domain.like;
 
 import java.io.Serializable;
 import java.util.UUID;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ public class FeedLikeId implements Serializable {
     private UUID feedId;
     private UUID profileId;
 
+    @Builder
     public FeedLikeId(UUID feedId, UUID profileId) {
         this.feedId = feedId;
         this.profileId = profileId;

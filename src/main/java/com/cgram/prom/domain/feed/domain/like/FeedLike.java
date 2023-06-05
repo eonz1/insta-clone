@@ -9,6 +9,7 @@ import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,10 +31,19 @@ public class FeedLike {
 
     private boolean isPresent;
 
+    @Builder
     public FeedLike(Feed feedId, Profile profileId, boolean isPresent) {
         this.feedId = feedId;
         this.profileId = profileId;
         this.isPresent = isPresent;
+    }
+
+    public void like() {
+        this.isPresent = true;
+    }
+
+    public void unlike() {
+        this.isPresent = false;
     }
 }
 
