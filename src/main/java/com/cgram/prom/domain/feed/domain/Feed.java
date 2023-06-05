@@ -57,4 +57,8 @@ public class Feed {
     public void delete() {
         this.isPresent = false;
     }
+
+    public void modify(String content) {
+        this.content = content == null ? this.content : content;
+    }
 }

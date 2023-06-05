@@ -3,6 +3,8 @@ package com.cgram.prom.domain.feed.controller;
 import com.cgram.prom.domain.feed.exception.FeedException;
 import com.cgram.prom.domain.feed.exception.FeedExceptionType;
 import com.cgram.prom.domain.feed.request.DeleteFeedServiceDto;
+import com.cgram.prom.domain.feed.request.ModifyFeedRequest;
+import com.cgram.prom.domain.feed.request.ModifyFeedServiceDto;
 import com.cgram.prom.domain.feed.request.PostFeedRequest;
 import com.cgram.prom.domain.feed.request.PostFeedServiceDto;
 import com.cgram.prom.domain.feed.service.FeedService;
@@ -17,8 +19,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -64,5 +68,19 @@ public class FeedController {
             .userId(UUID.fromString(authentication.getName()))
             .build();
         feedService.delete(dto);
+    }
+
+    @PatchMapping("/{id}")
+    public void modify(Authentication authentication, @PathVariable String id,
+        @Valid @RequestBody ModifyFeedRequest request) {
+
+        ModifyFeedServiceDto dto = ModifyFeedServiceDto.builder()
+            .userId(UUID.fromString(authentication.getName()))
+            .feedId(UUID.fromString(id))
+            .content(request.getContent())
+            .hashTags(request.getHashTags())
+            .build();
+
+        feedService.modify(dto);
     }
 }
