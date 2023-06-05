@@ -2,6 +2,7 @@ package com.cgram.prom.domain.profile.service;
 
 import com.cgram.prom.domain.following.service.FollowService;
 import com.cgram.prom.domain.image.domain.Image;
+import com.cgram.prom.domain.image.service.FileConverter;
 import com.cgram.prom.domain.image.service.ImageService;
 import com.cgram.prom.domain.profile.domain.Profile;
 import com.cgram.prom.domain.profile.exception.ProfileException;
@@ -20,7 +21,6 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -30,6 +30,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final FollowService followService;
     private final ProfileRepository profileRepository;
     private final ImageService imageService;
+    private final FileConverter fileConverter = new FileConverter();
 
     @Override
     public void follow(UUID followedProfileId, UUID userId) {
@@ -59,8 +60,8 @@ public class ProfileServiceImpl implements ProfileService {
         Optional<Profile> profile = profileRepository.findByUserId(dto.getUserId());
         Image image;
         if (dto.getImage() != null) {
+            File imageFile = fileConverter.transferMultipartFileToFile(dto.getImage());
             try {
-                File imageFile = transferMultipartFileToFile(dto.getImage());
                 image = imageService.saveImage(imageFile);
             } catch (IOException e) {
                 throw new RuntimeException("이미지 처리에 실패하였습니다.");
@@ -99,13 +100,5 @@ public class ProfileServiceImpl implements ProfileService {
             .feedCount(profileDto.getFeedCount())
             .isFollowing(isFollowing)
             .build();
-    }
-
-    private File transferMultipartFileToFile(MultipartFile mFile) throws IOException {
-        String path = System.getProperty("user.dir") + "/src/main/resources/static";
-        File file = new File(path + File.separator + mFile.getOriginalFilename());
-        mFile.transferTo(file);
-
-        return file;
     }
 }
