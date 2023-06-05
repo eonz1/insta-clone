@@ -3,9 +3,12 @@ package com.cgram.prom.domain.feed.service;
 import com.cgram.prom.domain.feed.domain.Feed;
 import com.cgram.prom.domain.feed.domain.hashtag.HashTag;
 import com.cgram.prom.domain.feed.domain.image.FeedImage;
+import com.cgram.prom.domain.feed.exception.FeedException;
+import com.cgram.prom.domain.feed.exception.FeedExceptionType;
 import com.cgram.prom.domain.feed.repository.FeedImageRepository;
 import com.cgram.prom.domain.feed.repository.FeedRepository;
 import com.cgram.prom.domain.feed.repository.HashTagRepository;
+import com.cgram.prom.domain.feed.request.DeleteFeedServiceDto;
 import com.cgram.prom.domain.feed.request.PostFeedServiceDto;
 import com.cgram.prom.domain.image.domain.Image;
 import com.cgram.prom.domain.image.service.ImageService;
@@ -107,5 +110,23 @@ public class FeedServiceImpl implements FeedService {
         }
 
         hashTagRepository.saveAll(hashTagEntities);
+    }
+
+    @Transactional
+    @Override
+    public void delete(DeleteFeedServiceDto dto) {
+        Profile profile = profileRepository.findByUserId(dto.getUserId())
+            .orElseThrow(() -> new ProfileException(ProfileExceptionType.NOT_FOUND));
+
+        Feed feed = feedRepository.findById(dto.getFeedId())
+            .orElseThrow(() -> new FeedException(FeedExceptionType.NOT_FOUND));
+
+        if (!feed.getProfile().getId().equals(profile.getId())) {
+            throw new FeedException(FeedExceptionType.UNAUTHORIZED);
+        }
+
+        feed.delete();
+
+        // TODO: 2023/06/05 피드 삭제 aop
     }
 }

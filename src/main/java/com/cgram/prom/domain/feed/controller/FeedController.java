@@ -2,6 +2,7 @@ package com.cgram.prom.domain.feed.controller;
 
 import com.cgram.prom.domain.feed.exception.FeedException;
 import com.cgram.prom.domain.feed.exception.FeedExceptionType;
+import com.cgram.prom.domain.feed.request.DeleteFeedServiceDto;
 import com.cgram.prom.domain.feed.request.PostFeedRequest;
 import com.cgram.prom.domain.feed.request.PostFeedServiceDto;
 import com.cgram.prom.domain.feed.service.FeedService;
@@ -15,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -52,5 +55,14 @@ public class FeedController {
             .build();
 
         feedService.post(dto);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(Authentication authentication, @PathVariable String id) {
+        DeleteFeedServiceDto dto = DeleteFeedServiceDto.builder()
+            .feedId(UUID.fromString(id))
+            .userId(UUID.fromString(authentication.getName()))
+            .build();
+        feedService.delete(dto);
     }
 }
