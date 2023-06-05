@@ -105,6 +105,7 @@ public class FeedServiceImpl implements FeedService {
             HashTag tag = HashTag.builder()
                 .feed(feed)
                 .tag(hashTag)
+                .isPresent(true)
                 .build();
             hashTagEntities.add(tag);
         }

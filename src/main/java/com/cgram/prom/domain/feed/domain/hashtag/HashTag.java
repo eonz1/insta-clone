@@ -26,11 +26,13 @@ public class HashTag {
     private Feed feed;
 
     private String tag;
+    private boolean isPresent;
 
     @Builder
-    public HashTag(Long id, Feed feed, String tag) {
+    public HashTag(Long id, Feed feed, String tag, Boolean isPresent) {
         this.id = id;
         this.feed = feed;
         this.tag = tag;
+        this.isPresent = isPresent;
     }
 }
