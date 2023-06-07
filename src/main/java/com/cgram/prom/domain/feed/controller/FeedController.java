@@ -7,6 +7,7 @@ import com.cgram.prom.domain.feed.request.ModifyFeedRequest;
 import com.cgram.prom.domain.feed.request.ModifyFeedServiceDto;
 import com.cgram.prom.domain.feed.request.PostFeedRequest;
 import com.cgram.prom.domain.feed.request.PostFeedServiceDto;
+import com.cgram.prom.domain.feed.response.FeedResponse;
 import com.cgram.prom.domain.feed.service.FeedService;
 import com.cgram.prom.domain.image.service.FileConverter;
 import jakarta.validation.Valid;
@@ -17,8 +18,10 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +39,13 @@ public class FeedController {
 
     private final FeedService feedService;
     private FileConverter fileConverter = new FileConverter();
+
+    @GetMapping("/{id}")
+    public ResponseEntity<FeedResponse> get(@PathVariable String id) {
+        FeedResponse feedResponse = feedService.getFeed(UUID.fromString(id));
+
+        return ResponseEntity.status(200).body(feedResponse);
+    }
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public void post(Authentication authentication,

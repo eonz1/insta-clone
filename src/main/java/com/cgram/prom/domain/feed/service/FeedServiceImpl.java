@@ -11,6 +11,8 @@ import com.cgram.prom.domain.feed.repository.HashTagRepository;
 import com.cgram.prom.domain.feed.request.DeleteFeedServiceDto;
 import com.cgram.prom.domain.feed.request.ModifyFeedServiceDto;
 import com.cgram.prom.domain.feed.request.PostFeedServiceDto;
+import com.cgram.prom.domain.feed.response.FeedImageResponse;
+import com.cgram.prom.domain.feed.response.FeedResponse;
 import com.cgram.prom.domain.image.domain.Image;
 import com.cgram.prom.domain.image.service.ImageService;
 import com.cgram.prom.domain.profile.domain.Profile;
@@ -24,6 +26,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +41,48 @@ public class FeedServiceImpl implements FeedService {
     private final FeedImageRepository feedImageRepository;
     private final HashTagRepository hashTagRepository;
     private final StatisticsService statisticsService;
+
+    @Override
+    public FeedResponse getFeed(UUID feedId) {
+        Feed feed = feedRepository.findByIdAndIsPresent(feedId, true)
+            .orElseThrow(() -> new FeedException(FeedExceptionType.NOT_FOUND));
+
+        Set<String> hashTags = getHashTagResponseType(feed.getHashTags());
+
+        List<FeedImageResponse> feedImageResponses = new ArrayList<>();
+        FeedImageResponse thumbnailImage = new FeedImageResponse();
+
+        for (FeedImage image : feed.getImages()) {
+            if (image.isCover()) {
+                thumbnailImage = getFeedImageResponse(image);
+                continue;
+            }
+            feedImageResponses.add(getFeedImageResponse(image));
+        }
+
+        return FeedResponse.builder()
+            .content(feed.getContent())
+            .modifiedAt(feed.getModifiedAt())
+            .createdAt(feed.getCreatedAt())
+            .feedId(feedId)
+            .hashTags(hashTags)
+            .images(feedImageResponses)
+            .thumbnailImage(thumbnailImage)
+            .likes(0)
+            .build();
+    }
+
+    private Set<String> getHashTagResponseType(Set<HashTag> hashTags) {
+        return hashTags.stream().map(HashTag::getTag).collect(Collectors.toSet());
+    }
+
+    private FeedImageResponse getFeedImageResponse(FeedImage feedImage) {
+        return FeedImageResponse.builder()
+            .imageId(feedImage.getImageId().getId())
+            .path(feedImage.getImageId().getPath())
+            .imageIndex(feedImage.getImageIndex())
+            .build();
+    }
 
     @Transactional
     @Override
