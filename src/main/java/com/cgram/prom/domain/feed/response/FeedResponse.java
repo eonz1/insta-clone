@@ -1,5 +1,6 @@
 package com.cgram.prom.domain.feed.response;
 
+import com.cgram.prom.domain.comment.response.CommentWithCountResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,6 +19,7 @@ public class FeedResponse {
     private List<FeedImageResponse> images;
     private FeedImageResponse thumbnailImage;
     private Set<String> hashTags;
+    private CommentWithCountResponse comments;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
@@ -28,13 +30,14 @@ public class FeedResponse {
 
     @Builder
     public FeedResponse(UUID feedId, String content, List<FeedImageResponse> images,
-        FeedImageResponse thumbnailImage, Set<String> hashTags, LocalDateTime createdAt,
-        LocalDateTime modifiedAt, Integer likes) {
+        FeedImageResponse thumbnailImage, Set<String> hashTags, CommentWithCountResponse comments,
+        LocalDateTime createdAt, LocalDateTime modifiedAt, Integer likes) {
         this.feedId = feedId;
         this.content = content;
         this.images = images;
         this.thumbnailImage = thumbnailImage;
         this.hashTags = hashTags;
+        this.comments = comments;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.likes = likes;
