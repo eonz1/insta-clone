@@ -3,10 +3,12 @@ package com.cgram.prom.domain.feed.controller;
 import com.cgram.prom.domain.feed.exception.FeedException;
 import com.cgram.prom.domain.feed.exception.FeedExceptionType;
 import com.cgram.prom.domain.feed.request.DeleteFeedServiceDto;
+import com.cgram.prom.domain.feed.request.GetFeedsServiceDto;
 import com.cgram.prom.domain.feed.request.ModifyFeedRequest;
 import com.cgram.prom.domain.feed.request.ModifyFeedServiceDto;
 import com.cgram.prom.domain.feed.request.PostFeedRequest;
 import com.cgram.prom.domain.feed.request.PostFeedServiceDto;
+import com.cgram.prom.domain.feed.response.FeedListResponse;
 import com.cgram.prom.domain.feed.response.FeedResponse;
 import com.cgram.prom.domain.feed.service.FeedService;
 import com.cgram.prom.domain.image.service.FileConverter;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +42,24 @@ public class FeedController {
 
     private final FeedService feedService;
     private FileConverter fileConverter = new FileConverter();
+
+    @GetMapping("")
+    public ResponseEntity<FeedListResponse> getFeeds(Authentication authentication,
+        @RequestParam(defaultValue = "12") int offset,
+        @RequestParam(required = false) String tag,
+        @RequestParam(required = false) String cursor) {
+
+        GetFeedsServiceDto dto = GetFeedsServiceDto.builder()
+            .offset(offset)
+            .cursor(cursor)
+            .tag(tag)
+            .profileId(authentication.getName())
+            .build();
+
+        FeedListResponse feedListResponse = feedService.getFeeds(dto);
+
+        return ResponseEntity.ok().body(feedListResponse);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<FeedResponse> get(@PathVariable String id) {

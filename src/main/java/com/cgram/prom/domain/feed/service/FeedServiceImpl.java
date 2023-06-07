@@ -9,9 +9,11 @@ import com.cgram.prom.domain.feed.repository.FeedImageRepository;
 import com.cgram.prom.domain.feed.repository.FeedRepository;
 import com.cgram.prom.domain.feed.repository.HashTagRepository;
 import com.cgram.prom.domain.feed.request.DeleteFeedServiceDto;
+import com.cgram.prom.domain.feed.request.GetFeedsServiceDto;
 import com.cgram.prom.domain.feed.request.ModifyFeedServiceDto;
 import com.cgram.prom.domain.feed.request.PostFeedServiceDto;
 import com.cgram.prom.domain.feed.response.FeedImageResponse;
+import com.cgram.prom.domain.feed.response.FeedListResponse;
 import com.cgram.prom.domain.feed.response.FeedResponse;
 import com.cgram.prom.domain.image.domain.Image;
 import com.cgram.prom.domain.image.service.ImageService;
@@ -41,6 +43,29 @@ public class FeedServiceImpl implements FeedService {
     private final FeedImageRepository feedImageRepository;
     private final HashTagRepository hashTagRepository;
     private final StatisticsService statisticsService;
+
+
+    @Override
+    public FeedListResponse getFeeds(GetFeedsServiceDto dto) {
+        // TODO: dto.getOffset() 의 +1개 만큼 가져와서, nextId 채워주기
+        // TODO: dto.getCursor() 의 값이 있으면 그거부터 가져오기, 없으면 첫화면 이라는 뜻
+
+        if (dto.getTag() != null && !dto.getTag().isEmpty()) {
+            // TODO: 태그로 작성자, 작성일자 상관없이 전체 조회
+
+        }
+
+        int followCount = statisticsService.getStatistics(UUID.fromString(dto.getProfileId()),
+            StatisticType.FOLLOWING.label()).getCounts();
+
+        if(followCount > 0) {
+            // TODO: 내가 팔로우한 사람들의 최근 일주일 기준 피드 가져오기
+
+        }
+
+        // TODO: 최근 일주일 기준 '나의' 피드 가져오기
+        return FeedListResponse.builder().build();
+    }
 
     @Override
     public FeedResponse getFeed(UUID feedId) {
