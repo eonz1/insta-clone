@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface StatisticsRepository extends JpaRepository<Statistics, Long> {
 
     Optional<Statistics> findByUuid(UUID uuid);
+
+    Optional<Statistics> findByUuidAndType(UUID uuid, String type);
 }

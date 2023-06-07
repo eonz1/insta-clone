@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class StatisticsServiceImpl implements StatisticsService{
+public class StatisticsServiceImpl implements StatisticsService {
 
     private final StatisticsRepository statisticsRepository;
 
@@ -18,7 +18,7 @@ public class StatisticsServiceImpl implements StatisticsService{
 
         Optional<Statistics> optionalStatistics = statisticsRepository.findByUuid(id);
 
-        if(optionalStatistics.isPresent()) {
+        if (optionalStatistics.isPresent()) {
             optionalStatistics.get().updateCounts(optionalStatistics.get().getCounts() + value);
         } else {
             statisticsRepository.save(Statistics.builder()
@@ -27,5 +27,13 @@ public class StatisticsServiceImpl implements StatisticsService{
                 .counts(1)
                 .build());
         }
+    }
+
+    @Override
+    public Statistics getStatistics(UUID id, String type) {
+
+        Optional<Statistics> optionalStatistics = statisticsRepository.findByUuidAndType(id, type);
+
+        return optionalStatistics.orElse(Statistics.builder().build());
     }
 }
