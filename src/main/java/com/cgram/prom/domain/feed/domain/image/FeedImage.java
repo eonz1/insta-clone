@@ -41,4 +41,8 @@ public class FeedImage {
         this.isCover = isCover;
         this.imageIndex = imageIndex;
     }
+
+    public void setFeed(Feed feed) {
+        this.feedId = feed;
+    }
 }

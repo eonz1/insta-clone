@@ -35,4 +35,8 @@ public class HashTag {
         this.tag = tag;
         this.isPresent = isPresent;
     }
+
+    public void setFeed(Feed feed) {
+        this.feed = feed;
+    }
 }
