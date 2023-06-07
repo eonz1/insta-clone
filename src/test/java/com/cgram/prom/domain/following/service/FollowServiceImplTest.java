@@ -10,6 +10,7 @@ import com.cgram.prom.domain.following.domain.Follow;
 import com.cgram.prom.domain.following.domain.FollowId;
 import com.cgram.prom.domain.following.repository.FollowRepository;
 import com.cgram.prom.domain.profile.domain.Profile;
+import com.cgram.prom.domain.statistics.service.StatisticsServiceImpl;
 import com.cgram.prom.domain.user.domain.User;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,6 +30,9 @@ class FollowServiceImplTest {
 
     @Mock
     FollowRepository followRepository;
+
+    @Mock
+    StatisticsServiceImpl statisticsService;
 
     @Test
     @DisplayName("팔로잉 성공")
