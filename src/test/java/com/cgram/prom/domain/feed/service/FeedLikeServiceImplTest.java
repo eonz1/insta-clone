@@ -14,6 +14,7 @@ import com.cgram.prom.domain.feed.exception.FeedLikeException;
 import com.cgram.prom.domain.feed.exception.FeedLikeExceptionType;
 import com.cgram.prom.domain.feed.repository.FeedLikeRepository;
 import com.cgram.prom.domain.profile.domain.Profile;
+import com.cgram.prom.domain.statistics.service.StatisticsServiceImpl;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,9 @@ class FeedLikeServiceImplTest {
 
     @Mock
     FeedLikeRepository feedLikeRepository;
+
+    @Mock
+    StatisticsServiceImpl statisticsService;
 
     @Test
     @DisplayName("좋아요 이력 있으면 좋아요 상태만 바꿔줌")
