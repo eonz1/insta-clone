@@ -3,12 +3,17 @@ package com.cgram.prom.domain.feed.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.cgram.prom.domain.feed.domain.Feed;
+import com.cgram.prom.domain.feed.domain.hashtag.HashTag;
+import com.cgram.prom.domain.feed.domain.image.FeedImage;
 import com.cgram.prom.domain.feed.exception.FeedException;
 import com.cgram.prom.domain.feed.exception.FeedExceptionType;
 import com.cgram.prom.domain.feed.repository.FeedImageRepository;
@@ -16,11 +21,14 @@ import com.cgram.prom.domain.feed.repository.FeedRepository;
 import com.cgram.prom.domain.feed.repository.HashTagRepository;
 import com.cgram.prom.domain.feed.request.DeleteFeedServiceDto;
 import com.cgram.prom.domain.feed.request.ModifyFeedServiceDto;
+import com.cgram.prom.domain.feed.response.FeedResponse;
+import com.cgram.prom.domain.image.domain.Image;
 import com.cgram.prom.domain.image.service.ImageService;
 import com.cgram.prom.domain.profile.domain.Profile;
 import com.cgram.prom.domain.profile.exception.ProfileException;
 import com.cgram.prom.domain.profile.exception.ProfileExceptionType;
 import com.cgram.prom.domain.profile.repository.ProfileRepository;
+import com.cgram.prom.domain.statistics.service.StatisticsService;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -55,6 +63,57 @@ class FeedServiceImplTest {
 
     @Mock
     HashTagRepository hashTagRepository;
+
+    @Mock
+    StatisticsService statisticsService;
+
+    @Test
+    @DisplayName("피드 조회")
+    public void getFeed() throws Exception {
+        // given
+        Feed feed = Feed.builder()
+            .id(UUID.randomUUID())
+            .profile(Profile.builder().build())
+            .content("피드")
+            .isPresent(true)
+            .build();
+        for (int i = 0; i < 3; i++) {
+            HashTag tag = HashTag.builder().tag("#tag" + (i + 1)).isPresent(true).build();
+            FeedImage feedImage = FeedImage.builder()
+                .imageId(Image.builder().isPresent(true).path("path" + (i + 1)).build())
+                .imageIndex(i)
+                .isCover(i == 0)
+                .build();
+            feed.addHashTag(tag);
+            feed.addImage(feedImage);
+        }
+        when(feedRepository.findByIdAndIsPresent(any(UUID.class), anyBoolean())).thenReturn(
+            Optional.of(feed));
+
+        // when
+        FeedResponse feedResponse = feedService.getFeed(feed.getId());
+
+        // then
+        assertThat(feedResponse.getFeedId()).isEqualTo(feed.getId());
+        assertThat(feedResponse.getImages().size()).isEqualTo(2);
+        assertThat(feedResponse.getHashTags().size()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("삭제된 피드 조회 시 예외 발생")
+    public void getDeletedFeed() throws Exception {
+        // given
+        when(feedRepository.findByIdAndIsPresent(any(UUID.class), anyBoolean())).thenReturn(
+            Optional.empty());
+
+        // when
+        FeedException feedException = assertThrows(FeedException.class, () -> {
+            feedService.getFeed(UUID.randomUUID());
+        });
+
+        // then
+        assertThat(feedException.getExceptionType()).isEqualTo(FeedExceptionType.NOT_FOUND);
+    }
 
     @Test
     @DisplayName("피드 저장")
@@ -193,6 +252,8 @@ class FeedServiceImplTest {
         feedService.delete(dto);
 
         verify(feedRepository, times(1)).findById(any(UUID.class));
+        verify(statisticsService, times(1)).updateStatistics(any(UUID.class),
+            anyString(), anyInt());
     }
 
     @Test
