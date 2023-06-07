@@ -65,7 +65,7 @@ public class CommentServiceImpl implements CommentService {
 
         commentRepository.save(comment);
 
-        statisticsService.updateStatistics(profile.getId(), StatisticType.COMMENT.label(), 1);
+        statisticsService.updateStatistics(UUID.fromString(dto.getFeedId()), StatisticType.COMMENT.label(), 1);
     }
 
     @Override
@@ -80,13 +80,10 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public void delete(CommentServiceDTO dto) {
 
-        Profile profile = profileRepository.findByUserId(UUID.fromString(dto.getUserId()))
-            .orElseThrow(() -> new UserException(UserExceptionType.USER_UNAUTHORIZED));
-
         Comment comment = getComment(dto);
         comment.updateStatus(false);
 
-        statisticsService.updateStatistics(profile.getId(), StatisticType.COMMENT.label(), -1);
+        statisticsService.updateStatistics(UUID.fromString(dto.getFeedId()), StatisticType.COMMENT.label(), -1);
     }
 
     private Comment getComment(CommentServiceDTO dto) {
