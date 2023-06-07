@@ -7,6 +7,8 @@ import com.cgram.prom.domain.feed.exception.FeedLikeException;
 import com.cgram.prom.domain.feed.exception.FeedLikeExceptionType;
 import com.cgram.prom.domain.feed.repository.FeedLikeRepository;
 import com.cgram.prom.domain.profile.domain.Profile;
+import com.cgram.prom.domain.statistics.enums.StatisticType;
+import com.cgram.prom.domain.statistics.service.StatisticsService;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class FeedLikeServiceImpl implements FeedLikeService {
 
     private final FeedLikeRepository feedLikeRepository;
+    private final StatisticsService statisticsService;
 
     @Transactional
     @Override
@@ -37,6 +40,8 @@ public class FeedLikeServiceImpl implements FeedLikeService {
             .isPresent(true)
             .build();
         feedLikeRepository.save(feedLike);
+
+        statisticsService.updateStatistics(feed.getId(), StatisticType.FEED_LIKE.label(), 1);
     }
 
     @Transactional
@@ -50,5 +55,7 @@ public class FeedLikeServiceImpl implements FeedLikeService {
             .orElseThrow(() -> new FeedLikeException(FeedLikeExceptionType.NOT_FOUND));
 
         feedLike.unlike();
+
+        statisticsService.updateStatistics(feed.getId(), StatisticType.FEED_LIKE.label(), -1);
     }
 }
