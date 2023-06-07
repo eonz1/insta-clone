@@ -13,16 +13,28 @@ public interface ProfileRepository extends JpaRepository<Profile, UUID> {
 
     Optional<Profile> findByUserId(UUID id);
 
-    @Query(value = "SELECT user.email, image.path as imagePath, p.intro, p.is_public as isPublic"
-        + ", follower.count as followerCount, following.count as followingCount, feed.count as feedCount"
-        + ", EXISTS(SELECT * FROM follow WHERE profile_id = :loginProfileId and followed_id = :profileId) as isFollowing"
-        + "    FROM profile p"
-        + "    INNER JOIN user ON p.user_id = user.id"
-        + "    LEFT JOIN (SELECT id, path, is_present, created_at FROM image WHERE is_present = true) AS image ON p.image_id = image.id"
-        + "    LEFT JOIN (SELECT profile_id, count(*) as count FROM feed WHERE is_present=true and profile_id = :profileId GROUP BY profile_id) AS feed ON feed.profile_id = p.id"
-        + "    LEFT JOIN (SELECT profile_id, count(*) as count FROM follow WHERE is_present=true and profile_id = :profileId GROUP BY profile_id) AS following ON following.profile_id = p.id"
-        + "    LEFT JOIN (SELECT followed_id, count(*) as count FROM follow WHERE is_present=true and followed_id = :profileId GROUP BY followed_id) AS follower ON follower.followed_id = p.id"
-        + "    WHERE user.is_present = true and p.id = :profileId", nativeQuery = true)
+    @Query(value = """
+        SELECT
+            user.email, image.path AS imagePath, p.intro, p.is_public AS isPublic,
+            follower.count AS followerCount, following.count AS followingCount, feed.count AS feedCount,
+            EXISTS(SELECT * FROM follow WHERE profile_id = :loginProfileId AND followed_id = :profileId) AS isFollowing
+        FROM profile p
+        INNER JOIN user ON p.user_id = user.id
+        LEFT JOIN (SELECT id, path, is_present, created_at
+                    FROM image WHERE is_present = true) AS image ON p.image_id = image.id
+        LEFT JOIN (SELECT profile_id, count(*) AS count
+                    FROM feed WHERE is_present=true AND profile_id = :profileId
+                    GROUP BY profile_id) AS feed ON feed.profile_id = p.id
+        LEFT JOIN (SELECT profile_id, count(*) AS count
+                    FROM follow WHERE is_present=true AND profile_id = :profileId
+                    GROUP BY profile_id) AS following ON following.profile_id = p.id
+        LEFT JOIN (SELECT followed_id, count(*) AS count
+                    FROM follow WHERE is_present=true AND followed_id = :profileId
+                    GROUP BY followed_id) AS follower ON follower.followed_id = p.id
+        WHERE
+            user.is_present = true
+            AND p.id = :profileId
+        """, nativeQuery = true)
     ProfileWithCounts getProfileWithCountsByProfileId(@Param("profileId") UUID id,
         @Param("loginProfileId") UUID loginProfileId);
 
