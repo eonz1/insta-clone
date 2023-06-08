@@ -1,24 +1,24 @@
 package com.cgram.prom.domain.feed.domain;
 
+import com.cgram.prom.domain.comment.domain.Comment;
 import com.cgram.prom.domain.feed.domain.hashtag.HashTag;
 import com.cgram.prom.domain.feed.domain.image.FeedImage;
 import com.cgram.prom.domain.profile.domain.Profile;
-import com.cgram.prom.domain.statistics.domain.Statistics;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,7 +41,7 @@ public class Feed {
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "profile_id")
     private Profile profile;
 
@@ -56,15 +56,14 @@ public class Feed {
 
     private boolean isPresent;
 
-    @OneToOne
-    @JoinColumn(name = "uuid")
-    private Statistics statistics;
-
     @OneToMany(mappedBy = "feed")
-    private Set<HashTag> hashTags = new HashSet<>();
+    private List<HashTag> hashTags = new ArrayList<>();
 
     @OneToMany(mappedBy = "feedId")
     private List<FeedImage> images = new ArrayList<>();
+
+    @OneToMany(mappedBy = "feed")
+    private List<Comment> comments = new ArrayList<>();
 
     @Builder
     public Feed(UUID id, Profile profile, String content, boolean isPresent) {
@@ -90,5 +89,17 @@ public class Feed {
     public void addImage(FeedImage feedImage) {
         images.add(feedImage);
         feedImage.setFeed(this);
+    }
+
+    public void setHashTags(List<HashTag> hashTags) {
+        this.hashTags = hashTags;
+    }
+
+    public void setImages(List<FeedImage> images) {
+        this.images = images;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }
