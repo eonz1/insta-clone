@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.cgram.prom.domain.feed.domain.Feed;
 import com.cgram.prom.domain.feed.domain.hashtag.HashTag;
+import com.cgram.prom.domain.feed.dto.FeedDTO;
 import com.cgram.prom.domain.feed.request.GetFeedsServiceDto;
 import com.cgram.prom.domain.following.domain.Follow;
 import com.cgram.prom.domain.following.repository.FollowRepository;
@@ -136,11 +137,10 @@ class FeedQueryRepositoryTest {
             }
         }
 
-        GetFeedsServiceDto dto = GetFeedsServiceDto.builder().tag("#tag").offset(5)
-            .build();
+        GetFeedsServiceDto dto = GetFeedsServiceDto.builder().tag("#tag").limit(5).build();
 
         // when
-        List<Feed> allFeedsByHashTag = feedQueryRepository.getAllFeedsByHashTag(dto,
+        List<FeedDTO> allFeedsByHashTag = feedQueryRepository.getAllFeedsByHashTag(dto,
             LocalDateTime.now().minusDays(3));
 
         // then
@@ -172,16 +172,16 @@ class FeedQueryRepositoryTest {
 
         GetFeedsServiceDto dto = GetFeedsServiceDto.builder()
             .profileId(userProfile.getId().toString())
-            .offset(5)
+            .limit(5)
             .build();
 
         // when
-        List<Feed> allFeedsByMyProfile = feedQueryRepository.getAllFeedsByMyProfile(dto,
+        List<FeedDTO> allFeedsByMyProfile = feedQueryRepository.getAllFeedsByMyProfile(dto,
             LocalDateTime.now().minusDays(3));
 
         // then
         assertThat(allFeedsByMyProfile.size()).isEqualTo(6);
-        assertThat(allFeedsByMyProfile.stream().map(Feed::getContent)
+        assertThat(allFeedsByMyProfile.stream().map(FeedDTO::getContent)
             .allMatch(s -> s.contains("내 피드"))).isTrue();
     }
 
@@ -215,15 +215,15 @@ class FeedQueryRepositoryTest {
 
         GetFeedsServiceDto dto = GetFeedsServiceDto.builder()
             .profileId(userProfile.getId().toString())
-            .offset(5)
+            .limit(5)
             .build();
 
         // when
-        List<Feed> allFeedsByMyFollowings = feedQueryRepository.getAllFeedsByMyFollowings(dto,
+        List<FeedDTO> allFeedsByMyFollowings = feedQueryRepository.getAllFeedsByMyFollowings(dto,
             LocalDateTime.now().minusDays(3));
 
         assertThat(allFeedsByMyFollowings.size()).isEqualTo(6);
-        assertThat(allFeedsByMyFollowings.stream().map(Feed::getContent)
+        assertThat(allFeedsByMyFollowings.stream().map(FeedDTO::getContent)
             .allMatch(s -> s.contains("팔로우한 사람"))).isTrue();
     }
 
