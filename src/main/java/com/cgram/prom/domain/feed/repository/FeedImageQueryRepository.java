@@ -15,13 +15,14 @@ public class FeedImageQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public List<FeedImage> getAllFeedImagesByFeedId(UUID feedId) {
+    public List<FeedImage> getAllFeedImagesByFeedId(List<UUID> feedIds) {
 
         return queryFactory
             .selectFrom(QFeedImage.feedImage)
             .join(QFeedImage.feedImage.imageId, QImage.image)
             .on(QImage.image.id.eq(QFeedImage.feedImage.imageId.id))
-            .where(QFeedImage.feedImage.feedId.id.eq(feedId))
+            .where(QFeedImage.feedImage.feedId.id.in(feedIds),
+                QFeedImage.feedImage.isPresent.eq(true))
             .fetch();
     }
 
