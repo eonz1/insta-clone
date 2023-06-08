@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface CommentRepository extends JpaRepository<Comment, UUID> {
 
     List<Comment> findByFeedIdAndIsPresent(UUID feedId, boolean isPresent);
+
+    List<Comment> findTop3ByFeedIdAndIsPresentOrderByCreatedAtDesc(UUID feedId, boolean isPresent);
 }

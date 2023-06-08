@@ -45,15 +45,16 @@ public class FeedController {
 
     @GetMapping("")
     public ResponseEntity<FeedListResponse> getFeeds(Authentication authentication,
-        @RequestParam(defaultValue = "12") int offset,
+        @RequestParam(defaultValue = "12") int limit,
         @RequestParam(required = false) String tag,
-        @RequestParam(required = false) String cursor) {
+        @RequestParam(required = false) String cursor,
+        @RequestParam String profile_id) {
 
         GetFeedsServiceDto dto = GetFeedsServiceDto.builder()
-            .offset(offset)
+            .limit(limit)
             .cursor(cursor)
             .tag(tag)
-            .profileId(authentication.getName())
+            .profileId(profile_id)
             .build();
 
         FeedListResponse feedListResponse = feedService.getFeeds(dto);

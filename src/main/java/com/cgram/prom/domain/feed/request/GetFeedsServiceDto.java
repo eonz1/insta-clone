@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 public class GetFeedsServiceDto {
 
-    private int offset;
+    private int limit;
 
     private String cursor;
 
