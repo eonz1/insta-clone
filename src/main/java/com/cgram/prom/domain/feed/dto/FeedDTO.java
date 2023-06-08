@@ -2,6 +2,7 @@ package com.cgram.prom.domain.feed.dto;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,4 +26,9 @@ public class FeedDTO {
 
     private int likesCount;
 
+    private String email;
+
+    private UUID profileImageId;
+
+    private String profileImagePath;
 }
