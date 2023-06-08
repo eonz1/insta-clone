@@ -8,6 +8,8 @@ import com.cgram.prom.domain.feed.dto.FeedDTO;
 import com.cgram.prom.domain.feed.request.GetFeedsServiceDto;
 import com.cgram.prom.domain.following.domain.Follow;
 import com.cgram.prom.domain.following.repository.FollowRepository;
+import com.cgram.prom.domain.image.domain.Image;
+import com.cgram.prom.domain.image.repository.ImageRepository;
 import com.cgram.prom.domain.profile.domain.Profile;
 import com.cgram.prom.domain.profile.repository.ProfileRepository;
 import com.cgram.prom.domain.statistics.domain.Statistics;
@@ -17,10 +19,12 @@ import com.cgram.prom.domain.user.domain.User;
 import com.cgram.prom.domain.user.repository.UserRepository;
 import com.cgram.prom.global.config.JpaAuditingConfig;
 import com.cgram.prom.global.config.QuerydslTestConfig;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -59,38 +63,47 @@ class FeedQueryRepositoryTest {
     @Autowired
     UserRepository userRepository;
 
+//    @Autowired
+//    FeedImageRepository feedImageRepository;
+
+    @Autowired
+    ImageRepository imageRepository;
+
     @BeforeEach
     void setup() {
         followRepository.deleteAll();
         hashTagRepository.deleteAll();
         feedRepository.deleteAll();
+        imageRepository.deleteAll();
         profileRepository.deleteAll();
         userRepository.deleteAll();
+
     }
 
     private Follow saveFollow(Profile followProfile, Profile userProfile) {
         Follow follow = Follow.builder()
-            .profileId(userProfile)
-            .followedId(followProfile)
-            .isPresent(true)
-            .build();
+                .profileId(userProfile)
+                .followedId(followProfile)
+                .isPresent(true)
+                .build();
 
         return followRepository.save(follow);
     }
 
     private void saveStatistics(UUID uuid, String type, int count) {
         Statistics statistics = Statistics.builder()
-            .uuid(uuid)
-            .counts(count)
-            .type(type)
-            .build();
+                .uuid(uuid)
+                .counts(count)
+                .type(type)
+                .build();
         statisticsRepository.save(statistics);
     }
 
     private Profile saveProfile(User user) {
         Profile profile = Profile.builder()
-            .user(user)
-            .build();
+                .user(user)
+                .image(saveImage())
+                .build();
 
         return profileRepository.save(profile);
     }
@@ -104,22 +117,31 @@ class FeedQueryRepositoryTest {
 
     private Feed saveFeed(String content, Profile profile) {
         Feed feed = Feed.builder()
-            .content(content)
-            .profile(profile)
-            .isPresent(true)
-            .build();
+                .content(content)
+                .profile(profile)
+                .isPresent(true)
+                .build();
 
         return feedRepository.save(feed);
     }
 
     private HashTag saveHashTag(String tag, Feed feed) {
         HashTag hashTag = HashTag.builder()
-            .tag(tag)
-            .feed(feed)
-            .isPresent(true)
-            .build();
+                .tag(tag)
+                .feed(feed)
+                .isPresent(true)
+                .build();
 
         return hashTagRepository.save(hashTag);
+    }
+
+    private Image saveImage() {
+        Image image = Image.builder()
+                .path("path")
+                .isPresent(true)
+                .build();
+
+        return imageRepository.save(image);
     }
 
     @Test
@@ -127,8 +149,19 @@ class FeedQueryRepositoryTest {
     @Commit
     public void getFeedsByHashtag() throws Exception {
         // given
+        List<HashTag> hashTags = new ArrayList<>();
+
+        User user = saveUser("test@test.com", "password123!!!");
+        User followUser = saveUser("follow1@test.com", "password123!!!");
+
+        Profile userProfile = saveProfile(user);
+        Profile followProfile = saveProfile(followUser);
+
+        saveFollow(followProfile, userProfile);
+        saveStatistics(userProfile.getId(), StatisticType.FOLLOWING.label(), 2);
+
         for (int i = 0; i < 10; i++) {
-            Feed feed = saveFeed("피드" + (i + 1), null);
+            Feed feed = saveFeed("피드" + (i + 1), userProfile);
             saveHashTag("#tag", feed);
             saveHashTag("#tag1", feed);
 
@@ -141,10 +174,12 @@ class FeedQueryRepositoryTest {
 
         // when
         List<FeedDTO> allFeedsByHashTag = feedQueryRepository.getAllFeedsByHashTag(dto,
-            LocalDateTime.now().minusDays(3));
+                LocalDateTime.now().minusDays(3));
 
         // then
         assertThat(allFeedsByHashTag.size()).isEqualTo(6);
+        assertThat(allFeedsByHashTag.stream().map(FeedDTO::getProfileImagePath).allMatch(s -> s.equals("path"))).isTrue();
+
     }
 
     @Test
@@ -171,18 +206,19 @@ class FeedQueryRepositoryTest {
         }
 
         GetFeedsServiceDto dto = GetFeedsServiceDto.builder()
-            .profileId(userProfile.getId().toString())
-            .limit(5)
-            .build();
+                .profileId(userProfile.getId().toString())
+                .limit(5)
+                .build();
 
         // when
         List<FeedDTO> allFeedsByMyProfile = feedQueryRepository.getAllFeedsByMyProfile(dto,
-            LocalDateTime.now().minusDays(3));
+                LocalDateTime.now().minusDays(3));
 
         // then
         assertThat(allFeedsByMyProfile.size()).isEqualTo(6);
         assertThat(allFeedsByMyProfile.stream().map(FeedDTO::getContent)
-            .allMatch(s -> s.contains("내 피드"))).isTrue();
+                .allMatch(s -> s.contains("내 피드"))).isTrue();
+        assertThat(allFeedsByMyProfile.stream().map(FeedDTO::getProfileImagePath).allMatch(s -> s.equals("path"))).isTrue();
     }
 
     @Test
@@ -210,21 +246,25 @@ class FeedQueryRepositoryTest {
                 Feed followedFeed2 = saveFeed("팔로우한 사람2 피드" + (i + 1), followProfile2);
             }
 
-            HashTag tag = saveHashTag("#tag", feed);
+            HashTag tag = saveHashTag("tag", feed);
+            saveHashTag("follow tag", feed);
+            saveHashTag("tag2", followedFeed);
         }
 
         GetFeedsServiceDto dto = GetFeedsServiceDto.builder()
-            .profileId(userProfile.getId().toString())
-            .limit(5)
-            .build();
+                .profileId(userProfile.getId().toString())
+                .limit(5)
+                .build();
 
         // when
         List<FeedDTO> allFeedsByMyFollowings = feedQueryRepository.getAllFeedsByMyFollowings(dto,
-            LocalDateTime.now().minusDays(3));
+                LocalDateTime.now().minusDays(3));
 
         assertThat(allFeedsByMyFollowings.size()).isEqualTo(6);
         assertThat(allFeedsByMyFollowings.stream().map(FeedDTO::getContent)
-            .allMatch(s -> s.contains("팔로우한 사람"))).isTrue();
+                .allMatch(s -> s.contains("팔로우한 사람"))).isTrue();
+        assertThat(allFeedsByMyFollowings.stream().map(FeedDTO::getProfileImagePath).allMatch(s -> s.equals("path"))).isTrue();
+
     }
 
     // TODO: 2023/06/08  getAllFeedsByMyFollowings dto에 nextId 포함되어 있는 경우
