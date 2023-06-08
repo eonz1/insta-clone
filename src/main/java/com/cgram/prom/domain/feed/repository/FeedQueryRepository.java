@@ -36,7 +36,8 @@ public class FeedQueryRepository {
             .leftJoin(comment).on(comment.uuid.eq(QFeed.feed.id), comment.type.eq(StatisticType.COMMENT.label()))
             .leftJoin(likes).on(likes.uuid.eq(QFeed.feed.id), likes.type.eq(StatisticType.FEED_LIKE.label()))
             .where( loeFeedId(dto.getCursor()),
-                QFeed.feed.createdAt.gt(lastDate)
+                QFeed.feed.createdAt.gt(lastDate),
+                QFeed.feed.isPresent.eq(true)
             )
             .orderBy(QFeed.feed.createdAt.desc())
             .limit(dto.getLimit() + 1)
@@ -62,7 +63,9 @@ public class FeedQueryRepository {
             .leftJoin(comment).on(comment.uuid.eq(QFeed.feed.id), comment.type.eq(StatisticType.COMMENT.label()))
             .leftJoin(likes).on(likes.uuid.eq(QFeed.feed.id), likes.type.eq(StatisticType.FEED_LIKE.label()))
             .where(loeFeedId(dto.getCursor()),
-                QFeed.feed.createdAt.gt(lastDate))
+                QFeed.feed.createdAt.gt(lastDate),
+                QFeed.feed.isPresent.eq(true)
+            )
             .orderBy(QFeed.feed.createdAt.desc())
             .limit(dto.getLimit() + 1)
             .fetchJoin()
@@ -79,7 +82,7 @@ public class FeedQueryRepository {
                 , QFeed.feed.modifiedAt, QFeed.feed.isPresent, comment.counts.as("commentCount"), likes.counts.as("likesCount")
             ))
             .where(
-                QFeed.feed.isPresent,
+                QFeed.feed.isPresent.eq(true),
                 QFeed.feed.profile.id.eq(UUID.fromString(dto.getProfileId())),
                 loeFeedId(dto.getCursor()),
                 QFeed.feed.createdAt.gt(lastDate)
