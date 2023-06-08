@@ -8,7 +8,9 @@ import com.cgram.prom.domain.image.domain.Image;
 import com.cgram.prom.domain.image.repository.ImageRepository;
 import com.cgram.prom.global.config.JpaAuditingConfig;
 import com.cgram.prom.global.config.QuerydslTestConfig;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,22 +40,23 @@ class FeedImageQueryRepositoryTest {
 
     @Test
     @DisplayName("피드아이디로 이미지 리스트 조회")
-    public void FeedImageQueryRepositoryTest() {
+    public void getAllFeedImagesByFeedId() {
         // given
         Image image = saveImage();
         Image image2 = saveImage();
 
-        Feed feed = Feed.builder()
-            .profile(null)
-            .isPresent(true)
-            .build();
-        feedRepository.save(feed);
+        Feed feed = saveFeed();
+        Feed feed2 = saveFeed();
+
+        List<UUID> feedUUIDs = new ArrayList<>();
+        feedUUIDs.add(feed.getId());
+        feedUUIDs.add(feed2.getId());
 
         saveFeedImage(image, feed);
         saveFeedImage(image2, feed);
 
         // when
-        List<FeedImage> images = feedImageQueryRepository.getAllFeedImagesByFeedId(feed.getId());
+        List<FeedImage> images = feedImageQueryRepository.getAllFeedImagesByFeedId(feedUUIDs);
 
         // then
         Assertions.assertThat(images.size()).isEqualTo(2);
@@ -61,6 +64,14 @@ class FeedImageQueryRepositoryTest {
         Assertions.assertThat(images.get(0).getFeedId()).isEqualTo(feed);
         Assertions.assertThat(images.get(1).getImageId()).isEqualTo(image2);
         Assertions.assertThat(images.get(1).getFeedId()).isEqualTo(feed);
+    }
+
+    private Feed saveFeed() {
+        Feed feed = Feed.builder()
+            .profile(null)
+            .isPresent(true)
+            .build();
+        return feedRepository.save(feed);
     }
 
     private Image saveImage() {
