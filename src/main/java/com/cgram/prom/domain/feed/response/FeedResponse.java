@@ -2,10 +2,12 @@ package com.cgram.prom.domain.feed.response;
 
 import com.cgram.prom.domain.comment.response.CommentWithCountResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,10 +30,14 @@ public class FeedResponse {
 
     private Integer likes;
 
+    private UUID profileId;
+    private String profileImagePath;
+    private UUID profileImageId;
+
     @Builder
     public FeedResponse(UUID feedId, String content, List<FeedImageResponse> images,
-        FeedImageResponse thumbnailImage, Set<String> hashTags, CommentWithCountResponse comments,
-        LocalDateTime createdAt, LocalDateTime modifiedAt, Integer likes) {
+                        FeedImageResponse thumbnailImage, Set<String> hashTags, CommentWithCountResponse comments,
+                        LocalDateTime createdAt, LocalDateTime modifiedAt, Integer likes, UUID profileId, String profileImagePath, UUID profileImageId) {
         this.feedId = feedId;
         this.content = content;
         this.images = images;
@@ -41,5 +47,8 @@ public class FeedResponse {
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.likes = likes;
+        this.profileId = profileId;
+        this.profileImageId = profileImageId;
+        this.profileImagePath = profileImagePath;
     }
 }
