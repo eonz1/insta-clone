@@ -54,10 +54,6 @@ public class Comment {
 
     private boolean isPresent;
 
-    @OneToOne
-    @JoinColumn(name = "uuid")
-    private Statistics statistics;
-
     @Builder
     public Comment(UUID id, Feed feed, Profile profile, String content) {
         this.id = id;
