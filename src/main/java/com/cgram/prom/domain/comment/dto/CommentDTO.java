@@ -13,9 +13,15 @@ public class CommentDTO {
 
     private UUID id;
 
-    private Feed feed;
+    private UUID feedId;
 
-    private Profile profile;
+    private UUID userId;
+
+    private UUID profileImageId;
+
+    private String profileImagePath;
+
+    private String userEmail;
 
     private String content;
 
