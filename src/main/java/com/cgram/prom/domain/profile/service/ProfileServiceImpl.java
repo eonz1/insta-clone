@@ -79,8 +79,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public ProfileResponse getProfile(UUID profileId, UUID loginUserId) {
-        Profile userProfile = profileRepository.findByUserId(profileId).orElseThrow(
+    public ProfileResponse getProfile(UUID userId, UUID loginUserId) {
+        Profile userProfile = profileRepository.findByUserId(userId).orElseThrow(
             () -> new UserException(UserExceptionType.USER_NOT_FOUND));
         Profile loginUserProfile = profileRepository.findByUserId(loginUserId).orElseThrow(
             () -> new UserException(UserExceptionType.USER_NOT_FOUND));

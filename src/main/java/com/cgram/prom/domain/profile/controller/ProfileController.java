@@ -30,24 +30,24 @@ public class ProfileController {
 
     private final ProfileService profileService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ProfileResponse> getProfile(@PathVariable String id,
+    @GetMapping("/{userId}")
+    public ResponseEntity<ProfileResponse> getProfile(@PathVariable String userId,
         Authentication authentication) {
 
-        return ResponseEntity.status(200).body(profileService.getProfile(UUID.fromString(id),
+        return ResponseEntity.status(200).body(profileService.getProfile(UUID.fromString(userId),
             UUID.fromString(authentication.getName())));
     }
 
-    @PatchMapping(value = "/{id}", consumes = {
+    @PatchMapping(value = "/{userId}", consumes = {
         MediaType.APPLICATION_JSON_VALUE,
         MediaType.MULTIPART_FORM_DATA_VALUE
     })
     public void updateProfile(
-        @PathVariable String id,
+        @PathVariable String userId,
         Authentication authentication,
         @RequestPart(value = "image", required = false) MultipartFile image,
         @RequestPart(value = "request", required = false) UpdateProfileRequest request) {
-        if (!authentication.getName().equals(id)) {
+        if (!authentication.getName().equals(userId)) {
             throw new UserException(UserExceptionType.USER_UNAUTHORIZED);
         }
 
@@ -60,14 +60,14 @@ public class ProfileController {
         profileService.updateProfile(dto);
     }
 
-    @PostMapping("/{id}/following")
-    public void follow(Authentication authentication, @PathVariable String id) {
-        profileService.follow(UUID.fromString(id), UUID.fromString(authentication.getName()));
+    @PostMapping("/{profileId}/following")
+    public void follow(Authentication authentication, @PathVariable String profileId) {
+        profileService.follow(UUID.fromString(profileId), UUID.fromString(authentication.getName()));
     }
 
-    @DeleteMapping("/{id}/following")
-    public void unfollow(Authentication authentication, @PathVariable String id) {
-        profileService.unfollow(UUID.fromString(id), UUID.fromString(authentication.getName()));
+    @DeleteMapping("/{profileId}/following")
+    public void unfollow(Authentication authentication, @PathVariable String profileId) {
+        profileService.unfollow(UUID.fromString(profileId), UUID.fromString(authentication.getName()));
     }
 
     @GetMapping("/{id}/feeds")

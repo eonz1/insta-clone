@@ -14,5 +14,5 @@ public interface ProfileService {
 
     void getFeeds(String id);
 
-    ProfileResponse getProfile(UUID profileId, UUID loginProfileId);
+    ProfileResponse getProfile(UUID userId, UUID loginProfileId);
 }
