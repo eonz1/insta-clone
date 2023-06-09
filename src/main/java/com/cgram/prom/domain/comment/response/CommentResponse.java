@@ -14,7 +14,11 @@ public class CommentResponse {
 
     private String content;
 
-    private UUID profileId;
+    private UUID userId;
+
+    private String userEmail;
+
+    private String profileImagePath;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
@@ -22,6 +26,5 @@ public class CommentResponse {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime modifiedAt;
 
-    private Integer likes;
-
+    private long likes;
 }

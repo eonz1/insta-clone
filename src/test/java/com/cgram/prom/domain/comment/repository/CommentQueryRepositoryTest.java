@@ -8,6 +8,8 @@ import com.cgram.prom.domain.feed.domain.Feed;
 import com.cgram.prom.domain.feed.repository.FeedRepository;
 import com.cgram.prom.domain.profile.domain.Profile;
 import com.cgram.prom.domain.profile.repository.ProfileRepository;
+import com.cgram.prom.domain.user.domain.User;
+import com.cgram.prom.domain.user.repository.UserRepository;
 import com.cgram.prom.global.config.JpaAuditingConfig;
 import com.cgram.prom.global.config.QuerydslTestConfig;
 import java.util.ArrayList;
@@ -40,11 +42,17 @@ class CommentQueryRepositoryTest {
     @Autowired
     private ProfileRepository profileRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Test
     @DisplayName("피드로 댓글 최상위 3개 조회하기")
     public void getCommentsByFeedIds() {
         // given
-        Profile profile = Profile.builder().build();
+        User user = User.builder().build();
+        userRepository.save(user);
+
+        Profile profile = Profile.builder().user(user).build();
         profileRepository.save(profile);
 
         Feed feed = feedRepository.save(Feed.builder().isPresent(true).build());
@@ -64,9 +72,9 @@ class CommentQueryRepositoryTest {
 
         // then
         Assertions.assertThat(commentList.size()).isEqualTo(3);
-        Assertions.assertThat(commentList.get(0).getFeed().getId()).isEqualTo(feed.getId());
-        Assertions.assertThat(commentList.get(1).getFeed().getId()).isEqualTo(feed.getId());
-        Assertions.assertThat(commentList.get(2).getFeed().getId()).isEqualTo(feed.getId());
+        Assertions.assertThat(commentList.get(0).getFeedId()).isEqualTo(feed.getId());
+        Assertions.assertThat(commentList.get(1).getFeedId()).isEqualTo(feed.getId());
+        Assertions.assertThat(commentList.get(2).getFeedId()).isEqualTo(feed.getId());
         Assertions.assertThat(commentList.get(0).getContent()).isEqualTo("코멘트5");
         Assertions.assertThat(commentList.get(1).getContent()).isEqualTo("코멘트4");
         Assertions.assertThat(commentList.get(2).getContent()).isEqualTo("코멘트3");

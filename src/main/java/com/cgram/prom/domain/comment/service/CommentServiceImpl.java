@@ -1,8 +1,10 @@
 package com.cgram.prom.domain.comment.service;
 
 import com.cgram.prom.domain.comment.domain.Comment;
+import com.cgram.prom.domain.comment.dto.CommentDTO;
 import com.cgram.prom.domain.comment.exception.CommentException;
 import com.cgram.prom.domain.comment.exception.CommentExceptionType;
+import com.cgram.prom.domain.comment.repository.CommentQueryRepository;
 import com.cgram.prom.domain.comment.repository.CommentRepository;
 import com.cgram.prom.domain.comment.request.CommentServiceDTO;
 import com.cgram.prom.domain.comment.response.CommentResponse;
@@ -14,6 +16,7 @@ import com.cgram.prom.domain.statistics.service.StatisticsService;
 import com.cgram.prom.domain.user.exception.UserException;
 import com.cgram.prom.domain.user.exception.UserExceptionType;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -27,23 +30,29 @@ import org.springframework.stereotype.Service;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
+    private final CommentQueryRepository commentQueryRepository;
     private final ProfileRepository profileRepository;
     private final StatisticsService statisticsService;
 
     @Override
     public List<CommentResponse> getComments(String feedId) {
+        List<UUID> feedIds = new ArrayList<>();
+        feedIds.add(UUID.fromString(feedId));
 
-        List<Comment> comments = commentRepository.findByFeedIdAndIsPresent(
-            UUID.fromString(feedId), true);
+        List<CommentDTO> comments = commentQueryRepository.getCommentsByFeedIds(feedIds, Long.MAX_VALUE);
 
         List<CommentResponse> responseList = comments.stream().map(comment ->
                 CommentResponse.builder()
                     .id(comment.getId())
-                    .profileId(comment.getProfile().getId())
+                    .userId(comment.getUserId())
+                    .userEmail(comment.getUserEmail())
+                    .profileImagePath(comment.getProfileImagePath() != null
+                        ? comment.getProfileImagePath()+"/"+comment.getProfileImageId()+".jpg"
+                        : null)
                     .content(comment.getContent())
+                    .likes(comment.getLikesCount())
                     .createdAt(comment.getCreatedAt())
                     .modifiedAt(comment.getModifiedAt())
-                    .likes(comment.getStatistics().getCounts())
                     .build())
             .collect(Collectors.toList());
 
@@ -62,7 +71,6 @@ public class CommentServiceImpl implements CommentService {
             .profile(profile)
             .content(dto.getContent())
             .build();
-
         commentRepository.save(comment);
 
         statisticsService.updateStatistics(UUID.fromString(dto.getFeedId()), StatisticType.COMMENT.label(), 1);
