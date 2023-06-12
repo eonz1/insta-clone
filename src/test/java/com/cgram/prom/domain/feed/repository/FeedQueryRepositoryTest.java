@@ -2,6 +2,8 @@ package com.cgram.prom.domain.feed.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.cgram.prom.domain.comment.domain.Comment;
+import com.cgram.prom.domain.comment.repository.CommentRepository;
 import com.cgram.prom.domain.feed.domain.Feed;
 import com.cgram.prom.domain.feed.domain.hashtag.HashTag;
 import com.cgram.prom.domain.feed.dto.FeedDTO;
@@ -21,7 +23,6 @@ import com.cgram.prom.global.config.JpaAuditingConfig;
 import com.cgram.prom.global.config.QuerydslTestConfig;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,7 +34,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
@@ -63,11 +63,14 @@ class FeedQueryRepositoryTest {
     @Autowired
     UserRepository userRepository;
 
-//    @Autowired
-//    FeedImageRepository feedImageRepository;
+    @Autowired
+    FeedImageRepository feedImageRepository;
 
     @Autowired
     ImageRepository imageRepository;
+
+    @Autowired
+    CommentRepository commentRepository;
 
     @BeforeEach
     void setup() {
@@ -80,10 +83,21 @@ class FeedQueryRepositoryTest {
 
     }
 
-    private Follow saveFollow(Profile followProfile, Profile userProfile) {
+    private void saveComment(Profile profile, Feed feed, String content) {
+        Comment comment = Comment.builder()
+            .profile(profile)
+            .content(content)
+            .feed(feed)
+            .build();
+        commentRepository.save(comment);
+
+        saveStatistics(feed.getId(), StatisticType.COMMENT.label(), 1);
+    }
+
+    private Follow saveFollow(Profile userProfile, Profile followedProfile) {
         Follow follow = Follow.builder()
                 .profileId(userProfile)
-                .followedId(followProfile)
+                .followedId(followedProfile)
                 .isPresent(true)
                 .build();
 
@@ -129,7 +143,6 @@ class FeedQueryRepositoryTest {
         HashTag hashTag = HashTag.builder()
                 .tag(tag)
                 .feed(feed)
-                .isPresent(true)
                 .build();
 
         return hashTagRepository.save(hashTag);
@@ -146,24 +159,16 @@ class FeedQueryRepositoryTest {
 
     @Test
     @DisplayName("해시태그로 피드 조회하기")
-    @Commit
     public void getFeedsByHashtag() throws Exception {
         // given
-        List<HashTag> hashTags = new ArrayList<>();
-
         User user = saveUser("test@test.com", "password123!!!");
-        User followUser = saveUser("follow1@test.com", "password123!!!");
-
         Profile userProfile = saveProfile(user);
-        Profile followProfile = saveProfile(followUser);
-
-        saveFollow(followProfile, userProfile);
-        saveStatistics(userProfile.getId(), StatisticType.FOLLOWING.label(), 2);
 
         for (int i = 0; i < 10; i++) {
             Feed feed = saveFeed("피드" + (i + 1), userProfile);
             saveHashTag("#tag", feed);
             saveHashTag("#tag1", feed);
+            saveComment(userProfile, feed, "댓글"+(i+1));
 
             if (i % 2 == 0) {
                 saveHashTag("#태그", feed);
@@ -179,30 +184,59 @@ class FeedQueryRepositoryTest {
         // then
         assertThat(allFeedsByHashTag.size()).isEqualTo(6);
         assertThat(allFeedsByHashTag.stream().map(FeedDTO::getProfileImagePath).allMatch(s -> s.equals("path"))).isTrue();
+        assertThat(allFeedsByHashTag.stream().map(FeedDTO::getCommentCount).allMatch(i -> i.equals(1))).isTrue();
+    }
 
+    @Test
+    @DisplayName("해시태그로 피드 조회하기 - 더보기")
+    public void getFeedsByHashtagNextId() throws Exception {
+        // given
+        User user = saveUser("test@test.com", "password123!!!");
+        Profile userProfile = saveProfile(user);
+
+        for (int i = 0; i < 10; i++) {
+            Feed feed = saveFeed("피드" + (i + 1), userProfile);
+            saveHashTag("#tag", feed);
+            saveHashTag("#tag1", feed);
+            saveComment(userProfile, feed, "댓글"+(i+1));
+
+            if (i % 2 == 0) {
+                saveHashTag("#태그", feed);
+            }
+        }
+
+        List<FeedDTO> feedDTOList = feedQueryRepository.getAllFeedsByHashTag(
+            GetFeedsServiceDto.builder().tag("#tag").limit(5).build(),
+            LocalDateTime.now().minusDays(3));
+        String nextId = feedDTOList.get(5).getId().toString();
+
+        GetFeedsServiceDto dto = GetFeedsServiceDto.builder()
+            .profileId(userProfile.getId().toString())
+            .limit(5)
+            .cursor(nextId)
+            .build();
+
+        // when
+        List<FeedDTO> allFeedsByHashTag = feedQueryRepository.getAllFeedsByHashTag(dto,
+            LocalDateTime.now().minusDays(3));
+
+        // then
+        assertThat(allFeedsByHashTag.size()).isEqualTo(5);
+        assertThat(allFeedsByHashTag.stream().map(FeedDTO::getProfileImagePath).allMatch(s -> s.equals("path"))).isTrue();
+        assertThat(allFeedsByHashTag.stream().map(FeedDTO::getCommentCount).allMatch(i -> i.equals(1))).isTrue();
     }
 
     @Test
     @DisplayName("내 프로필 피드 조회하기")
-    @Commit
     public void getFeedsByMyProfile() throws Exception {
         // given
-        List<HashTag> hashTags = new ArrayList<>();
-
         User user = saveUser("test@test.com", "password123!!!");
-        User followUser = saveUser("follow1@test.com", "password123!!!");
-
         Profile userProfile = saveProfile(user);
-        Profile followProfile = saveProfile(followUser);
-
-        saveFollow(followProfile, userProfile);
-        saveStatistics(userProfile.getId(), StatisticType.FOLLOWING.label(), 2);
 
         for (int i = 0; i < 10; i++) {
             Feed feed = saveFeed("내 피드" + (i + 1), userProfile);
-            Feed followedFeed = saveFeed("팔로우한 사람 피드" + (i + 1), followProfile);
-
             saveHashTag("#tag", feed);
+            saveComment(userProfile, feed, "댓글"+(i+1));
         }
 
         GetFeedsServiceDto dto = GetFeedsServiceDto.builder()
@@ -211,7 +245,7 @@ class FeedQueryRepositoryTest {
                 .build();
 
         // when
-        List<FeedDTO> allFeedsByMyProfile = feedQueryRepository.getAllFeedsByMyProfile(dto,
+        List<FeedDTO> allFeedsByMyProfile = feedQueryRepository.getAllFeedsByUser(dto,
                 LocalDateTime.now().minusDays(3));
 
         // then
@@ -219,11 +253,50 @@ class FeedQueryRepositoryTest {
         assertThat(allFeedsByMyProfile.stream().map(FeedDTO::getContent)
                 .allMatch(s -> s.contains("내 피드"))).isTrue();
         assertThat(allFeedsByMyProfile.stream().map(FeedDTO::getProfileImagePath).allMatch(s -> s.equals("path"))).isTrue();
+        assertThat(allFeedsByMyProfile.stream().map(FeedDTO::getCommentCount).allMatch(i -> i.equals(1))).isTrue();
+    }
+
+    @Test
+    @DisplayName("내가 팔로잉한 사람 피드 조회하기 - 더보기")
+    public void getFeedsByMyProfileNextId() throws Exception {
+        // given
+        User user = saveUser("test@test.com", "password123!!!");
+        Profile userProfile = saveProfile(user);
+
+        for (int i = 0; i < 10; i++) {
+            Feed feed = saveFeed("내 피드" + (i + 1), userProfile);
+            saveHashTag("#tag", feed);
+            saveComment(userProfile, feed, "댓글"+(i+1));
+        }
+
+        List<FeedDTO> feedDTOList = feedQueryRepository.getAllFeedsByUser(
+            GetFeedsServiceDto.builder()
+                .profileId(userProfile.getId().toString())
+                .limit(5)
+                .build(),
+            LocalDateTime.now().minusDays(3));
+        String nextId = feedDTOList.get(5).getId().toString();
+
+        GetFeedsServiceDto dto = GetFeedsServiceDto.builder()
+            .profileId(userProfile.getId().toString())
+            .limit(5)
+            .cursor(nextId)
+            .build();
+
+        // when
+        List<FeedDTO> allFeedsByMyProfile = feedQueryRepository.getAllFeedsByUser(dto,
+            LocalDateTime.now().minusDays(3));
+
+        // then
+        assertThat(allFeedsByMyProfile.size()).isEqualTo(5);
+        assertThat(allFeedsByMyProfile.stream().map(FeedDTO::getContent)
+            .allMatch(s -> s.contains("내 피드"))).isTrue();
+        assertThat(allFeedsByMyProfile.stream().map(FeedDTO::getProfileImagePath).allMatch(s -> s.equals("path"))).isTrue();
+        assertThat(allFeedsByMyProfile.stream().map(FeedDTO::getCommentCount).allMatch(i -> i.equals(1))).isTrue();
     }
 
     @Test
     @DisplayName("내가 팔로잉한 사람 피드 조회하기")
-    @Commit
     public void getFeedsByMyFollowingProfiles() throws Exception {
         // given
         User user = saveUser("test@test.com", "password123!!!");
@@ -234,9 +307,8 @@ class FeedQueryRepositoryTest {
         Profile followProfile = saveProfile(followUser);
         Profile followProfile2 = saveProfile(followUser2);
 
-        saveFollow(followProfile, userProfile);
-        saveFollow(followProfile2, userProfile);
-        saveStatistics(userProfile.getId(), StatisticType.FOLLOWING.label(), 2);
+        saveFollow(userProfile, followProfile);
+        saveFollow(userProfile, followProfile2);
 
         for (int i = 0; i < 4; i++) {
             Feed feed = saveFeed("내 피드" + (i + 1), userProfile);
@@ -244,11 +316,13 @@ class FeedQueryRepositoryTest {
 
             if (i % 2 == 0) {
                 Feed followedFeed2 = saveFeed("팔로우한 사람2 피드" + (i + 1), followProfile2);
+                saveComment(userProfile, followedFeed2, "팔로우한 사람2 피드 댓글"+(i+1));
             }
 
-            HashTag tag = saveHashTag("tag", feed);
+            saveHashTag("tag", feed);
             saveHashTag("follow tag", feed);
             saveHashTag("tag2", followedFeed);
+            saveComment(userProfile, followedFeed, "댓글"+(i+1));
         }
 
         GetFeedsServiceDto dto = GetFeedsServiceDto.builder()
@@ -260,14 +334,66 @@ class FeedQueryRepositoryTest {
         List<FeedDTO> allFeedsByMyFollowings = feedQueryRepository.getAllFeedsByMyFollowings(dto,
                 LocalDateTime.now().minusDays(3));
 
+        // then
         assertThat(allFeedsByMyFollowings.size()).isEqualTo(6);
         assertThat(allFeedsByMyFollowings.stream().map(FeedDTO::getContent)
                 .allMatch(s -> s.contains("팔로우한 사람"))).isTrue();
         assertThat(allFeedsByMyFollowings.stream().map(FeedDTO::getProfileImagePath).allMatch(s -> s.equals("path"))).isTrue();
-
+        assertThat(allFeedsByMyFollowings.stream().map(FeedDTO::getCommentCount).allMatch(i -> i.equals(1))).isTrue();
     }
 
-    // TODO: 2023/06/08  getAllFeedsByMyFollowings dto에 nextId 포함되어 있는 경우
-    // TODO: 2023/06/08  getAllFeedsByMyProfile dto에 nextId 포함되어 있는 경우
-    // TODO: 2023/06/08  getAllFeedsByHashTag dto에 nextId 포함되어 있는 경우
+    @Test
+    @DisplayName("내가 팔로잉한 사람 피드 조회하기 - 더보기")
+    public void getFeedsByMyFollowingProfilesNextId() throws Exception {
+        // given
+        User user = saveUser("test@test.com", "password123!!!");
+        User followUser = saveUser("follow1@test.com", "password123!!!");
+        User followUser2 = saveUser("follow2@test.com", "password123!!!");
+
+        Profile userProfile = saveProfile(user);
+        Profile followProfile = saveProfile(followUser);
+        Profile followProfile2 = saveProfile(followUser2);
+
+        saveFollow(userProfile, followProfile);
+        saveFollow(userProfile, followProfile2);
+
+        for (int i = 0; i < 5; i++) {
+            Feed feed = saveFeed("내 피드" + (i + 1), userProfile);
+            Feed followFeed = saveFeed("팔로우한 사람 피드" + (i + 1), followProfile);
+
+            if (i % 2 == 0) {
+                Feed followFeed2 = saveFeed("팔로우한 사람2 피드" + (i + 1), followProfile2);
+                saveComment(userProfile, followFeed2, "팔로우한 사람2 피드 댓글"+(i+1));
+            }
+
+            saveHashTag("tag", feed);
+            saveHashTag("follow tag", feed);
+            saveHashTag("tag2", followFeed);
+            saveComment(userProfile, followFeed, "댓글"+(i+1));
+        }
+
+        List<FeedDTO> feedDTOList = feedQueryRepository.getAllFeedsByMyFollowings(
+            GetFeedsServiceDto.builder()
+                .profileId(userProfile.getId().toString())
+                .limit(3)
+                .build()
+            , LocalDateTime.now().minusDays(3));
+        String nextId = feedDTOList.get(3).getId().toString();
+
+        // when
+        GetFeedsServiceDto dto = GetFeedsServiceDto.builder()
+            .profileId(userProfile.getId().toString())
+            .limit(3)
+            .cursor(nextId)
+            .build();
+        List<FeedDTO> allFeedsByMyFollowings = feedQueryRepository.getAllFeedsByMyFollowings(dto,
+            LocalDateTime.now().minusDays(3));
+
+        // then
+        assertThat(allFeedsByMyFollowings.size()).isEqualTo(4);
+        assertThat(allFeedsByMyFollowings.stream().map(FeedDTO::getContent)
+            .allMatch(s -> s.contains("팔로우한 사람"))).isTrue();
+        assertThat(allFeedsByMyFollowings.stream().map(FeedDTO::getProfileImagePath).allMatch(s -> s.equals("path"))).isTrue();
+        assertThat(allFeedsByMyFollowings.stream().map(FeedDTO::getCommentCount).allMatch(i -> i.equals(1))).isTrue();
+    }
 }
