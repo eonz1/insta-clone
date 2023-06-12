@@ -47,7 +47,6 @@ class HashTagQueryRepositoryTest {
         HashTag hashTag = HashTag.builder()
             .tag(tag)
             .feed(feed)
-            .isPresent(true)
             .build();
 
         return hashTagRepository.save(hashTag);

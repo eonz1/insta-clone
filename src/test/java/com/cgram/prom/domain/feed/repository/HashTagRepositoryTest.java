@@ -39,7 +39,6 @@ class HashTagRepositoryTest {
 
         for (int i = 0; i < 3; i++) {
             HashTag tag = HashTag.builder()
-                .isPresent(true)
                 .tag("#tag" + i)
                 .feed(feed)
                 .build();
