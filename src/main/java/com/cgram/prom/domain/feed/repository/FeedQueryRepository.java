@@ -32,31 +32,29 @@ public class FeedQueryRepository {
         QStatistics likes = new QStatistics("likes");
 
         return queryFactory
-                .select(Projections.fields(FeedDTO.class
-                        , QFeed.feed.id, QFeed.feed.profile.id.as("profileId"), QFeed.feed.content, QFeed.feed.createdAt
-                        , QFeed.feed.modifiedAt, QFeed.feed.isPresent, comment.counts.as("commentCount")
-                        , likes.counts.as("likesCount")
-                        , QProfile.profile.user.email
-                        , QImage.image.path.as("profileImagePath")
-                        , QImage.image.id.as("profileImageId")
-                ))
-                .from(QFeed.feed)
-                .leftJoin(QFeed.feed.hashTags, QHashTag.hashTag)
-                .on(QHashTag.hashTag.tag.eq(dto.getTag()))
-                .leftJoin(comment)
-                .on(comment.uuid.eq(QFeed.feed.id), comment.type.eq(StatisticType.COMMENT.label()))
-                .leftJoin(likes)
-                .on(likes.uuid.eq(QFeed.feed.id), likes.type.eq(StatisticType.FEED_LIKE.label()))
-                .leftJoin(QProfile.profile).on(QProfile.profile.id.eq(QFeed.feed.profile.id))
-                .leftJoin(QUser.user).on(QProfile.profile.user.id.eq(QUser.user.id))
-                .leftJoin(QImage.image).on(QImage.image.id.eq(QProfile.profile.image.id))
-                .where(loeFeedId(dto.getCursor()),
-                        QFeed.feed.createdAt.gt(lastDate),
-                        QFeed.feed.isPresent.eq(true)
-                )
-                .orderBy(QFeed.feed.createdAt.desc())
-                .limit(dto.getLimit() + 1)
-                .fetch();
+            .select(Projections.fields(FeedDTO.class
+                , QFeed.feed.id, QFeed.feed.content
+                , QFeed.feed.createdAt, QFeed.feed.modifiedAt
+                , comment.counts.as("commentCount"), likes.counts.as("likesCount")
+                , QProfile.profile.user.email, QFeed.feed.profile.user.id.as("userId")
+                , QImage.image.path.as("profileImagePath"), QImage.image.id.as("profileImageId")
+            ))
+            .from(QFeed.feed)
+            .where(
+                QFeed.feed.isPresent.eq(true),
+                QFeed.feed.createdAt.gt(lastDate),
+                loeFeedId(dto.getCursor()),
+                eqTag(dto.getTag())
+            )
+            .leftJoin(comment).on(comment.uuid.eq(QFeed.feed.id), comment.type.eq(StatisticType.COMMENT.label()))
+            .leftJoin(likes).on(likes.uuid.eq(QFeed.feed.id), likes.type.eq(StatisticType.FEED_LIKE.label()))
+            .leftJoin(QHashTag.hashTag).on(QHashTag.hashTag.feed.id.eq(QFeed.feed.id))
+            .join(QProfile.profile).on(QProfile.profile.id.eq(QFeed.feed.profile.id))
+            .join(QUser.user).on(QProfile.profile.user.id.eq(QUser.user.id))
+            .join(QImage.image).on(QImage.image.id.eq(QProfile.profile.image.id))
+            .orderBy(QFeed.feed.createdAt.desc())
+            .limit(dto.getLimit() + 1)
+            .fetch();
     }
 
     public List<FeedDTO> getAllFeedsByMyFollowings(GetFeedsServiceDto dto, LocalDateTime lastDate) {
@@ -65,61 +63,59 @@ public class FeedQueryRepository {
 
         // 내가 팔로우한 사람들
         return queryFactory
-                .select(Projections.fields(FeedDTO.class
-                        , QFeed.feed.id, QFeed.feed.profile.id.as("profileId"), QFeed.feed.content, QFeed.feed.createdAt
-                        , QFeed.feed.modifiedAt, QFeed.feed.isPresent, comment.counts.as("commentCount"), likes.counts.as("likesCount")
-                        , QProfile.profile.user.email
-                        , QImage.image.path.as("profileImagePath")
-                        , QImage.image.id.as("profileImageId")
-                ))
-                .from(QFeed.feed)
-                .join(QFollow.follow)
-                .on(QFollow.follow.isPresent,
-                        QFollow.follow.profileId.id.eq(UUID.fromString(dto.getProfileId())),
-                        QFeed.feed.profile.id.eq(QFollow.follow.followedId.id)
-                )
-                .leftJoin(comment).on(comment.uuid.eq(QFeed.feed.id), comment.type.eq(StatisticType.COMMENT.label()))
-                .leftJoin(likes).on(likes.uuid.eq(QFeed.feed.id), likes.type.eq(StatisticType.FEED_LIKE.label()))
-                .leftJoin(QProfile.profile).on(QProfile.profile.id.eq(QFeed.feed.profile.id))
-                .leftJoin(QUser.user).on(QProfile.profile.user.id.eq(QUser.user.id))
-                .leftJoin(QImage.image).on(QImage.image.id.eq(QProfile.profile.image.id))
-                .where(loeFeedId(dto.getCursor()),
-                        QFeed.feed.createdAt.gt(lastDate),
-                        QFeed.feed.isPresent.eq(true)
-                )
-                .orderBy(QFeed.feed.createdAt.desc())
-                .limit(dto.getLimit() + 1)
-                .fetchJoin()
-                .fetch();
+            .select(Projections.fields(FeedDTO.class
+                , QFeed.feed.id, QFeed.feed.content
+                , QFeed.feed.createdAt, QFeed.feed.modifiedAt
+                , comment.counts.as("commentCount"), likes.counts.as("likesCount")
+                , QProfile.profile.user.email, QFeed.feed.profile.user.id.as("userId")
+                , QImage.image.path.as("profileImagePath"), QImage.image.id.as("profileImageId")
+            ))
+            .from(QFeed.feed)
+            .leftJoin(comment).on(comment.uuid.eq(QFeed.feed.id), comment.type.eq(StatisticType.COMMENT.label()))
+            .leftJoin(likes).on(likes.uuid.eq(QFeed.feed.id), likes.type.eq(StatisticType.FEED_LIKE.label()))
+            .join(QProfile.profile).on(QProfile.profile.id.eq(QFeed.feed.profile.id))
+            .join(QImage.image).on(QImage.image.id.eq(QProfile.profile.image.id))
+            .join(QFollow.follow)
+            .on(QFollow.follow.isPresent.eq(true),
+                QFollow.follow.profileId.id.eq(UUID.fromString(dto.getProfileId())),
+                QFollow.follow.followedId.id.eq(QFeed.feed.profile.id)
+            )
+            .where(loeFeedId(dto.getCursor()),
+                QFeed.feed.createdAt.gt(lastDate),
+                QFeed.feed.isPresent.eq(true)
+            )
+            .orderBy(QFeed.feed.createdAt.desc())
+            .limit(dto.getLimit() + 1)
+            .fetch();
     }
 
-    public List<FeedDTO> getAllFeedsByMyProfile(GetFeedsServiceDto dto, LocalDateTime lastDate) {
+    public List<FeedDTO> getAllFeedsByUser(GetFeedsServiceDto dto, LocalDateTime lastDate) {
         QStatistics comment = new QStatistics("comment");
         QStatistics likes = new QStatistics("likes");
 
         return queryFactory
-                .select(Projections.fields(FeedDTO.class
-                        , QFeed.feed.id, QFeed.feed.profile.id.as("profileId"), QFeed.feed.content, QFeed.feed.createdAt
-                        , QFeed.feed.modifiedAt, QFeed.feed.isPresent, comment.counts.as("commentCount"), likes.counts.as("likesCount")
-                        , QProfile.profile.user.email
-                        , QImage.image.path.as("profileImagePath")
-                        , QImage.image.id.as("profileImageId")
-                ))
-                .from(QFeed.feed)
-                .where(
-                        QFeed.feed.isPresent.eq(true),
-                        QFeed.feed.profile.id.eq(UUID.fromString(dto.getProfileId())),
-                        loeFeedId(dto.getCursor()),
-                        QFeed.feed.createdAt.gt(lastDate)
-                )
-                .leftJoin(comment).on(comment.uuid.eq(QFeed.feed.id), comment.type.eq(StatisticType.COMMENT.label()))
-                .leftJoin(likes).on(likes.uuid.eq(QFeed.feed.id), likes.type.eq(StatisticType.FEED_LIKE.label()))
-                .leftJoin(QProfile.profile).on(QProfile.profile.id.eq(QFeed.feed.profile.id))
-                .leftJoin(QUser.user).on(QProfile.profile.user.id.eq(QUser.user.id))
-                .leftJoin(QImage.image).on(QImage.image.id.eq(QProfile.profile.image.id))
-                .orderBy(QFeed.feed.createdAt.desc())
-                .limit(dto.getLimit() + 1)
-                .fetch();
+            .select(Projections.fields(FeedDTO.class
+                , QFeed.feed.id, QFeed.feed.content
+                , QFeed.feed.createdAt, QFeed.feed.modifiedAt
+                , comment.counts.as("commentCount"), likes.counts.as("likesCount")
+                , QProfile.profile.user.email, QFeed.feed.profile.user.id.as("userId")
+                , QImage.image.path.as("profileImagePath"), QImage.image.id.as("profileImageId")
+            ))
+            .from(QFeed.feed)
+            .where(
+                QFeed.feed.isPresent.eq(true),
+                QFeed.feed.createdAt.gt(lastDate),
+                eqProfileId(dto.getProfileId()),
+                loeFeedId(dto.getCursor())
+            )
+            .leftJoin(comment).on(comment.uuid.eq(QFeed.feed.id), comment.type.eq(StatisticType.COMMENT.label()))
+            .leftJoin(likes).on(likes.uuid.eq(QFeed.feed.id), likes.type.eq(StatisticType.FEED_LIKE.label()))
+            .join(QProfile.profile).on(QProfile.profile.id.eq(QFeed.feed.profile.id))
+            .join(QUser.user).on(QProfile.profile.user.id.eq(QUser.user.id))
+            .join(QImage.image).on(QImage.image.id.eq(QProfile.profile.image.id))
+            .orderBy(QFeed.feed.createdAt.desc())
+            .limit(dto.getLimit() + 1)
+            .fetch();
     }
 
     private BooleanExpression loeFeedId(String feedId) {
@@ -128,5 +124,21 @@ public class FeedQueryRepository {
         }
 
         return QFeed.feed.id.loe(UUID.fromString(feedId));
+    }
+
+    private BooleanExpression eqProfileId(String profileId) {
+        if (profileId == null) {
+            return null;
+        }
+
+        return QFeed.feed.profile.id.eq(UUID.fromString(profileId));
+    }
+
+    private BooleanExpression eqTag(String tag) {
+        if (tag == null) {
+            return null;
+        }
+
+        return QHashTag.hashTag.tag.eq(tag);
     }
 }
