@@ -23,7 +23,7 @@ public class ByCodePasswordService implements PasswordService {
         verificationCodeService.validDate(email, LocalDateTime.now());
         verificationCodeService.validCode(email, code);
 
-        User user = userRepository.findByEmail(email).get();
+        User user = userRepository.findByEmailAndIsPresent(email, true).get();
         user.updatePassword(passwordEncoder.encode(password));
     }
 }
