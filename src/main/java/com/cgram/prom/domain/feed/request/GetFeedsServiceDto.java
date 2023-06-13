@@ -13,5 +13,5 @@ public class GetFeedsServiceDto {
 
     private String tag;
 
-    private String profileId;
+    private String userId;
 }

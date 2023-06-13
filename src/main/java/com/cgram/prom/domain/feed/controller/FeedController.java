@@ -47,14 +47,13 @@ public class FeedController {
     public ResponseEntity<FeedListResponse> getFeeds(Authentication authentication,
         @RequestParam(defaultValue = "12") int limit,
         @RequestParam(required = false) String tag,
-        @RequestParam(required = false) String cursor,
-        @RequestParam String profile_id) {
+        @RequestParam(required = false) String cursor) {
 
         GetFeedsServiceDto dto = GetFeedsServiceDto.builder()
             .limit(limit)
             .cursor(cursor)
             .tag(tag)
-            .profileId(profile_id)
+            .userId(authentication.getName())
             .build();
 
         FeedListResponse feedListResponse = feedService.getFeeds(dto);
