@@ -3,7 +3,7 @@ package com.cgram.prom.domain.feed.repository;
 import com.cgram.prom.domain.feed.domain.QFeed;
 import com.cgram.prom.domain.feed.domain.hashtag.QHashTag;
 import com.cgram.prom.domain.feed.dto.FeedDTO;
-import com.cgram.prom.domain.feed.request.GetFeedsServiceDto;
+import com.cgram.prom.domain.feed.request.GetFeedsRepoDto;
 import com.cgram.prom.domain.following.domain.QFollow;
 import com.cgram.prom.domain.image.domain.QImage;
 import com.cgram.prom.domain.profile.domain.QProfile;
@@ -27,7 +27,7 @@ public class FeedQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public List<FeedDTO> getFeedsByHashTag(GetFeedsServiceDto dto) {
+    public List<FeedDTO> getFeedsByHashTag(GetFeedsRepoDto dto) {
         QStatistics comment = new QStatistics("comment");
         QStatistics likes = new QStatistics("likes");
 
@@ -56,7 +56,7 @@ public class FeedQueryRepository {
             .fetch();
     }
 
-    public List<FeedDTO> getFeedsByMyFollowings(GetFeedsServiceDto dto, LocalDateTime lastDate) {
+    public List<FeedDTO> getFeedsByMyFollowings(GetFeedsRepoDto dto, LocalDateTime lastDate) {
         QStatistics comment = new QStatistics("comment");
         QStatistics likes = new QStatistics("likes");
 
@@ -88,7 +88,7 @@ public class FeedQueryRepository {
             .fetch();
     }
 
-    public List<FeedDTO> getFeedsByUser(GetFeedsServiceDto dto, LocalDateTime lastDate) {
+    public List<FeedDTO> getFeedsByUser(GetFeedsRepoDto dto, LocalDateTime lastDate) {
         QStatistics comment = new QStatistics("comment");
         QStatistics likes = new QStatistics("likes");
 

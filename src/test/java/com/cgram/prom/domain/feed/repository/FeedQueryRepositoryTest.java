@@ -7,7 +7,7 @@ import com.cgram.prom.domain.comment.repository.CommentRepository;
 import com.cgram.prom.domain.feed.domain.Feed;
 import com.cgram.prom.domain.feed.domain.hashtag.HashTag;
 import com.cgram.prom.domain.feed.dto.FeedDTO;
-import com.cgram.prom.domain.feed.request.GetFeedsServiceDto;
+import com.cgram.prom.domain.feed.request.GetFeedsRepoDto;
 import com.cgram.prom.domain.following.domain.Follow;
 import com.cgram.prom.domain.following.repository.FollowRepository;
 import com.cgram.prom.domain.image.domain.Image;
@@ -175,7 +175,7 @@ class FeedQueryRepositoryTest {
             }
         }
 
-        GetFeedsServiceDto dto = GetFeedsServiceDto.builder().tag("#tag").limit(5).build();
+        GetFeedsRepoDto dto = GetFeedsRepoDto.builder().tag("#tag").limit(5).build();
 
         // when
         List<FeedDTO> allFeedsByHashTag = feedQueryRepository.getFeedsByHashTag(dto);
@@ -205,13 +205,13 @@ class FeedQueryRepositoryTest {
         }
 
         List<FeedDTO> feedDTOList = feedQueryRepository.getFeedsByHashTag(
-            GetFeedsServiceDto.builder()
+            GetFeedsRepoDto.builder()
                 .tag("#tag")
                 .limit(5)
                 .build());
         String nextId = feedDTOList.get(5).getId().toString();
 
-        GetFeedsServiceDto dto = GetFeedsServiceDto.builder()
+        GetFeedsRepoDto dto = GetFeedsRepoDto.builder()
             .profileId(userProfile.getId().toString())
             .limit(5)
             .cursor(nextId)
@@ -239,7 +239,7 @@ class FeedQueryRepositoryTest {
             saveComment(userProfile, feed, "댓글"+(i+1));
         }
 
-        GetFeedsServiceDto dto = GetFeedsServiceDto.builder()
+        GetFeedsRepoDto dto = GetFeedsRepoDto.builder()
                 .profileId(userProfile.getId().toString())
                 .limit(5)
                 .build();
@@ -270,14 +270,14 @@ class FeedQueryRepositoryTest {
         }
 
         List<FeedDTO> feedDTOList = feedQueryRepository.getFeedsByUser(
-            GetFeedsServiceDto.builder()
+            GetFeedsRepoDto.builder()
                 .profileId(userProfile.getId().toString())
                 .limit(5)
                 .build(),
             LocalDateTime.now().minusDays(3));
         String nextId = feedDTOList.get(5).getId().toString();
 
-        GetFeedsServiceDto dto = GetFeedsServiceDto.builder()
+        GetFeedsRepoDto dto = GetFeedsRepoDto.builder()
             .profileId(userProfile.getId().toString())
             .limit(5)
             .cursor(nextId)
@@ -325,7 +325,7 @@ class FeedQueryRepositoryTest {
             saveComment(userProfile, followedFeed, "댓글"+(i+1));
         }
 
-        GetFeedsServiceDto dto = GetFeedsServiceDto.builder()
+        GetFeedsRepoDto dto = GetFeedsRepoDto.builder()
                 .profileId(userProfile.getId().toString())
                 .limit(5)
                 .build();
@@ -373,7 +373,7 @@ class FeedQueryRepositoryTest {
         }
 
         List<FeedDTO> feedDTOList = feedQueryRepository.getFeedsByMyFollowings(
-            GetFeedsServiceDto.builder()
+            GetFeedsRepoDto.builder()
                 .profileId(userProfile.getId().toString())
                 .limit(3)
                 .build()
@@ -381,7 +381,7 @@ class FeedQueryRepositoryTest {
         String nextId = feedDTOList.get(3).getId().toString();
 
         // when
-        GetFeedsServiceDto dto = GetFeedsServiceDto.builder()
+        GetFeedsRepoDto dto = GetFeedsRepoDto.builder()
             .profileId(userProfile.getId().toString())
             .limit(3)
             .cursor(nextId)
