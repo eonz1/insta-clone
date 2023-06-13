@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class GetFeedsRepoDto {
+public class GetFeedsDto {
 
     private int limit;
 
