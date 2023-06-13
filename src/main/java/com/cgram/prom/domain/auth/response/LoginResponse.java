@@ -11,8 +11,11 @@ public class LoginResponse {
 
     private Token token;
 
+    private String profileId;
+
     @Builder
-    public LoginResponse(Token token) {
+    public LoginResponse(Token token, String profileId) {
         this.token = token;
+        this.profileId = profileId;
     }
 }
