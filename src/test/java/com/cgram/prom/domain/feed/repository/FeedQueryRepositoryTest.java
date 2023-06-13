@@ -178,8 +178,7 @@ class FeedQueryRepositoryTest {
         GetFeedsServiceDto dto = GetFeedsServiceDto.builder().tag("#tag").limit(5).build();
 
         // when
-        List<FeedDTO> allFeedsByHashTag = feedQueryRepository.getAllFeedsByHashTag(dto,
-                LocalDateTime.now().minusDays(3));
+        List<FeedDTO> allFeedsByHashTag = feedQueryRepository.getFeedsByHashTag(dto);
 
         // then
         assertThat(allFeedsByHashTag.size()).isEqualTo(6);
@@ -205,9 +204,11 @@ class FeedQueryRepositoryTest {
             }
         }
 
-        List<FeedDTO> feedDTOList = feedQueryRepository.getAllFeedsByHashTag(
-            GetFeedsServiceDto.builder().tag("#tag").limit(5).build(),
-            LocalDateTime.now().minusDays(3));
+        List<FeedDTO> feedDTOList = feedQueryRepository.getFeedsByHashTag(
+            GetFeedsServiceDto.builder()
+                .tag("#tag")
+                .limit(5)
+                .build());
         String nextId = feedDTOList.get(5).getId().toString();
 
         GetFeedsServiceDto dto = GetFeedsServiceDto.builder()
@@ -217,8 +218,7 @@ class FeedQueryRepositoryTest {
             .build();
 
         // when
-        List<FeedDTO> allFeedsByHashTag = feedQueryRepository.getAllFeedsByHashTag(dto,
-            LocalDateTime.now().minusDays(3));
+        List<FeedDTO> allFeedsByHashTag = feedQueryRepository.getFeedsByHashTag(dto);
 
         // then
         assertThat(allFeedsByHashTag.size()).isEqualTo(5);
@@ -245,7 +245,7 @@ class FeedQueryRepositoryTest {
                 .build();
 
         // when
-        List<FeedDTO> allFeedsByMyProfile = feedQueryRepository.getAllFeedsByUser(dto,
+        List<FeedDTO> allFeedsByMyProfile = feedQueryRepository.getFeedsByUser(dto,
                 LocalDateTime.now().minusDays(3));
 
         // then
@@ -269,7 +269,7 @@ class FeedQueryRepositoryTest {
             saveComment(userProfile, feed, "댓글"+(i+1));
         }
 
-        List<FeedDTO> feedDTOList = feedQueryRepository.getAllFeedsByUser(
+        List<FeedDTO> feedDTOList = feedQueryRepository.getFeedsByUser(
             GetFeedsServiceDto.builder()
                 .profileId(userProfile.getId().toString())
                 .limit(5)
@@ -284,7 +284,7 @@ class FeedQueryRepositoryTest {
             .build();
 
         // when
-        List<FeedDTO> allFeedsByMyProfile = feedQueryRepository.getAllFeedsByUser(dto,
+        List<FeedDTO> allFeedsByMyProfile = feedQueryRepository.getFeedsByUser(dto,
             LocalDateTime.now().minusDays(3));
 
         // then
@@ -331,7 +331,7 @@ class FeedQueryRepositoryTest {
                 .build();
 
         // when
-        List<FeedDTO> allFeedsByMyFollowings = feedQueryRepository.getAllFeedsByMyFollowings(dto,
+        List<FeedDTO> allFeedsByMyFollowings = feedQueryRepository.getFeedsByMyFollowings(dto,
                 LocalDateTime.now().minusDays(3));
 
         // then
@@ -372,7 +372,7 @@ class FeedQueryRepositoryTest {
             saveComment(userProfile, followFeed, "댓글"+(i+1));
         }
 
-        List<FeedDTO> feedDTOList = feedQueryRepository.getAllFeedsByMyFollowings(
+        List<FeedDTO> feedDTOList = feedQueryRepository.getFeedsByMyFollowings(
             GetFeedsServiceDto.builder()
                 .profileId(userProfile.getId().toString())
                 .limit(3)
@@ -386,7 +386,7 @@ class FeedQueryRepositoryTest {
             .limit(3)
             .cursor(nextId)
             .build();
-        List<FeedDTO> allFeedsByMyFollowings = feedQueryRepository.getAllFeedsByMyFollowings(dto,
+        List<FeedDTO> allFeedsByMyFollowings = feedQueryRepository.getFeedsByMyFollowings(dto,
             LocalDateTime.now().minusDays(3));
 
         // then

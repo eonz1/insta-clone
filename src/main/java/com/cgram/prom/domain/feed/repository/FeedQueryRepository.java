@@ -27,7 +27,7 @@ public class FeedQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public List<FeedDTO> getAllFeedsByHashTag(GetFeedsServiceDto dto, LocalDateTime lastDate) {
+    public List<FeedDTO> getFeedsByHashTag(GetFeedsServiceDto dto) {
         QStatistics comment = new QStatistics("comment");
         QStatistics likes = new QStatistics("likes");
 
@@ -42,7 +42,6 @@ public class FeedQueryRepository {
             .from(QFeed.feed)
             .where(
                 QFeed.feed.isPresent.eq(true),
-                QFeed.feed.createdAt.gt(lastDate),
                 loeFeedId(dto.getCursor()),
                 eqTag(dto.getTag())
             )
@@ -57,7 +56,7 @@ public class FeedQueryRepository {
             .fetch();
     }
 
-    public List<FeedDTO> getAllFeedsByMyFollowings(GetFeedsServiceDto dto, LocalDateTime lastDate) {
+    public List<FeedDTO> getFeedsByMyFollowings(GetFeedsServiceDto dto, LocalDateTime lastDate) {
         QStatistics comment = new QStatistics("comment");
         QStatistics likes = new QStatistics("likes");
 
@@ -89,7 +88,7 @@ public class FeedQueryRepository {
             .fetch();
     }
 
-    public List<FeedDTO> getAllFeedsByUser(GetFeedsServiceDto dto, LocalDateTime lastDate) {
+    public List<FeedDTO> getFeedsByUser(GetFeedsServiceDto dto, LocalDateTime lastDate) {
         QStatistics comment = new QStatistics("comment");
         QStatistics likes = new QStatistics("likes");
 
