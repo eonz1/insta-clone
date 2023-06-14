@@ -11,12 +11,15 @@ import static org.mockito.Mockito.when;
 import com.cgram.prom.domain.auth.exception.AuthException;
 import com.cgram.prom.domain.auth.request.LoginServiceDto;
 import com.cgram.prom.domain.auth.request.LogoutServiceDto;
+import com.cgram.prom.domain.profile.domain.Profile;
+import com.cgram.prom.domain.profile.repository.ProfileRepository;
 import com.cgram.prom.domain.user.domain.User;
 import com.cgram.prom.domain.user.service.UserService;
 import com.cgram.prom.global.security.jwt.domain.RefreshToken;
 import com.cgram.prom.global.security.jwt.domain.Token;
 import com.cgram.prom.global.security.jwt.service.RefreshTokenService;
 import com.cgram.prom.global.security.jwt.service.TokenProvider;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,6 +43,9 @@ class AuthServiceImplTest {
     @Mock
     RefreshTokenService refreshTokenService;
 
+    @Mock
+    ProfileRepository profileRepository;
+
     @Test
     @DisplayName("로그인 성공")
     public void login() throws Exception {
@@ -50,14 +56,17 @@ class AuthServiceImplTest {
             .build();
         User user = User.builder().id(UUID.randomUUID()).build();
         Token token = new Token();
+        Profile profile = Profile.builder().id(UUID.randomUUID()).build();
         when(userService.loginValidate(anyString(), anyString())).thenReturn(user);
         when(tokenProvider.issueToken(any(User.class))).thenReturn(token);
+        when(profileRepository.findByUserId(any(UUID.class))).thenReturn(Optional.of(profile));
 
         // when
         authService.login(loginServiceDto);
 
         // then
         verify(tokenProvider, times(1)).issueToken(any(User.class));
+        verify(profileRepository, times(1)).findByUserId(any(UUID.class));
     }
 
     @Test
