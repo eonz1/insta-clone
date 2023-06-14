@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -43,5 +44,9 @@ public class Image {
         this.id = id;
         this.path = path;
         this.isPresent = isPresent;
+    }
+
+    public String getImageFullPath() {
+        return this.path + File.separator + this.id + ".jpg";
     }
 }
