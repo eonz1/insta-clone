@@ -14,7 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.cgram.prom.domain.feed.request.DeleteFeedServiceDto;
 import com.cgram.prom.domain.feed.request.PostFeedRequest;
 import com.cgram.prom.domain.feed.request.PostFeedServiceDto;
-import com.cgram.prom.domain.feed.service.FeedService;
+import com.cgram.prom.domain.feed.service.FeedCommandService;
+import com.cgram.prom.domain.feed.service.FeedQueryService;
 import com.cgram.prom.global.security.jwt.filter.WithAuthentication;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
@@ -41,7 +42,7 @@ class FeedControllerTest {
     MockMvc mockMvc;
 
     @MockBean
-    FeedService feedService;
+    FeedCommandService feedCommandService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -142,7 +143,7 @@ class FeedControllerTest {
 
         ArgumentCaptor<PostFeedServiceDto> postFeedCaptor = ArgumentCaptor.forClass(
             PostFeedServiceDto.class);
-        verify(feedService).post(postFeedCaptor.capture());
+        verify(feedCommandService).post(postFeedCaptor.capture());
         PostFeedServiceDto dto = postFeedCaptor.getValue();
 
         assertThat(dto.getContent()).isEqualTo("가나다라마바");
@@ -180,7 +181,7 @@ class FeedControllerTest {
             .andExpect(jsonPath("$.message").value("이미지 업로드 개수를 초과하였습니다."))
             .andDo(print());
 
-        verify(feedService, times(0)).post(any(PostFeedServiceDto.class));
+        verify(feedCommandService, times(0)).post(any(PostFeedServiceDto.class));
     }
 
     @Test
@@ -199,7 +200,7 @@ class FeedControllerTest {
         // then
         ArgumentCaptor<DeleteFeedServiceDto> deleteFeedCaptor = ArgumentCaptor.forClass(
             DeleteFeedServiceDto.class);
-        verify(feedService).delete(deleteFeedCaptor.capture());
+        verify(feedCommandService).delete(deleteFeedCaptor.capture());
         DeleteFeedServiceDto dto = deleteFeedCaptor.getValue();
 
         assertThat(dto.getUserId()).isEqualTo(
