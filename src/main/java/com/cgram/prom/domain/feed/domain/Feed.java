@@ -13,12 +13,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -81,25 +79,7 @@ public class Feed {
         this.content = content == null ? this.content : content;
     }
 
-    public void addHashTag(HashTag hashTag) {
-        hashTags.add(hashTag);
-        hashTag.setFeed(this);
-    }
-
-    public void addImage(FeedImage feedImage) {
-        images.add(feedImage);
-        feedImage.setFeed(this);
-    }
-
-    public void setHashTags(List<HashTag> hashTags) {
-        this.hashTags = hashTags;
-    }
-
-    public void setImages(List<FeedImage> images) {
-        this.images = images;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
+    public void setTestCreateAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
