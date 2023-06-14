@@ -1,13 +1,12 @@
 package com.cgram.prom.domain.feed.response;
 
 import com.cgram.prom.domain.comment.response.CommentWithCountResponse;
+import com.cgram.prom.domain.feed.dto.FeedDTO;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,8 +18,8 @@ public class FeedResponse {
     private UUID feedId;
     private String content;
     private List<FeedImageResponse> images;
-    private FeedImageResponse thumbnailImage;
-    private Set<String> hashTags;
+    private FeedImageResponse coverImage;
+    private List<String> hashTags;
     private CommentWithCountResponse comments;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul")
@@ -31,24 +30,33 @@ public class FeedResponse {
     private Integer likes;
 
     private UUID userId;
+    private String userEmail;
     private String profileImagePath;
-    private UUID profileImageId;
 
     @Builder
-    public FeedResponse(UUID feedId, String content, List<FeedImageResponse> images,
-                        FeedImageResponse thumbnailImage, Set<String> hashTags, CommentWithCountResponse comments,
-                        LocalDateTime createdAt, LocalDateTime modifiedAt, Integer likes, UUID userId, String profileImagePath, UUID profileImageId) {
-        this.feedId = feedId;
-        this.content = content;
+    public FeedResponse(FeedDTO dto, FeedImageResponse coverImage, List<FeedImageResponse> images,
+        List<String> hashTags, CommentWithCountResponse comments) {
+        this.feedId = dto.getId();
+        this.content = dto.getContent();
+        this.createdAt = dto.getCreatedAt();
+        this.modifiedAt = dto.getModifiedAt();
+        this.userId = dto.getUserId();
+        this.userEmail = dto.getEmail();
+        this.likes = dto.getLikesCount();
+
         this.images = images;
-        this.thumbnailImage = thumbnailImage;
+        this.coverImage = coverImage;
         this.hashTags = hashTags;
         this.comments = comments;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
-        this.likes = likes;
-        this.userId = userId;
-        this.profileImageId = profileImageId;
-        this.profileImagePath = profileImagePath;
+
+        setProfileImagePath(dto.getProfileImageId(), dto.getProfileImagePath());
+    }
+
+    private void setProfileImagePath(UUID imageId, String path) {
+        if (imageId == null) {
+            return;
+        }
+
+        this.profileImagePath = path + File.separator + imageId + ".jpg";
     }
 }
