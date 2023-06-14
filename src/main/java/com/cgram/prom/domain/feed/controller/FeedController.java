@@ -3,14 +3,14 @@ package com.cgram.prom.domain.feed.controller;
 import com.cgram.prom.domain.feed.exception.FeedException;
 import com.cgram.prom.domain.feed.exception.FeedExceptionType;
 import com.cgram.prom.domain.feed.request.DeleteFeedServiceDto;
-import com.cgram.prom.domain.feed.request.GetFeedsServiceDto;
+import com.cgram.prom.domain.feed.request.GetFeedsDto;
 import com.cgram.prom.domain.feed.request.ModifyFeedRequest;
 import com.cgram.prom.domain.feed.request.ModifyFeedServiceDto;
 import com.cgram.prom.domain.feed.request.PostFeedRequest;
 import com.cgram.prom.domain.feed.request.PostFeedServiceDto;
 import com.cgram.prom.domain.feed.response.FeedListResponse;
-import com.cgram.prom.domain.feed.response.FeedResponse;
-import com.cgram.prom.domain.feed.service.FeedService;
+import com.cgram.prom.domain.feed.service.FeedCommandService;
+import com.cgram.prom.domain.feed.service.FeedQueryService;
 import com.cgram.prom.domain.image.service.FileConverter;
 import jakarta.validation.Valid;
 import java.io.File;
@@ -40,32 +40,27 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/v1/feeds")
 public class FeedController {
 
-    private final FeedService feedService;
+    private final FeedCommandService feedCommandService;
+    private final FeedQueryService feedQueryService;
     private FileConverter fileConverter = new FileConverter();
 
     @GetMapping("")
     public ResponseEntity<FeedListResponse> getFeeds(Authentication authentication,
         @RequestParam(defaultValue = "12") int limit,
         @RequestParam(required = false) String tag,
-        @RequestParam(required = false) String cursor) {
+        @RequestParam(required = false) String cursor,
+        @RequestParam(required = false) String profileId) {
 
-        GetFeedsServiceDto dto = GetFeedsServiceDto.builder()
+        GetFeedsDto dto = GetFeedsDto.builder()
             .limit(limit)
             .cursor(cursor)
             .tag(tag)
-            .userId(authentication.getName())
+            .profileId(profileId)
             .build();
 
-        FeedListResponse feedListResponse = feedService.getFeeds(dto);
+        FeedListResponse feedListResponse = feedQueryService.getFeeds(dto);
 
         return ResponseEntity.ok().body(feedListResponse);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<FeedResponse> get(@PathVariable String id) {
-        FeedResponse feedResponse = feedService.getFeed(UUID.fromString(id));
-
-        return ResponseEntity.status(200).body(feedResponse);
     }
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -89,7 +84,7 @@ public class FeedController {
             .images(imageFiles)
             .build();
 
-        feedService.post(dto);
+        feedCommandService.post(dto);
     }
 
     @DeleteMapping("/{id}")
@@ -98,7 +93,7 @@ public class FeedController {
             .feedId(UUID.fromString(id))
             .userId(UUID.fromString(authentication.getName()))
             .build();
-        feedService.delete(dto);
+        feedCommandService.delete(dto);
     }
 
     @PatchMapping("/{id}")
@@ -112,6 +107,6 @@ public class FeedController {
             .hashTags(request.getHashTags())
             .build();
 
-        feedService.modify(dto);
+        feedCommandService.modify(dto);
     }
 }
