@@ -1,7 +1,5 @@
 package com.cgram.prom.domain.feed.repository;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.cgram.prom.domain.feed.domain.Feed;
 import com.cgram.prom.domain.feed.domain.image.FeedImage;
 import com.cgram.prom.domain.image.domain.Image;
@@ -86,6 +84,7 @@ class FeedImageQueryRepositoryTest {
         FeedImage feedImage = FeedImage.builder()
             .imageId(image)
             .feedId(feed)
+            .isPresent(true)
             .build();
 
         feedImageRepository.save(feedImage);
