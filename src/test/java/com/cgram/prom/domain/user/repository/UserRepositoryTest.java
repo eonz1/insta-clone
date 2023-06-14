@@ -58,7 +58,7 @@ class UserRepositoryTest {
         userRepository.save(user);
 
         // when
-        User byEmail = userRepository.findByEmail(email).get();
+        User byEmail = userRepository.findByEmailAndIsPresent(email, true).get();
 
         // then
         assertEquals(email, byEmail.getEmail());
@@ -74,11 +74,11 @@ class UserRepositoryTest {
             .build());
 
         // when
-        User beforeUser = userRepository.findByEmail(email).get();
+        User beforeUser = userRepository.findByEmailAndIsPresent(email, true).get();
         beforeUser.updatePassword("123456");
 
         // then
-        User afterUser = userRepository.findByEmail(email).get();
+        User afterUser = userRepository.findByEmailAndIsPresent(email, true).get();
         assertThat(afterUser.getPassword()).isEqualTo("123456");
     }
 
