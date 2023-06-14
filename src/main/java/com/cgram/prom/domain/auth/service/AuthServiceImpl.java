@@ -5,6 +5,8 @@ import com.cgram.prom.domain.auth.exception.AuthExceptionType;
 import com.cgram.prom.domain.auth.request.LoginServiceDto;
 import com.cgram.prom.domain.auth.request.LogoutServiceDto;
 import com.cgram.prom.domain.auth.response.LoginResponse;
+import com.cgram.prom.domain.profile.domain.Profile;
+import com.cgram.prom.domain.profile.repository.ProfileRepository;
 import com.cgram.prom.domain.user.domain.User;
 import com.cgram.prom.domain.user.service.UserService;
 import com.cgram.prom.global.security.jwt.domain.RefreshToken;
@@ -20,6 +22,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final TokenProvider tokenProvider;
     private final RefreshTokenService refreshTokenService;
+    private final ProfileRepository profileRepository;
 
     @Override
     public LoginResponse login(LoginServiceDto dto) {
@@ -29,8 +32,11 @@ public class AuthServiceImpl implements AuthService {
             throw new AuthException(AuthExceptionType.AUTH_FAILED);
         }
 
+        Profile profile = profileRepository.findByUserId(user.getId()).get();
+
         return LoginResponse.builder()
             .token(tokenProvider.issueToken(user))
+            .profileId(profile.getId().toString())
             .build();
     }
 
