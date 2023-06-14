@@ -50,7 +50,7 @@ public class FeedQueryRepository {
             .leftJoin(QHashTag.hashTag).on(QHashTag.hashTag.feed.id.eq(QFeed.feed.id))
             .join(QProfile.profile).on(QProfile.profile.id.eq(QFeed.feed.profile.id))
             .join(QUser.user).on(QProfile.profile.user.id.eq(QUser.user.id))
-            .join(QImage.image).on(QImage.image.id.eq(QProfile.profile.image.id))
+            .leftJoin(QImage.image).on(QImage.image.id.eq(QProfile.profile.image.id))
             .orderBy(QFeed.feed.createdAt.desc())
             .limit(dto.getLimit() + 1)
             .fetch();
@@ -75,7 +75,7 @@ public class FeedQueryRepository {
             .leftJoin(likes)
             .on(likes.uuid.eq(QFeed.feed.id), likes.type.eq(StatisticType.FEED_LIKE.label()))
             .join(QProfile.profile).on(QProfile.profile.id.eq(QFeed.feed.profile.id))
-            .join(QImage.image).on(QImage.image.id.eq(QProfile.profile.image.id))
+            .leftJoin(QImage.image).on(QImage.image.id.eq(QProfile.profile.image.id))
             .join(QFollow.follow)
             .on(QFollow.follow.isPresent.eq(true),
                 QFollow.follow.profileId.id.eq(UUID.fromString(dto.getProfileId())),
@@ -115,7 +115,7 @@ public class FeedQueryRepository {
             .on(likes.uuid.eq(QFeed.feed.id), likes.type.eq(StatisticType.FEED_LIKE.label()))
             .join(QProfile.profile).on(QProfile.profile.id.eq(QFeed.feed.profile.id))
             .join(QUser.user).on(QProfile.profile.user.id.eq(QUser.user.id))
-            .join(QImage.image).on(QImage.image.id.eq(QProfile.profile.image.id))
+            .leftJoin(QImage.image).on(QImage.image.id.eq(QProfile.profile.image.id))
             .orderBy(QFeed.feed.createdAt.desc())
             .limit(dto.getLimit() + 1)
             .fetch();
