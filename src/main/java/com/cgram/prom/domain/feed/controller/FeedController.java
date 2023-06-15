@@ -1,5 +1,6 @@
 package com.cgram.prom.domain.feed.controller;
 
+import com.cgram.prom.domain.feed.dto.FeedLikeServiceDto;
 import com.cgram.prom.domain.feed.exception.FeedException;
 import com.cgram.prom.domain.feed.exception.FeedExceptionType;
 import com.cgram.prom.domain.feed.request.DeleteFeedServiceDto;
@@ -108,5 +109,23 @@ public class FeedController {
             .build();
 
         feedCommandService.modify(dto);
+    }
+
+    @PostMapping("/{id}/like")
+    public void like(Authentication authentication, @PathVariable String id) {
+        FeedLikeServiceDto dto = FeedLikeServiceDto.builder()
+            .userId(UUID.fromString(authentication.getName()))
+            .feedID(UUID.fromString(id))
+            .build();
+        feedCommandService.like(dto);
+    }
+
+    @DeleteMapping("/{id}/like")
+    public void unlike(Authentication authentication, @PathVariable String id) {
+        FeedLikeServiceDto dto = FeedLikeServiceDto.builder()
+            .userId(UUID.fromString(authentication.getName()))
+            .feedID(UUID.fromString(id))
+            .build();
+        feedCommandService.unlike(dto);
     }
 }

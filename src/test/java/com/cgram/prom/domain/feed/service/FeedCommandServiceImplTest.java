@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.cgram.prom.domain.feed.domain.Feed;
+import com.cgram.prom.domain.feed.dto.FeedLikeServiceDto;
 import com.cgram.prom.domain.feed.exception.FeedException;
 import com.cgram.prom.domain.feed.exception.FeedExceptionType;
 import com.cgram.prom.domain.feed.repository.FeedImageRepository;
@@ -61,6 +62,9 @@ class FeedCommandServiceImplTest {
 
     @Mock
     StatisticsService statisticsService;
+
+    @Mock
+    FeedLikeService feedLikeService;
 
     @Test
     @DisplayName("피드 저장")
@@ -267,5 +271,49 @@ class FeedCommandServiceImplTest {
         verify(feedRepository, times(1)).findById(any(UUID.class));
         verify(hashTagRepository, times(0)).deleteByFeedId(any(UUID.class));
         assertThat(feed.getContent()).isEqualTo("내용");
+    }
+
+    @Test
+    @DisplayName("피드 좋아요")
+    public void like() throws Exception {
+        // given
+        FeedLikeServiceDto dto = FeedLikeServiceDto.builder()
+            .userId(UUID.randomUUID())
+            .feedID(UUID.randomUUID())
+            .build();
+
+        when(profileRepository.findByUserId(any(UUID.class))).thenReturn(
+            Optional.of(Profile.builder()
+                .build()));
+        when(feedRepository.findById(any(UUID.class))).thenReturn(
+            Optional.of(Feed.builder().build()));
+
+        // when
+        feedService.like(dto);
+
+        // then
+        verify(feedLikeService, times(1)).like(any(Feed.class), any(Profile.class));
+    }
+
+    @Test
+    @DisplayName("피드 좋아요 취소")
+    public void unlike() throws Exception {
+        // given
+        FeedLikeServiceDto dto = FeedLikeServiceDto.builder()
+            .userId(UUID.randomUUID())
+            .feedID(UUID.randomUUID())
+            .build();
+
+        when(profileRepository.findByUserId(any(UUID.class))).thenReturn(
+            Optional.of(Profile.builder()
+                .build()));
+        when(feedRepository.findById(any(UUID.class))).thenReturn(
+            Optional.of(Feed.builder().build()));
+
+        // when
+        feedService.unlike(dto);
+
+        // then
+        verify(feedLikeService, times(1)).unlike(any(Feed.class), any(Profile.class));
     }
 }
