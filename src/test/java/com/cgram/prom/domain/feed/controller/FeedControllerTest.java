@@ -44,6 +44,9 @@ class FeedControllerTest {
     @MockBean
     FeedCommandService feedCommandService;
 
+    @MockBean
+    FeedQueryService feedQueryService;
+
     @Autowired
     private ObjectMapper objectMapper;
 
