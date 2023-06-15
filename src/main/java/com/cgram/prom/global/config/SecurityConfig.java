@@ -1,7 +1,6 @@
 package com.cgram.prom.global.config;
 
 import com.cgram.prom.global.security.jwt.service.CustomSubjectValidator;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -73,13 +72,6 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-    /*
-    @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
-    }
-     */
 
     @Bean
     public JwtDecoder decoder() {
