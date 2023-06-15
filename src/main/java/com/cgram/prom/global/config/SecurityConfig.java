@@ -23,6 +23,7 @@ import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
@@ -76,7 +77,8 @@ public class SecurityConfig {
     @Bean
     public JwtDecoder decoder() {
         OAuth2TokenValidator<Jwt> withSubject = new DelegatingOAuth2TokenValidator<>(
-            new CustomSubjectValidator()
+            new CustomSubjectValidator(),
+            new JwtTimestampValidator()
         );
         NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(publicKey).build();
         decoder.setJwtValidator(withSubject);
