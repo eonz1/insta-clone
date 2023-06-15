@@ -1,10 +1,13 @@
 package com.cgram.prom.domain.comment.controller;
 
+import com.cgram.prom.domain.comment.dto.CommentLikeDTO;
 import com.cgram.prom.domain.comment.request.CommentRequest;
 import com.cgram.prom.domain.comment.request.CommentServiceDTO;
 import com.cgram.prom.domain.comment.response.CommentResponse;
+import com.cgram.prom.domain.comment.service.CommentLikeService;
 import com.cgram.prom.domain.comment.service.CommentService;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CommentController {
 
     private final CommentService commentService;
+    private final CommentLikeService commentLikeService;
 
     @GetMapping("/feeds/{id}/comments")
     public ResponseEntity<List<CommentResponse>> getCommentList(@PathVariable String id) {
@@ -55,6 +59,27 @@ public class CommentController {
 
     @DeleteMapping("/feeds/{feedId}/comments/{commentId}")
     public void delete(Authentication auth, @PathVariable String feedId, @PathVariable String commentId) {
+
+        CommentServiceDTO dto = CommentServiceDTO.builder()
+            .feedId(feedId)
+            .commentId(commentId)
+            .userId(auth.getName())
+            .build();
+        commentService.delete(dto);
+    }
+
+    @PostMapping("/feeds/{feedId}/comments/{commentId}/like")
+    public void like(Authentication auth, @PathVariable String feedId, @PathVariable String commentId) {
+
+        CommentLikeDTO dto = CommentLikeDTO.builder()
+            .commentId(UUID.fromString(commentId))
+            .userId(UUID.fromString(auth.getName()))
+            .build();
+        commentLikeService.like(dto);
+    }
+
+    @DeleteMapping("/feeds/{feedId}/comments/{commentId}/like")
+    public void unlike(Authentication auth, @PathVariable String feedId, @PathVariable String commentId) {
 
         CommentServiceDTO dto = CommentServiceDTO.builder()
             .feedId(feedId)
