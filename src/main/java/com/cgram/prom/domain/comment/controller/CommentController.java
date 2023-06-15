@@ -81,11 +81,10 @@ public class CommentController {
     @DeleteMapping("/feeds/{feedId}/comments/{commentId}/like")
     public void unlike(Authentication auth, @PathVariable String feedId, @PathVariable String commentId) {
 
-        CommentServiceDTO dto = CommentServiceDTO.builder()
-            .feedId(feedId)
-            .commentId(commentId)
-            .userId(auth.getName())
+        CommentLikeDTO dto = CommentLikeDTO.builder()
+            .commentId(UUID.fromString(commentId))
+            .userId(UUID.fromString(auth.getName()))
             .build();
-        commentService.delete(dto);
+        commentLikeService.unlike(dto);
     }
 }
