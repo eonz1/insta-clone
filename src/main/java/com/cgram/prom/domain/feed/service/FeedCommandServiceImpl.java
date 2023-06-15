@@ -3,6 +3,7 @@ package com.cgram.prom.domain.feed.service;
 import com.cgram.prom.domain.feed.domain.Feed;
 import com.cgram.prom.domain.feed.domain.hashtag.HashTag;
 import com.cgram.prom.domain.feed.domain.image.FeedImage;
+import com.cgram.prom.domain.feed.dto.FeedLikeServiceDto;
 import com.cgram.prom.domain.feed.exception.FeedException;
 import com.cgram.prom.domain.feed.exception.FeedExceptionType;
 import com.cgram.prom.domain.feed.repository.FeedImageRepository;
@@ -37,6 +38,7 @@ public class FeedCommandServiceImpl implements FeedCommandService {
     private final FeedImageRepository feedImageRepository;
     private final HashTagRepository hashTagRepository;
     private final StatisticsService statisticsService;
+    private final FeedLikeService feedLikeService;
 
     @Transactional
     @Override
@@ -165,4 +167,25 @@ public class FeedCommandServiceImpl implements FeedCommandService {
         feed.modify(dto.getContent());
     }
 
+    @Transactional
+    @Override
+    public void like(FeedLikeServiceDto dto) {
+        Profile profile = profileRepository.findByUserId(dto.getUserId())
+            .orElseThrow(() -> new ProfileException(ProfileExceptionType.NOT_FOUND));
+
+        Feed feed = feedRepository.findById(dto.getFeedID())
+            .orElseThrow(() -> new FeedException(FeedExceptionType.NOT_FOUND));
+
+        feedLikeService.like(feed, profile);
+    }
+
+    public void unlike(FeedLikeServiceDto dto) {
+        Profile profile = profileRepository.findByUserId(dto.getUserId())
+            .orElseThrow(() -> new ProfileException(ProfileExceptionType.NOT_FOUND));
+
+        Feed feed = feedRepository.findById(dto.getFeedID())
+            .orElseThrow(() -> new FeedException(FeedExceptionType.NOT_FOUND));
+
+        feedLikeService.unlike(feed, profile);
+    }
 }
