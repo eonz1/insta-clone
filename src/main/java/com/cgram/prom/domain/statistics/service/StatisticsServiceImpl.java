@@ -16,7 +16,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Override
     public void updateStatistics(UUID id, String type, int value) {
 
-        Optional<Statistics> optionalStatistics = statisticsRepository.findByUuid(id);
+        Optional<Statistics> optionalStatistics = statisticsRepository.findByUuidAndType(id, type);
 
         if (optionalStatistics.isPresent()) {
             optionalStatistics.get().updateCounts(optionalStatistics.get().getCounts() + value);

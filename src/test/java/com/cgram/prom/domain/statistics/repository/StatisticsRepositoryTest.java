@@ -25,28 +25,6 @@ class StatisticsRepositoryTest {
     StatisticsRepository repository;
 
     @Test
-    @DisplayName("uuid 로 조회하기")
-    void findByUuid() {
-        // given
-        Statistics statistics = Statistics.builder()
-            .uuid(UUID.randomUUID())
-            .type(StatisticType.COMMENT.label())
-            .counts(12)
-            .build();
-        repository.save(statistics);
-
-        // when
-        Optional<Statistics> optionalStatistics = repository.findByUuid(statistics.getUuid());
-        Statistics dbStatistics = optionalStatistics.orElse(null);
-
-        // then
-        assertThat(dbStatistics).isNotNull();
-        assertThat(dbStatistics.getUuid()).isEqualTo(statistics.getUuid());
-        assertThat(dbStatistics.getCounts()).isEqualTo(12);
-        assertThat(dbStatistics.getType()).isEqualTo(StatisticType.COMMENT.label());
-    }
-
-    @Test
     @DisplayName("uuid와 타입으로 조회하기")
     void findByUuidAndType() {
         // given

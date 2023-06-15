@@ -38,7 +38,8 @@ class StatisticsServiceImplTest {
             .type(StatisticType.COMMENT.label())
             .uuid(UUID.randomUUID())
             .build();
-        given(statisticsRepository.findByUuid(mockStatics.getUuid()))
+        given(statisticsRepository.findByUuidAndType(mockStatics.getUuid(),
+            StatisticType.COMMENT.label()))
             .willReturn(Optional.empty());
 
         // when
@@ -57,7 +58,8 @@ class StatisticsServiceImplTest {
             .type(StatisticType.COMMENT.label())
             .uuid(UUID.randomUUID())
             .build();
-        given(statisticsRepository.findByUuid(mockStatics.getUuid()))
+        given(statisticsRepository.findByUuidAndType(mockStatics.getUuid(),
+            StatisticType.COMMENT.label()))
             .willReturn(Optional.of(mockStatics));
 
         // when
@@ -65,7 +67,8 @@ class StatisticsServiceImplTest {
 
         // then
         verify(statisticsRepository, never()).save(any());
-        Statistics result = statisticsRepository.findByUuid(mockStatics.getUuid()).get();
+        Statistics result = statisticsRepository.findByUuidAndType(mockStatics.getUuid(),
+            StatisticType.COMMENT.label()).get();
         assertThat(result.getCounts()).isEqualTo(4);
     }
 
@@ -79,7 +82,8 @@ class StatisticsServiceImplTest {
             .type(StatisticType.COMMENT.label())
             .uuid(UUID.randomUUID())
             .build();
-        given(statisticsRepository.findByUuid(mockStatics.getUuid()))
+        given(statisticsRepository.findByUuidAndType(mockStatics.getUuid(),
+            StatisticType.COMMENT.label()))
             .willReturn(Optional.of(mockStatics));
 
         // when
@@ -87,7 +91,8 @@ class StatisticsServiceImplTest {
 
         // then
         verify(statisticsRepository, never()).save(any());
-        Statistics result = statisticsRepository.findByUuid(mockStatics.getUuid()).get();
+        Statistics result = statisticsRepository.findByUuidAndType(mockStatics.getUuid(),
+            StatisticType.COMMENT.label()).get();
         assertThat(result.getCounts()).isEqualTo(2);
     }
 }
