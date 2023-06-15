@@ -21,8 +21,8 @@ public class TokenProvider {
     private final JwtEncoder jwtEncoder;
 
     public Token issueToken(User user) {
-        long accessPeriod = 60L * 10L;
-        long refreshPeriod = 60L * 60L * 24L * 7L;
+        long accessPeriod = 60L * 60L;        // 1시간
+        long refreshPeriod = 60L * 60L * 24L * 7L;  // 7일
 
         JwtClaimsSet accessClaims = JwtClaimsSet.builder()
             .subject(user.getId().toString())
