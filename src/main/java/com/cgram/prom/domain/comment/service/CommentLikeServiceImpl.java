@@ -69,6 +69,10 @@ public class CommentLikeServiceImpl implements CommentLikeService{
         CommentLike commentLike = commentLikeRepository.findById(id)
             .orElseThrow(() -> new CommentLikeException(CommentLikeExceptionType.NOT_FOUND));
 
+        if(commentLike.isPresent() == false) {
+            return;
+        }
+
         commentLike.unlike();
 
         statisticsService.updateStatistics(comment.getId(), StatisticType.COMMENT_LIKE.label(), -1);
