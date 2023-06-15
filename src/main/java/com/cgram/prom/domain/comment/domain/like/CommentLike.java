@@ -37,4 +37,12 @@ public class CommentLike {
         this.commentId = commentId;
         this.isPresent = isPresent;
     }
+
+    public void like() {
+        this.isPresent = true;
+    }
+
+    public void unlike() {
+        this.isPresent = false;
+    }
 }
