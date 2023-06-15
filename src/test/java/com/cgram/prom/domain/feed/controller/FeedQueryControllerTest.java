@@ -36,7 +36,7 @@ public class FeedQueryControllerTest {
 
         // when
         ResultActions result = mockMvc
-            .perform(get("/api/v1/feeds?profileId=da26891b-88b3-1530-8188-b3956c840001&limit=5"))
+            .perform(get("/api/v1/feeds?profile_id=da26891b-88b3-1530-8188-b3956c840001&limit=5"))
             .andDo(print());
 
         String resultString = result.andReturn().getResponse().getContentAsString();
@@ -52,7 +52,7 @@ public class FeedQueryControllerTest {
         Assertions.assertThat(firstFeed.getContent()).isNotNull();
 
         Assertions.assertThat(firstFeed.getComments().getComments().size()).isEqualTo(3);
-        for(int i = 0; i < firstFeed.getComments().getComments().size(); i++) {
+        for (int i = 0; i < firstFeed.getComments().getComments().size(); i++) {
             Assertions.assertThat(firstFeed.getComments().getComments().get(i)).isNotNull();
         }
         Assertions.assertThat(firstFeed.getComments().getCount()).isEqualTo(3);
@@ -73,7 +73,8 @@ public class FeedQueryControllerTest {
 
         // when
         ResultActions result = mockMvc
-            .perform(get("/api/v1/feeds?profileId=da26891b-88b3-1530-8188-b3956c840001&tag=태그1&limit=5"))
+            .perform(
+                get("/api/v1/feeds?profile_id=da26891b-88b3-1530-8188-b3956c840001&tag=태그1&limit=5"))
             .andDo(print());
 
         String resultString = result.andReturn().getResponse().getContentAsString();
@@ -89,7 +90,7 @@ public class FeedQueryControllerTest {
         Assertions.assertThat(firstFeed.getContent()).isNotNull();
 
         Assertions.assertThat(firstFeed.getComments().getComments().size()).isEqualTo(3);
-        for(int i = 0; i < firstFeed.getComments().getComments().size(); i++) {
+        for (int i = 0; i < firstFeed.getComments().getComments().size(); i++) {
             Assertions.assertThat(firstFeed.getComments().getComments().get(i)).isNotNull();
         }
         Assertions.assertThat(firstFeed.getComments().getCount()).isEqualTo(3);
@@ -110,7 +111,7 @@ public class FeedQueryControllerTest {
 
         // when
         ResultActions result = mockMvc
-            .perform(get("/api/v1/feeds?profileId=da26891b-88b3-1530-8188-b3956c840009"))
+            .perform(get("/api/v1/feeds?profile_id=da26891b-88b3-1530-8188-b3956c840009"))
             .andDo(print());
 
         String resultString = result.andReturn().getResponse().getContentAsString();
