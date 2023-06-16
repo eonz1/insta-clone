@@ -62,6 +62,7 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.POST, "/api/v1/verification/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/v1/password/code").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/v1/token/reissue").permitAll()
+            .requestMatchers(HttpMethod.GET, "/image/**").permitAll()
             .requestMatchers(HttpMethod.OPTIONS).permitAll()
             .anyRequest()
             .authenticated()
