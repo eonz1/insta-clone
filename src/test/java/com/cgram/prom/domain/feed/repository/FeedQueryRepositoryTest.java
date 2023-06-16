@@ -24,7 +24,6 @@ import com.cgram.prom.global.config.QuerydslTestConfig;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
@@ -70,16 +68,6 @@ class FeedQueryRepositoryTest {
 
     @Autowired
     CommentRepository commentRepository;
-
-    @BeforeEach
-    void setup() {
-        followRepository.deleteAll();
-        hashTagRepository.deleteAll();
-        feedRepository.deleteAll();
-        imageRepository.deleteAll();
-        profileRepository.deleteAll();
-        userRepository.deleteAll();
-    }
 
     private void saveComment(Profile profile, Feed feed, String content) {
         Comment comment = Comment.builder()
@@ -408,7 +396,6 @@ class FeedQueryRepositoryTest {
     }
 
     @Test
-    @Commit
     @DisplayName("내가 팔로잉한 사람 최근 n일 데이터만 가져오기")
     public void getFeedsByMyFollowingsWithLastDays() throws Exception {
         // given

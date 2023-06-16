@@ -6,7 +6,6 @@ import com.cgram.prom.domain.feed.domain.Feed;
 import com.cgram.prom.domain.feed.domain.hashtag.HashTag;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +22,6 @@ class HashTagRepositoryTest {
     private HashTagRepository hashTagRepository;
     @Autowired
     private FeedRepository feedRepository;
-
-    @BeforeEach
-    void setup() {
-        hashTagRepository.deleteAll();
-        feedRepository.deleteAll();
-    }
 
     @Test
     @DisplayName("feedId로 해시태그 삭제하기")
