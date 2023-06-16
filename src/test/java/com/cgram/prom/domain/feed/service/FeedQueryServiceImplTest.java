@@ -192,13 +192,13 @@ class FeedQueryServiceImplTest {
                 .path("feedPath" + (i + 1))
                 .isPresent(true)
                 .build();
-            images.add(FeedImage.builder().imageIndex(i)
+            images.add(FeedImage.builder()
                 .feedId(feed)
                 .imageId(image)
                 .isCover(false)
                 .build());
             if (i == 0) {
-                images.add(FeedImage.builder().imageIndex(i)
+                images.add(FeedImage.builder()
                     .feedId(feed)
                     .imageId(Image.builder()
                         .id(UUID.randomUUID())
@@ -274,7 +274,6 @@ class FeedQueryServiceImplTest {
                         .build())
                 .feedId(Feed.builder().build())
                 .isPresent(true)
-                .imageIndex(i)
                 .build());
         }
 
@@ -283,13 +282,11 @@ class FeedQueryServiceImplTest {
             feedImages);
 
         // then
-        assertThat(feedImageResponses.get(0).getImageIndex()).isEqualTo(0);
         assertThat(feedImageResponses.get(0).getImageId()).isEqualTo(
-            feedImages.get(0).getImageId());
+            feedImages.get(0).getImageId().getId());
 
-        assertThat(feedImageResponses.get(1).getImageIndex()).isEqualTo(1);
         assertThat(feedImageResponses.get(1).getImageId()).isEqualTo(
-            feedImages.get(1).getImageId());
+            feedImages.get(1).getImageId().getId());
     }
 
     @Test
