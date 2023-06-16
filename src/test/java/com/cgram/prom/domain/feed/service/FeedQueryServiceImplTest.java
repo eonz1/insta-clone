@@ -299,17 +299,17 @@ class FeedQueryServiceImplTest {
     }
 
     @Test
-    @DisplayName("피드 이미지 리스트가 null이면 null 반환")
+    @DisplayName("피드 이미지 리스트가 null이면 빈 배열 반환")
     void convertFeedImagesResponseNull() {
         // given
         List<FeedImage> feedImages = null;
 
         // when
         List<FeedImageResponse> feedImageResponses = feedQueryService.convertFeedImagesResponse(
-            null);
+            feedImages);
 
         // then
-        assertThat(feedImageResponses).isNull();
+        assertThat(feedImageResponses.size()).isEqualTo(0);
     }
 
     @Test
