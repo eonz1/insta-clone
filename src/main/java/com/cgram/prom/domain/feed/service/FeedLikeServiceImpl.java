@@ -28,20 +28,26 @@ public class FeedLikeServiceImpl implements FeedLikeService {
             .feedId(feed.getId())
             .profileId(profile.getId())
             .build();
-        Optional<FeedLike> byId = feedLikeRepository.findById(id);
-        if (byId.isPresent()) {
-            byId.get().like();
+        Optional<FeedLike> feedLike = feedLikeRepository.findById(id);
+
+        if (feedLike.isPresent() && !feedLike.get().isPresent()) {
+            feedLike.get().like();
+
+            statisticsService.updateStatistics(feed.getId(), StatisticType.FEED_LIKE.label(), 1);
             return;
         }
 
-        FeedLike feedLike = FeedLike.builder()
-            .feedId(feed)
-            .profileId(profile)
-            .isPresent(true)
-            .build();
-        feedLikeRepository.save(feedLike);
+        if (feedLike.isEmpty()) {
+            FeedLike newFeedLike = FeedLike.builder()
+                .feedId(feed)
+                .profileId(profile)
+                .isPresent(true)
+                .build();
+            feedLikeRepository.save(newFeedLike);
 
-        statisticsService.updateStatistics(feed.getId(), StatisticType.FEED_LIKE.label(), 1);
+            statisticsService.updateStatistics(feed.getId(), StatisticType.FEED_LIKE.label(),
+                1);
+        }
     }
 
     @Transactional
@@ -54,6 +60,10 @@ public class FeedLikeServiceImpl implements FeedLikeService {
         FeedLike feedLike = feedLikeRepository.findById(id)
             .orElseThrow(() -> new FeedLikeException(FeedLikeExceptionType.NOT_FOUND));
 
+        if (!feedLike.isPresent()) {
+            return;
+        }
+        
         feedLike.unlike();
 
         statisticsService.updateStatistics(feed.getId(), StatisticType.FEED_LIKE.label(), -1);
