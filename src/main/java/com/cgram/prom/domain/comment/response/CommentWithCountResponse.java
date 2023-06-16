@@ -9,13 +9,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CommentWithCountResponse {
 
-    private int count;
+    private int totalCount;
 
-    private List<CommentResponse> comments;
+    private List<CommentResponse> recentComments;
 
     @Builder
-    public CommentWithCountResponse(int count, List<CommentResponse> comments) {
-        this.count = count;
-        this.comments = comments;
+    public CommentWithCountResponse(int totalCount, List<CommentResponse> recentComments) {
+        this.totalCount = totalCount;
+        this.recentComments = recentComments;
     }
 }

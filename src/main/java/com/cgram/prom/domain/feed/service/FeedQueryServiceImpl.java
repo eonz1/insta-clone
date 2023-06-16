@@ -132,12 +132,12 @@ public class FeedQueryServiceImpl implements FeedQueryService {
 
     public CommentWithCountResponse convertCommentsResponse(List<CommentDTO> dtos) {
         if (dtos == null) {
-            return CommentWithCountResponse.builder().count(0).build();
+            return CommentWithCountResponse.builder().totalCount(0).build();
         }
 
         return CommentWithCountResponse.builder()
-            .count(dtos.size())
-            .comments(dtos.stream().map(CommentResponse::new).toList())
+            .totalCount(dtos.size())
+            .recentComments(dtos.stream().map(CommentResponse::new).toList())
             .build();
     }
 

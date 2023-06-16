@@ -249,8 +249,8 @@ class FeedQueryServiceImplTest {
             dtos);
 
         // then
-        assertThat(commentWithCountResponse.getComments().size()).isEqualTo(3);
-        assertThat(commentWithCountResponse.getCount()).isEqualTo(3);
+        assertThat(commentWithCountResponse.getRecentComments().size()).isEqualTo(3);
+        assertThat(commentWithCountResponse.getTotalCount()).isEqualTo(3);
     }
 
     @Test
@@ -264,8 +264,8 @@ class FeedQueryServiceImplTest {
             dtos);
 
         // then
-        assertThat(commentWithCountResponse.getComments()).isNull();
-        assertThat(commentWithCountResponse.getCount()).isEqualTo(0);
+        assertThat(commentWithCountResponse.getRecentComments()).isNull();
+        assertThat(commentWithCountResponse.getTotalCount()).isEqualTo(0);
     }
 
     @Test
