@@ -22,9 +22,9 @@ public class FeedResponse {
     private List<String> hashTags;
     private CommentWithCountResponse comments;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS", timezone = "Asia/Seoul")
     private LocalDateTime modifiedAt;
 
     private Integer likes;
