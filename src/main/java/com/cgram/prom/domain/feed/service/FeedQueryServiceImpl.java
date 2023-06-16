@@ -102,17 +102,15 @@ public class FeedQueryServiceImpl implements FeedQueryService {
             List<FeedImageResponse> feedImages = null;
 
             if (images != null) {
+                List<FeedImage> coverImageFilter = images.stream().filter(FeedImage::isCover)
+                    .toList();
+                List<FeedImageResponse> coverImageResponse = convertFeedImagesResponse(
+                    coverImageFilter);
+                coverImage = coverImageResponse.size() == 0 ? null : coverImageResponse.get(0);
 
-                Map<Boolean, List<FeedImage>> imageMapByIsCover = images.stream()
-                    .collect(groupingBy(FeedImage::isCover));
-
-                if (imageMapByIsCover.get(true) != null) {
-                    coverImage = convertFeedImagesResponse(imageMapByIsCover.get(true)).get(0);
-                }
-
-                if (imageMapByIsCover.get(false) != null) {
-                    feedImages = convertFeedImagesResponse(imageMapByIsCover.get(false));
-                }
+                List<FeedImage> feedImageEntities = images.stream().filter(x -> !x.isCover())
+                    .toList();
+                feedImages = convertFeedImagesResponse(feedImageEntities);
             }
 
             feedResponseList.add(FeedResponse.builder()
@@ -144,7 +142,7 @@ public class FeedQueryServiceImpl implements FeedQueryService {
     public List<FeedImageResponse> convertFeedImagesResponse(
         List<FeedImage> feedImages) {
         if (feedImages == null) {
-            return null;
+            return new ArrayList<>();
         }
 
         return feedImages.stream().map(FeedImageResponse::new).toList();
