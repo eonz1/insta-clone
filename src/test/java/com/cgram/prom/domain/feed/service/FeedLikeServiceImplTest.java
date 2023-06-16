@@ -3,6 +3,8 @@ package com.cgram.prom.domain.feed.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,6 +18,7 @@ import com.cgram.prom.domain.feed.repository.FeedLikeRepository;
 import com.cgram.prom.domain.profile.domain.Profile;
 import com.cgram.prom.domain.statistics.service.StatisticsServiceImpl;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -94,5 +97,38 @@ class FeedLikeServiceImplTest {
 
         // then
         assertThat(feedLike.isPresent()).isFalse();
+    }
+
+    @Test
+    @DisplayName("이미 좋아요 상태인 경우 좋아요 할 수 없음")
+    public void alreadyLike() throws Exception {
+        // given
+        FeedLike feedLike = FeedLike.builder().isPresent(true).build();
+        when(feedLikeRepository.findById(any(FeedLikeId.class))).thenReturn(
+            Optional.of(feedLike));
+
+        // when
+        feedLikeService.like(Feed.builder().build(), Profile.builder().build());
+
+        // then
+        verify(statisticsService, times(0)).updateStatistics(any(UUID.class), anyString(),
+            anyInt());
+        verify(feedLikeRepository, times(0)).save(any(FeedLike.class));
+    }
+
+    @Test
+    @DisplayName("이미 좋아요 취소 상태인 경우 좋아요 취소 할 수 없음")
+    public void alreadyUnlike() throws Exception {
+        // given
+        FeedLike feedLike = FeedLike.builder().isPresent(false).build();
+        when(feedLikeRepository.findById(any(FeedLikeId.class))).thenReturn(
+            Optional.of(feedLike));
+
+        // when
+        feedLikeService.unlike(Feed.builder().build(), Profile.builder().build());
+
+        // then
+        verify(statisticsService, times(0)).updateStatistics(any(UUID.class), anyString(),
+            anyInt());
     }
 }
