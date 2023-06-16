@@ -15,7 +15,7 @@ public interface ProfileRepository extends JpaRepository<Profile, UUID> {
 
     @Query(value = """
         SELECT
-            user.email, image.path AS imagePath, p.intro, p.is_public AS isPublic,
+            user.email, image.id AS imageId, p.intro, p.is_public AS isPublic,
             follower.count AS followerCount, following.count AS followingCount, feed.count AS feedCount,
             EXISTS(SELECT * FROM follow WHERE profile_id = :loginProfileId AND followed_id = :profileId) AS isFollowing
         FROM profile p
@@ -42,7 +42,7 @@ public interface ProfileRepository extends JpaRepository<Profile, UUID> {
 
         String getEmail();
 
-        String getImagePath();
+        String getImageId();
 
         String getIntro();
 

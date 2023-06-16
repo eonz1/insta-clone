@@ -46,9 +46,7 @@ public class CommentServiceImpl implements CommentService {
                     .id(comment.getId())
                     .userId(comment.getUserId())
                     .userEmail(comment.getUserEmail())
-                    .profileImagePath(comment.getProfileImagePath() != null
-                        ? comment.getProfileImagePath()+"/"+comment.getProfileImageId()+".jpg"
-                        : null)
+                    .profileImageId(comment.getProfileImageId())
                     .content(comment.getContent())
                     .likes(comment.getLikesCount())
                     .createdAt(comment.getCreatedAt())

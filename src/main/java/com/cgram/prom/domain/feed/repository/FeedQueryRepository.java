@@ -35,7 +35,7 @@ public class FeedQueryRepository {
                 , QFeed.feed.createdAt, QFeed.feed.modifiedAt
                 , comment.counts.as("commentCount"), likes.counts.as("likesCount")
                 , QProfile.profile.user.email, QFeed.feed.profile.user.id.as("userId")
-                , QImage.image.path.as("profileImagePath"), QImage.image.id.as("profileImageId")
+                , QImage.image.id.as("profileImageId")
             ))
             .from(QFeed.feed)
             .where(
@@ -67,7 +67,7 @@ public class FeedQueryRepository {
                 , QFeed.feed.createdAt, QFeed.feed.modifiedAt
                 , comment.counts.as("commentCount"), likes.counts.as("likesCount")
                 , QProfile.profile.user.email, QFeed.feed.profile.user.id.as("userId")
-                , QImage.image.path.as("profileImagePath"), QImage.image.id.as("profileImageId")
+                , QImage.image.id.as("profileImageId")
             ))
             .from(QFeed.feed)
             .leftJoin(comment)
@@ -100,7 +100,7 @@ public class FeedQueryRepository {
                 , QFeed.feed.createdAt, QFeed.feed.modifiedAt
                 , comment.counts.as("commentCount"), likes.counts.as("likesCount")
                 , QProfile.profile.user.email, QFeed.feed.profile.user.id.as("userId")
-                , QImage.image.path.as("profileImagePath"), QImage.image.id.as("profileImageId")
+                , QImage.image.id.as("profileImageId")
             ))
             .from(QFeed.feed)
             .where(

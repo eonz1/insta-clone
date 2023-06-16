@@ -3,7 +3,6 @@ package com.cgram.prom.domain.feed.response;
 import com.cgram.prom.domain.comment.response.CommentWithCountResponse;
 import com.cgram.prom.domain.feed.dto.FeedDTO;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -31,7 +30,7 @@ public class FeedResponse {
 
     private UUID userId;
     private String userEmail;
-    private String profileImagePath;
+    private UUID profileImageId;
 
     @Builder
     public FeedResponse(FeedDTO dto, FeedImageResponse coverImage, List<FeedImageResponse> images,
@@ -48,15 +47,5 @@ public class FeedResponse {
         this.coverImage = coverImage;
         this.hashTags = hashTags;
         this.comments = comments;
-
-        setProfileImagePath(dto.getProfileImageId(), dto.getProfileImagePath());
-    }
-
-    private void setProfileImagePath(UUID imageId, String path) {
-        if (imageId == null) {
-            return;
-        }
-
-        this.profileImagePath = path + File.separator + imageId + ".jpg";
     }
 }

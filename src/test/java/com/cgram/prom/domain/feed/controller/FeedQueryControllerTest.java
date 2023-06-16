@@ -61,7 +61,7 @@ public class FeedQueryControllerTest {
         Assertions.assertThat(firstFeed.getModifiedAt()).isNotNull();
         Assertions.assertThat(firstFeed.getUserId()).isNotNull();
         Assertions.assertThat(firstFeed.getUserEmail()).isNotNull();
-        Assertions.assertThat(firstFeed.getProfileImagePath()).isNull();
+        Assertions.assertThat(firstFeed.getProfileImageId()).isNull();
 
         Assertions.assertThat(feedListResponse.getNextId()).isNotNull();
     }
@@ -99,7 +99,7 @@ public class FeedQueryControllerTest {
         Assertions.assertThat(firstFeed.getModifiedAt()).isNotNull();
         Assertions.assertThat(firstFeed.getUserId()).isNotNull();
         Assertions.assertThat(firstFeed.getUserEmail()).isNotNull();
-        Assertions.assertThat(firstFeed.getProfileImagePath()).isNull();
+        Assertions.assertThat(firstFeed.getProfileImageId()).isNull();
 
         Assertions.assertThat(feedListResponse.getNextId()).isNull();
     }
@@ -132,7 +132,7 @@ public class FeedQueryControllerTest {
         Assertions.assertThat(firstFeed.getModifiedAt()).isNotNull();
         Assertions.assertThat(firstFeed.getUserId()).isNotNull();
         Assertions.assertThat(firstFeed.getUserEmail()).isNotNull();
-        Assertions.assertThat(firstFeed.getProfileImagePath()).isNull();
+        Assertions.assertThat(firstFeed.getProfileImageId()).isNull();
 
         Assertions.assertThat(feedListResponse.getNextId()).isNull();
     }

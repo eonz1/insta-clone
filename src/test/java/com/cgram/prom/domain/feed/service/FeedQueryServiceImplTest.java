@@ -227,12 +227,6 @@ class FeedQueryServiceImplTest {
         assertThat(feedListResponse.getFeeds().size()).isEqualTo(3);
         assertThat(feedListResponse.getFeeds().get(0).getHashTags().size()).isEqualTo(1);
         assertThat(feedListResponse.getFeeds().get(0).getImages().size()).isEqualTo(1);
-        assertThat(feedListResponse.getFeeds().get(0).getCoverImage().getImagePath()).contains(
-            "coverPath");
-        assertThat(
-            feedListResponse.getFeeds().get(0).getImages().stream().map(
-                    FeedImageResponse::getImagePath)
-                .allMatch(s -> s.contains("feedPath"))).isTrue();
     }
 
     @Test
@@ -290,12 +284,12 @@ class FeedQueryServiceImplTest {
 
         // then
         assertThat(feedImageResponses.get(0).getImageIndex()).isEqualTo(0);
-        assertThat(feedImageResponses.get(0).getImagePath()).isEqualTo(
-            feedImages.get(0).getImageId().getImageFullPath());
+        assertThat(feedImageResponses.get(0).getImageId()).isEqualTo(
+            feedImages.get(0).getImageId());
 
         assertThat(feedImageResponses.get(1).getImageIndex()).isEqualTo(1);
-        assertThat(feedImageResponses.get(1).getImagePath()).isEqualTo(
-            feedImages.get(1).getImageId().getImageFullPath());
+        assertThat(feedImageResponses.get(1).getImageId()).isEqualTo(
+            feedImages.get(1).getImageId());
     }
 
     @Test

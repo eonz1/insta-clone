@@ -28,7 +28,6 @@ public class CommentQueryRepository {
                 ,QFeed.feed.id.as("feedId")
                 ,QComment.comment.profile.user.id.as("userId")
                 ,QComment.comment.profile.image.id.as("profileImageId")
-                ,QComment.comment.profile.image.path.as("profileImagePath")
                 ,QComment.comment.profile.user.email.as("userEmail")
                 ,QComment.comment.content ,QComment.comment.createdAt, QComment.comment.modifiedAt
                 ,QComment.comment.isPresent, QStatistics.statistics.counts.as("likesCount")

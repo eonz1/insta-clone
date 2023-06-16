@@ -9,7 +9,7 @@ public class ProfileResponse {
 
     private String id;
     private String email;
-    private String imagePath;
+    private String imageId;
     private String intro;
     private boolean isPublic;
     private Long feedCount;
@@ -17,8 +17,8 @@ public class ProfileResponse {
     private Long followingCount;
     private boolean isFollowing;
 
-    public void updateImagePath(String imagePath) {
-        this.imagePath = imagePath;
+    public void updateImageId(String imageId) {
+        this.imageId = imageId;
     }
 
     public void updateId(String id) {

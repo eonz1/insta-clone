@@ -168,8 +168,6 @@ class FeedQueryRepositoryTest {
 
         // then
         assertThat(allFeedsByHashTag.size()).isEqualTo(6);
-        assertThat(allFeedsByHashTag.stream().map(FeedDTO::getProfileImagePath)
-            .allMatch(s -> s.equals("path"))).isTrue();
         assertThat(allFeedsByHashTag.stream().map(FeedDTO::getCommentCount)
             .allMatch(i -> i.equals(1))).isTrue();
     }
@@ -210,8 +208,6 @@ class FeedQueryRepositoryTest {
 
         // then
         assertThat(allFeedsByHashTag.size()).isEqualTo(6);
-        assertThat(allFeedsByHashTag.stream().map(FeedDTO::getProfileImagePath)
-            .allMatch(s -> s.equals("path"))).isTrue();
         assertThat(allFeedsByHashTag.stream().map(FeedDTO::getCommentCount)
             .allMatch(i -> i.equals(1))).isTrue();
     }
@@ -242,8 +238,6 @@ class FeedQueryRepositoryTest {
         assertThat(allFeedsByMyProfile.size()).isEqualTo(6);
         assertThat(allFeedsByMyProfile.stream().map(FeedDTO::getContent)
             .allMatch(s -> s.contains("내 피드"))).isTrue();
-        assertThat(allFeedsByMyProfile.stream().map(FeedDTO::getProfileImagePath)
-            .allMatch(s -> s.equals("path"))).isTrue();
         assertThat(allFeedsByMyProfile.stream().map(FeedDTO::getCommentCount)
             .allMatch(i -> i.equals(1))).isTrue();
     }
@@ -283,8 +277,6 @@ class FeedQueryRepositoryTest {
         assertThat(allFeedsByMyProfile.size()).isEqualTo(5);
         assertThat(allFeedsByMyProfile.stream().map(FeedDTO::getContent)
             .allMatch(s -> s.contains("내 피드"))).isTrue();
-        assertThat(allFeedsByMyProfile.stream().map(FeedDTO::getProfileImagePath)
-            .allMatch(s -> s.equals("path"))).isTrue();
         assertThat(allFeedsByMyProfile.stream().map(FeedDTO::getCommentCount)
             .allMatch(i -> i.equals(1))).isTrue();
     }
@@ -332,8 +324,6 @@ class FeedQueryRepositoryTest {
         assertThat(allFeedsByMyFollowings.size()).isEqualTo(6);
         assertThat(allFeedsByMyFollowings.stream().map(FeedDTO::getContent)
             .allMatch(s -> s.contains("팔로우한 사람"))).isTrue();
-        assertThat(allFeedsByMyFollowings.stream().map(FeedDTO::getProfileImagePath)
-            .allMatch(s -> s.equals("path"))).isTrue();
         assertThat(allFeedsByMyFollowings.stream().map(FeedDTO::getCommentCount)
             .allMatch(i -> i.equals(1))).isTrue();
     }
@@ -389,8 +379,6 @@ class FeedQueryRepositoryTest {
         assertThat(allFeedsByMyFollowings.size()).isEqualTo(4);
         assertThat(allFeedsByMyFollowings.stream().map(FeedDTO::getContent)
             .allMatch(s -> s.contains("팔로우한 사람"))).isTrue();
-        assertThat(allFeedsByMyFollowings.stream().map(FeedDTO::getProfileImagePath)
-            .allMatch(s -> s.equals("path"))).isTrue();
         assertThat(allFeedsByMyFollowings.stream().map(FeedDTO::getCommentCount)
             .allMatch(i -> i.equals(1))).isTrue();
     }

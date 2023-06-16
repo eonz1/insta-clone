@@ -2,7 +2,6 @@ package com.cgram.prom.domain.comment.response;
 
 import com.cgram.prom.domain.comment.dto.CommentDTO;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Builder;
@@ -21,7 +20,7 @@ public class CommentResponse {
 
     private String userEmail;
 
-    private String profileImagePath;
+    private UUID profileImageId;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
@@ -33,12 +32,12 @@ public class CommentResponse {
 
     @Builder
     public CommentResponse(UUID id, String content, UUID userId, String userEmail,
-        String profileImagePath, LocalDateTime createdAt, LocalDateTime modifiedAt, long likes) {
+        UUID profileImageId, LocalDateTime createdAt, LocalDateTime modifiedAt, long likes) {
         this.id = id;
         this.content = content;
         this.userId = userId;
         this.userEmail = userEmail;
-        this.profileImagePath = profileImagePath;
+        this.profileImageId = profileImageId;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.likes = likes;
@@ -52,15 +51,6 @@ public class CommentResponse {
         this.createdAt = dto.getCreatedAt();
         this.modifiedAt = dto.getModifiedAt();
         this.likes = dto.getLikesCount();
-
-        setProfileImagePath(dto.getProfileImageId(), dto.getProfileImagePath());
-    }
-
-    private void setProfileImagePath(UUID imageId, String path) {
-        if (imageId == null) {
-            return;
-        }
-
-        this.profileImagePath = path + File.separator + imageId + ".jpg";
+        this.profileImageId = dto.getProfileImageId();
     }
 }

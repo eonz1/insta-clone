@@ -92,7 +92,7 @@ public class ProfileServiceImpl implements ProfileService {
         return ProfileResponse.builder()
             .id(userProfile.getId().toString())
             .email(profileDto.getEmail())
-            .imagePath(profileDto.getImagePath())
+            .imageId(profileDto.getImageId())
             .intro(profileDto.getIntro())
             .isPublic(profileDto.getIsPublic())
             .followerCount(profileDto.getFollowerCount())

@@ -18,8 +18,6 @@ public class CommentDTO {
 
     private UUID profileImageId;
 
-    private String profileImagePath;
-
     private String userEmail;
 
     private String content;
@@ -34,14 +32,12 @@ public class CommentDTO {
 
     @Builder
     public CommentDTO(UUID id, UUID feedId, UUID userId, UUID profileImageId,
-        String profileImagePath,
         String userEmail, String content, LocalDateTime createdAt, LocalDateTime modifiedAt,
         boolean isPresent, int likesCount) {
         this.id = id;
         this.feedId = feedId;
         this.userId = userId;
         this.profileImageId = profileImageId;
-        this.profileImagePath = profileImagePath;
         this.userEmail = userEmail;
         this.content = content;
         this.createdAt = createdAt;

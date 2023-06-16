@@ -1,6 +1,7 @@
 package com.cgram.prom.domain.feed.response;
 
 import com.cgram.prom.domain.feed.domain.image.FeedImage;
+import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,12 +10,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FeedImageResponse {
 
-    private String imagePath;
+    private UUID imageId;
     private Integer imageIndex;
 
     @Builder
     public FeedImageResponse(FeedImage feedImage) {
-        this.imagePath = feedImage.getImageId().getImageFullPath();
+        this.imageId = feedImage.getImageId().getId();
         this.imageIndex = feedImage.getImageIndex();
     }
 }

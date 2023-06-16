@@ -17,7 +17,6 @@ public class FeedDTO {
     private UUID userId;
     private String email;
     private UUID profileImageId;
-    private String profileImagePath;
 
     private String content;
 
@@ -28,14 +27,13 @@ public class FeedDTO {
     private int likesCount;
 
     @Builder
-    public FeedDTO(UUID id, UUID userId, String email, UUID profileImageId, String profileImagePath,
+    public FeedDTO(UUID id, UUID userId, String email, UUID profileImageId,
         String content, LocalDateTime createdAt, LocalDateTime modifiedAt, int commentCount,
         int likesCount) {
         this.id = id;
         this.userId = userId;
         this.email = email;
         this.profileImageId = profileImageId;
-        this.profileImagePath = profileImagePath;
         this.content = content;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
