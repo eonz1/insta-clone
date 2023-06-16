@@ -23,6 +23,7 @@ public class FeedImageQueryRepository {
             .on(QImage.image.id.eq(QFeedImage.feedImage.imageId.id))
             .where(QFeedImage.feedImage.feedId.id.in(feedIds),
                 QFeedImage.feedImage.isPresent.eq(true))
+            .orderBy(QFeedImage.feedImage.imageId.createdAt.asc())
             .fetch();
     }
 

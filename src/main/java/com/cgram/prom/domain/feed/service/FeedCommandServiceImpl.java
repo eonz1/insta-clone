@@ -83,7 +83,6 @@ public class FeedCommandServiceImpl implements FeedCommandService {
                     .feedId(feed)
                     .isPresent(true)
                     .isCover(false)
-                    .imageIndex(i)
                     .build();
                 feedImages.add(feedImage);
             }
@@ -95,7 +94,6 @@ public class FeedCommandServiceImpl implements FeedCommandService {
                 .feedId(feed)
                 .isPresent(true)
                 .isCover(true)
-                .imageIndex(0)
                 .build();
             feedImages.add(feedCoverImage);
             feedImageRepository.saveAll(feedImages);

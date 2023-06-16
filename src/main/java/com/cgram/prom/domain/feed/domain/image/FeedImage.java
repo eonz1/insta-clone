@@ -30,16 +30,13 @@ public class FeedImage {
 
     private boolean isPresent;
     private boolean isCover;
-    private int imageIndex;
-
+    
     @Builder
-    public FeedImage(Feed feedId, Image imageId, boolean isPresent, boolean isCover,
-        int imageIndex) {
+    public FeedImage(Feed feedId, Image imageId, boolean isPresent, boolean isCover) {
         this.feedId = feedId;
         this.imageId = imageId;
         this.isPresent = isPresent;
         this.isCover = isCover;
-        this.imageIndex = imageIndex;
     }
 
     public void setFeed(Feed feed) {
