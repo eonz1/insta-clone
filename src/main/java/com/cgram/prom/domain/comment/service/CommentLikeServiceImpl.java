@@ -38,20 +38,26 @@ public class CommentLikeServiceImpl implements CommentLikeService{
             .profileId(profile.getId())
             .build();
 
-        Optional<CommentLike> byId = commentLikeRepository.findById(id);
-        if(byId.isPresent()) {
-            byId.get().like();
+        Optional<CommentLike> commentLike = commentLikeRepository.findById(id);
+
+        if(commentLike.isPresent() && !commentLike.get().isPresent()) {
+            commentLike.get().like();
+
+            statisticsService.updateStatistics(comment.getId(), StatisticType.COMMENT_LIKE.label(), 1);
             return;
         }
 
-        CommentLike commentLike = CommentLike.builder()
-            .commentId(comment)
-            .profileId(profile)
-            .isPresent(true)
-            .build();
-        commentLikeRepository.save(commentLike);
+        if(commentLike.isEmpty()) {
+            CommentLike insertCommentLike = CommentLike.builder()
+                .commentId(comment)
+                .profileId(profile)
+                .isPresent(true)
+                .build();
+            commentLikeRepository.save(insertCommentLike);
 
-        statisticsService.updateStatistics(comment.getId(), StatisticType.COMMENT_LIKE.label(), 1);
+            statisticsService.updateStatistics(comment.getId(), StatisticType.COMMENT_LIKE.label(),
+                1);
+        }
     }
 
     @Transactional
@@ -69,7 +75,7 @@ public class CommentLikeServiceImpl implements CommentLikeService{
         CommentLike commentLike = commentLikeRepository.findById(id)
             .orElseThrow(() -> new CommentLikeException(CommentLikeExceptionType.NOT_FOUND));
 
-        if(commentLike.isPresent() == false) {
+        if(!commentLike.isPresent()) {
             return;
         }
 
