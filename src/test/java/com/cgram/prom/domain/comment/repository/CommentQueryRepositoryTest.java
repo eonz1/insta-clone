@@ -1,7 +1,5 @@
 package com.cgram.prom.domain.comment.repository;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.cgram.prom.domain.comment.domain.Comment;
 import com.cgram.prom.domain.comment.dto.CommentDTO;
 import com.cgram.prom.domain.feed.domain.Feed;
@@ -68,7 +66,7 @@ class CommentQueryRepositoryTest {
         feedUUIDs.add(feed2.getId());
 
         // when
-        List<CommentDTO> commentList = commentQueryRepository.getCommentsByFeedIds(feedUUIDs, 3);
+        List<CommentDTO> commentList = commentQueryRepository.findByFeedIdsAndLimit(feedUUIDs, 3);
 
         // then
         Assertions.assertThat(commentList.size()).isEqualTo(3);
