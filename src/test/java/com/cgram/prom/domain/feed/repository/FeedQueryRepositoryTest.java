@@ -200,7 +200,7 @@ class FeedQueryRepositoryTest {
         GetFeedsDto dto = GetFeedsDto.builder()
             .profileId(userProfile.getId().toString())
             .limit(5)
-            .cursor(nextId)
+            .nextId(nextId)
             .build();
 
         // when
@@ -266,7 +266,7 @@ class FeedQueryRepositoryTest {
         GetFeedsDto dto = GetFeedsDto.builder()
             .profileId(userProfile.getId().toString())
             .limit(5)
-            .cursor(nextId)
+            .nextId(nextId)
             .build();
 
         // when
@@ -370,7 +370,7 @@ class FeedQueryRepositoryTest {
         GetFeedsDto dto = GetFeedsDto.builder()
             .profileId(userProfile.getId().toString())
             .limit(3)
-            .cursor(nextId)
+            .nextId(nextId)
             .build();
         List<FeedDTO> allFeedsByMyFollowings = feedQueryRepository.getFeedsByMyFollowings(dto,
             LocalDateTime.now().minusDays(3));

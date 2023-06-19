@@ -40,7 +40,7 @@ public class FeedQueryRepository {
             .from(QFeed.feed)
             .where(
                 QFeed.feed.isPresent.eq(true),
-                loeFeedId(dto.getCursor()),
+                loeFeedId(dto.getNextId()),
                 eqTag(dto.getTag())
             )
             .leftJoin(comment)
@@ -81,7 +81,7 @@ public class FeedQueryRepository {
                 QFollow.follow.profileId.id.eq(UUID.fromString(dto.getProfileId())),
                 QFollow.follow.followedId.id.eq(QFeed.feed.profile.id)
             )
-            .where(loeFeedId(dto.getCursor()),
+            .where(loeFeedId(dto.getNextId()),
                 QFeed.feed.createdAt.gt(lastDate),
                 QFeed.feed.isPresent.eq(true)
             )
@@ -107,7 +107,7 @@ public class FeedQueryRepository {
                 QFeed.feed.isPresent.eq(true),
                 QFeed.feed.createdAt.gt(lastDate),
                 eqProfileId(dto.getProfileId()),
-                loeFeedId(dto.getCursor())
+                loeFeedId(dto.getNextId())
             )
             .leftJoin(comment)
             .on(comment.uuid.eq(QFeed.feed.id), comment.type.eq(StatisticType.COMMENT.label()))

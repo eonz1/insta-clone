@@ -49,12 +49,12 @@ public class FeedController {
     public ResponseEntity<FeedListResponse> getFeeds(
         @RequestParam(defaultValue = "12") int limit,
         @RequestParam(required = false) String tag,
-        @RequestParam(required = false) String cursor,
+        @RequestParam(required = false) String next_id,
         @RequestParam(value = "profile_id", required = false) String profileId) {
 
         GetFeedsDto dto = GetFeedsDto.builder()
             .limit(limit)
-            .cursor(cursor)
+            .nextId(next_id)
             .tag(tag)
             .profileId(profileId)
             .build();

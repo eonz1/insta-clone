@@ -9,7 +9,7 @@ public class GetFeedsDto {
 
     private int limit;
 
-    private String cursor;
+    private String nextId;
 
     private String tag;
 
