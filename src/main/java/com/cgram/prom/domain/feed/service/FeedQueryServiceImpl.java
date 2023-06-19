@@ -74,8 +74,8 @@ public class FeedQueryServiceImpl implements FeedQueryService {
         return feedQueryRepository.getFeedsByUser(dto, lastDate);
     }
 
-    public boolean hasNext(int feedSize, int offset) {
-        return feedSize == (offset + 1);
+    public boolean hasNext(int feedSize, int limit) {
+        return feedSize == (limit + 1);
     }
 
     public FeedListResponse getFeedListResponse(List<FeedDTO> feeds, String nextId) {
@@ -84,7 +84,7 @@ public class FeedQueryServiceImpl implements FeedQueryService {
             feedIds);
         List<FeedImage> feedImagesByFeedId = feedImageQueryRepository.getAllFeedImagesByFeedId(
             feedIds);
-        List<CommentDTO> commentsByFeedIds = commentQueryRepository.getCommentsByFeedIds(feedIds,
+        List<CommentDTO> commentsByFeedIds = commentQueryRepository.findByFeedIdsAndLimit(feedIds,
             3);
 
         Map<UUID, List<HashTag>> hashTagMap = hashTagsByFeedIds.stream()
@@ -134,8 +134,8 @@ public class FeedQueryServiceImpl implements FeedQueryService {
         }
 
         return CommentWithCountResponse.builder()
-            .totalCount(dtos.size())
-            .recentComments(dtos.stream().map(CommentResponse::new).toList())
+            .totalCount(dtos.get(0).getTotalCount())
+            .comments(dtos.stream().map(CommentResponse::new).toList())
             .build();
     }
 

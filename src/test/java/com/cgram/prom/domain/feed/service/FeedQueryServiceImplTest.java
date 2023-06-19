@@ -218,7 +218,7 @@ class FeedQueryServiceImplTest {
         List<UUID> ids = feeds.stream().map(FeedDTO::getId).toList();
         when(hashTagQueryRepository.getAllHashTagsByFeedIds(ids)).thenReturn(hashTags);
         when(feedImageQueryRepository.getAllFeedImagesByFeedId(ids)).thenReturn(images);
-        when(commentQueryRepository.getCommentsByFeedIds(ids, 3)).thenReturn(comments);
+        when(commentQueryRepository.findByFeedIdsAndLimit(ids, 3)).thenReturn(comments);
 
         // when
         FeedListResponse feedListResponse = feedQueryService.getFeedListResponse(feeds, null);
@@ -243,8 +243,7 @@ class FeedQueryServiceImplTest {
             dtos);
 
         // then
-        assertThat(commentWithCountResponse.getRecentComments().size()).isEqualTo(3);
-        assertThat(commentWithCountResponse.getTotalCount()).isEqualTo(3);
+        assertThat(commentWithCountResponse.getComments().size()).isEqualTo(3);
     }
 
     @Test
@@ -258,7 +257,7 @@ class FeedQueryServiceImplTest {
             dtos);
 
         // then
-        assertThat(commentWithCountResponse.getRecentComments()).isNull();
+        assertThat(commentWithCountResponse.getComments()).isNull();
         assertThat(commentWithCountResponse.getTotalCount()).isEqualTo(0);
     }
 
