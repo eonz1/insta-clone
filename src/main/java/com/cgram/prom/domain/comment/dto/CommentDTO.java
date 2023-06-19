@@ -26,14 +26,13 @@ public class CommentDTO {
 
     private LocalDateTime modifiedAt;
 
-    private boolean isPresent;
-
     private int likesCount;
+    private int totalCount;
 
     @Builder
     public CommentDTO(UUID id, UUID feedId, UUID userId, UUID profileImageId,
         String userEmail, String content, LocalDateTime createdAt, LocalDateTime modifiedAt,
-        boolean isPresent, int likesCount) {
+        int likesCount, int totalCount) {
         this.id = id;
         this.feedId = feedId;
         this.userId = userId;
@@ -42,7 +41,7 @@ public class CommentDTO {
         this.content = content;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
-        this.isPresent = isPresent;
         this.likesCount = likesCount;
+        this.totalCount = totalCount;
     }
 }
