@@ -1,12 +1,12 @@
 package com.cgram.prom.domain.comment.service;
 
+import com.cgram.prom.domain.comment.request.CommentQueryRequest;
 import com.cgram.prom.domain.comment.request.CommentServiceDTO;
-import com.cgram.prom.domain.comment.response.CommentResponse;
-import java.util.List;
+import com.cgram.prom.domain.comment.response.CommentWithCountResponse;
 
 public interface CommentService {
 
-    List<CommentResponse> getComments(String feedId);
+    CommentWithCountResponse getComments(CommentQueryRequest request);
 
     void reply(CommentServiceDTO dto);
 

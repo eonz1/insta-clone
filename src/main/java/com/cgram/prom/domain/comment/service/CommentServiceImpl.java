@@ -6,8 +6,10 @@ import com.cgram.prom.domain.comment.exception.CommentException;
 import com.cgram.prom.domain.comment.exception.CommentExceptionType;
 import com.cgram.prom.domain.comment.repository.CommentQueryRepository;
 import com.cgram.prom.domain.comment.repository.CommentRepository;
+import com.cgram.prom.domain.comment.request.CommentQueryRequest;
 import com.cgram.prom.domain.comment.request.CommentServiceDTO;
 import com.cgram.prom.domain.comment.response.CommentResponse;
+import com.cgram.prom.domain.comment.response.CommentWithCountResponse;
 import com.cgram.prom.domain.feed.domain.Feed;
 import com.cgram.prom.domain.profile.domain.Profile;
 import com.cgram.prom.domain.profile.repository.ProfileRepository;
@@ -16,10 +18,8 @@ import com.cgram.prom.domain.statistics.service.StatisticsService;
 import com.cgram.prom.domain.user.exception.UserException;
 import com.cgram.prom.domain.user.exception.UserExceptionType;
 import jakarta.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,26 +35,13 @@ public class CommentServiceImpl implements CommentService {
     private final StatisticsService statisticsService;
 
     @Override
-    public List<CommentResponse> getComments(String feedId) {
-        List<UUID> feedIds = new ArrayList<>();
-        feedIds.add(UUID.fromString(feedId));
+    public CommentWithCountResponse getComments(CommentQueryRequest request) {
 
-        List<CommentDTO> comments = commentQueryRepository.getCommentsByFeedIds(feedIds, Long.MAX_VALUE);
+        List<CommentDTO> comments = commentQueryRepository.findByFeedIdWithPaging(request);
+        CommentWithCountResponse response = convertCommentsResponse(comments,
+            (int) request.getLimit());
 
-        List<CommentResponse> responseList = comments.stream().map(comment ->
-                CommentResponse.builder()
-                    .id(comment.getId())
-                    .userId(comment.getUserId())
-                    .userEmail(comment.getUserEmail())
-                    .profileImageId(comment.getProfileImageId())
-                    .content(comment.getContent())
-                    .likes(comment.getLikesCount())
-                    .createdAt(comment.getCreatedAt())
-                    .modifiedAt(comment.getModifiedAt())
-                    .build())
-            .collect(Collectors.toList());
-
-        return responseList;
+        return response;
     }
 
     @Override
@@ -108,5 +95,30 @@ public class CommentServiceImpl implements CommentService {
         }
 
         return comment;
+    }
+
+    public CommentWithCountResponse convertCommentsResponse(List<CommentDTO> dtos, int limit) {
+        if (dtos == null) {
+            return CommentWithCountResponse.builder().totalCount(0).build();
+        }
+
+        String nextId = null;
+
+        // nextId 저장, comment 리스트에서 nextData 제거
+        if (hasNext(dtos.size(), limit)) {
+            int lastFeedIndex = dtos.size() - 1;
+            nextId = dtos.get(lastFeedIndex).getId().toString();
+            dtos.remove(lastFeedIndex);
+        }
+
+        return CommentWithCountResponse.builder()
+            .totalCount(dtos.get(0).getTotalCount())
+            .comments(dtos.stream().map(CommentResponse::new).toList())
+            .nextId(nextId != null ? nextId : "")
+            .build();
+    }
+
+    public boolean hasNext(int feedSize, int limit) {
+        return feedSize == (limit + 1);
     }
 }
