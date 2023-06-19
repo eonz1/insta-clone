@@ -51,11 +51,11 @@ public class FeedQueryControllerTest {
         Assertions.assertThat(firstFeed.getCoverImage()).isNotNull();
         Assertions.assertThat(firstFeed.getContent()).isNotNull();
 
-        Assertions.assertThat(firstFeed.getComments().getRecentComments().size()).isEqualTo(3);
-        for (int i = 0; i < firstFeed.getComments().getRecentComments().size(); i++) {
-            Assertions.assertThat(firstFeed.getComments().getRecentComments().get(i)).isNotNull();
+        Assertions.assertThat(firstFeed.getComments().getComments().size()).isEqualTo(3);
+        for (int i = 0; i < firstFeed.getComments().getComments().size(); i++) {
+            Assertions.assertThat(firstFeed.getComments().getComments().get(i)).isNotNull();
         }
-        Assertions.assertThat(firstFeed.getComments().getRecentComments().size()).isEqualTo(3);
+        Assertions.assertThat(firstFeed.getComments().getComments().size()).isEqualTo(3);
 
         Assertions.assertThat(firstFeed.getCreatedAt()).isNotNull();
         Assertions.assertThat(firstFeed.getModifiedAt()).isNotNull();
@@ -89,9 +89,9 @@ public class FeedQueryControllerTest {
         Assertions.assertThat(firstFeed.getCoverImage()).isNotNull();
         Assertions.assertThat(firstFeed.getContent()).isNotNull();
 
-        Assertions.assertThat(firstFeed.getComments().getRecentComments().size()).isEqualTo(3);
-        for (int i = 0; i < firstFeed.getComments().getRecentComments().size(); i++) {
-            Assertions.assertThat(firstFeed.getComments().getRecentComments().get(i)).isNotNull();
+        Assertions.assertThat(firstFeed.getComments().getComments().size()).isEqualTo(3);
+        for (int i = 0; i < firstFeed.getComments().getComments().size(); i++) {
+            Assertions.assertThat(firstFeed.getComments().getComments().get(i)).isNotNull();
         }
         Assertions.assertThat(firstFeed.getComments().getTotalCount()).isEqualTo(3);
 
@@ -126,7 +126,7 @@ public class FeedQueryControllerTest {
         Assertions.assertThat(firstFeed.getCoverImage()).isNotNull();
         Assertions.assertThat(firstFeed.getContent()).isNotNull();
 
-        Assertions.assertThat(firstFeed.getComments().getRecentComments()).isNull();
+        Assertions.assertThat(firstFeed.getComments().getComments()).isNull();
 
         Assertions.assertThat(firstFeed.getCreatedAt()).isNotNull();
         Assertions.assertThat(firstFeed.getModifiedAt()).isNotNull();
