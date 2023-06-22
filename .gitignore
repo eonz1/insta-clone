@@ -44,3 +44,6 @@ logs/
 
 # jwt
 private_key.pem
+
+#queryDsl
+/src/main/generated/
