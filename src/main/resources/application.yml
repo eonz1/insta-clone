@@ -9,7 +9,7 @@ server:
 spring:
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/{database}?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/{database}?serverTimezone=Asia/Seoul&verifyServerCertificate=false&useSSL=true
     username:
     password:
     hikari:
@@ -20,6 +20,8 @@ spring:
       minimum-idle: 5
   jpa:
     database-platform: org.hibernate.dialect.MySQL57Dialect
+    hibernate:
+      ddlAuto: validate
     properties:
       hibernate:
         show_sql: true
@@ -37,12 +39,17 @@ mybatis:
 
 letter:
   mail:
-    host: "smtp.gmail.com"
-    port: "587"
+    host: smtp.gmail.com
+    port: 587
     id:
     pwd:
+
+ncloud:
+  api:
+    accessKeyId:
+    secretAccessKey:
 
 jwt:
   private.key: classpath:private_key.pem
   public.key: classpath:public_key.pem
-
+  secret-key:
