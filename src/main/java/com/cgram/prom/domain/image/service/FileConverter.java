@@ -6,12 +6,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class FileConverter {
 
-    private final String path = System.getProperty("user.dir") + "/src/main/resources/static/temp";
-
+    private final String path = "/prom";
 
     public File transferMultipartFileToFile(MultipartFile mFile) {
         try {
-            File file = new File(path + File.separator + mFile.getOriginalFilename());
+            File file = new File(path + File.separator + "temp" + File.separator + mFile.getOriginalFilename());
             mFile.transferTo(file);
             return file;
         } catch (IOException e) {

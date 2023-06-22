@@ -15,7 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ImageServiceImpl implements ImageService {
 
     private final ImageRepository imageRepository;
-    private String path = System.getProperty("user.dir") + "/src/main/resources/static";
+
+    private final String path = "/prom";
 
     @Transactional
     public Image saveImage(File file) throws IOException {
