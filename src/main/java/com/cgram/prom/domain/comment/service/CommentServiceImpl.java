@@ -98,11 +98,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     public CommentWithCountResponse convertCommentsResponse(List<CommentDTO> dtos, int limit) {
-        if (dtos == null) {
-            return CommentWithCountResponse.builder().totalCount(0).build();
-        }
 
-        String nextId = null;
+        String nextId = "";
 
         // nextId 저장, comment 리스트에서 nextData 제거
         if (hasNext(dtos.size(), limit)) {
@@ -112,9 +109,9 @@ public class CommentServiceImpl implements CommentService {
         }
 
         return CommentWithCountResponse.builder()
-            .totalCount(dtos.get(0).getTotalCount())
+            .totalCount(dtos.size() > 0 ? dtos.get(0).getTotalCount() : 0)
             .comments(dtos.stream().map(CommentResponse::new).toList())
-            .nextId(nextId != null ? nextId : "")
+            .nextId(nextId)
             .build();
     }
 
