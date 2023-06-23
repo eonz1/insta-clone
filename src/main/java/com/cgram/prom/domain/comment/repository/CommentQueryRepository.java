@@ -79,18 +79,18 @@ public class CommentQueryRepository {
             .on(likes.uuid.eq(QComment.comment.id), likes.type.eq(StatisticType.COMMENT_LIKE.label()))
             .where(QComment.comment.feed.id.eq(UUID.fromString(request.getFeedId()))
                 , QComment.comment.isPresent.eq(true)
-                , goeCommentId(request.getNextId())
+                , loeCommentId(request.getNextId())
             )
             .orderBy(QComment.comment.createdAt.desc())
             .limit(request.getLimit() + 1)
             .fetch();
     }
 
-    private BooleanExpression goeCommentId(String nextId) {
+    private BooleanExpression loeCommentId(String nextId) {
         if (nextId == null) {
             return null;
         }
 
-        return QComment.comment.id.goe(UUID.fromString(nextId));
+        return QComment.comment.id.loe(UUID.fromString(nextId));
     }
 }
