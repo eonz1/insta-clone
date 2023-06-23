@@ -12,9 +12,9 @@ public class ProfileResponse {
     private String imageId;
     private String intro;
     private boolean isPublic;
-    private Long feedCount;
-    private Long followerCount;
-    private Long followingCount;
+    private long feedCount;
+    private long followerCount;
+    private long followingCount;
     private boolean isFollowing;
 
     public void updateImageId(String imageId) {

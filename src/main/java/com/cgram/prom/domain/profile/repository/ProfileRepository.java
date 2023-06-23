@@ -15,8 +15,8 @@ public interface ProfileRepository extends JpaRepository<Profile, UUID> {
 
     @Query(value = """
         SELECT
-            user.email, image.id AS imageId, p.intro, p.is_public AS isPublic,
-            follower.count AS followerCount, following.count AS followingCount, feed.count AS feedCount,
+            user.email, BIN_TO_UUID(image.id) AS imageId, p.intro, p.is_public AS isPublic,
+            IFNULL(follower.count, 0) AS followerCount, IFNULL(following.count, 0) AS followingCount, IFNULL(feed.count, 0) AS feedCount,
             EXISTS(SELECT * FROM follow WHERE profile_id = :loginProfileId AND followed_id = :profileId) AS isFollowing
         FROM profile p
         INNER JOIN user ON p.user_id = user.id
@@ -48,11 +48,11 @@ public interface ProfileRepository extends JpaRepository<Profile, UUID> {
 
         boolean getIsPublic();
 
-        Long getFeedCount();
+        long getFeedCount();
 
-        Long getFollowerCount();
+        long getFollowerCount();
 
-        Long getFollowingCount();
+        long getFollowingCount();
 
         int getIsFollowing();
     }
