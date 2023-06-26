@@ -417,4 +417,33 @@ class FeedQueryRepositoryTest {
         assertThat(feedsByMyFollowings.stream().map(FeedDTO::getContent)
             .allMatch(s -> s.contains("팔로우한 사람"))).isTrue();
     }
+
+    @Test
+    @DisplayName("특정 회원 피드 목록 날짜 상관없이 전부 조회하기")
+    public void getFeedsByUser() throws Exception {
+        // given
+        User user = saveUser("test@test.com", "password123!!!");
+
+        Profile userProfile = saveProfile(user);
+
+        for (int i = 0; i < 10; i++) {
+            if (i < 5) {
+                Feed feed = saveFeed("예전 피드 " + (i + 1), userProfile);
+                feed.setTestCreateAt(LocalDateTime.now().minusDays(10)); // 10일전으로 생성 날짜 변경
+            } else {
+                saveFeed("최근 피드" + (i + 1), userProfile);
+            }
+        }
+
+        GetFeedsDto dto = GetFeedsDto.builder()
+            .profileId(userProfile.getId().toString())
+            .limit(15)
+            .build();
+
+        // when
+        List<FeedDTO> feedsByUser = feedQueryRepository.getFeedsByUser(dto, null);
+
+        // then
+        assertThat(feedsByUser.size()).isEqualTo(10);
+    }
 }
