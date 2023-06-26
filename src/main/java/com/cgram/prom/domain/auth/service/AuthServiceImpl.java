@@ -37,6 +37,7 @@ public class AuthServiceImpl implements AuthService {
         return LoginResponse.builder()
             .token(tokenProvider.issueToken(user))
             .profileId(profile.getId().toString())
+            .userId(user.getId().toString())
             .build();
     }
 

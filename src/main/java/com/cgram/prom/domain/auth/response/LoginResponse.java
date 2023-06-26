@@ -14,9 +14,12 @@ public class LoginResponse {
 
     private String profileId;
 
+    private String userId;
+
     @Builder
-    public LoginResponse(Token token, String profileId) {
+    public LoginResponse(Token token, String profileId, String userId) {
         this.token = token;
         this.profileId = profileId;
+        this.userId = userId;
     }
 }
