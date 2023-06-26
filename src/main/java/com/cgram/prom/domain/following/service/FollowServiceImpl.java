@@ -21,35 +21,52 @@ public class FollowServiceImpl implements FollowService {
     @Override
     @Transactional
     public void follow(Profile followedUserProfile, Profile userProfile) {
-        Optional<Follow> byId = followRepository.findById(
+        Optional<Follow> follow = followRepository.findById(
             new FollowId(followedUserProfile.getId(), userProfile.getId()));
 
-        if (byId.isPresent()) {
-            byId.get().followStatusUpdate(true);
+        if (follow.isPresent()) {
+            if (follow.get().isPresent()) {
+                return;
+            }
+
+            follow.get().followStatusUpdate(true);
+            statisticsService.updateStatistics(followedUserProfile.getId(),
+                StatisticType.FOLLOWER.label(), 1);
+            statisticsService.updateStatistics(userProfile.getId(), StatisticType.FOLLOWING.label(),
+                1);
             return;
         }
 
-        Follow follow = Follow.builder()
+        Follow newFollow = Follow.builder()
             .profileId(userProfile)
             .followedId(followedUserProfile)
             .isPresent(true)
             .build();
 
-        followRepository.save(follow);
+        followRepository.save(newFollow);
 
-        statisticsService.updateStatistics(followedUserProfile.getId(), StatisticType.FOLLOWER.label(), 1);
+        statisticsService.updateStatistics(followedUserProfile.getId(),
+            StatisticType.FOLLOWER.label(), 1);
         statisticsService.updateStatistics(userProfile.getId(), StatisticType.FOLLOWING.label(), 1);
     }
 
     @Override
     @Transactional
     public void unfollow(Profile followedUserProfile, Profile userProfile) {
-        Optional<Follow> byId = followRepository.findById(
+        Optional<Follow> follow = followRepository.findById(
             new FollowId(followedUserProfile.getId(), userProfile.getId()));
 
-        byId.ifPresent(follow -> follow.followStatusUpdate(false));
+        if (follow.isPresent()) {
+            if (!follow.get().isPresent()) {
+                return;
+            }
+            follow.get().followStatusUpdate(false);
 
-        statisticsService.updateStatistics(followedUserProfile.getId(), StatisticType.FOLLOWER.label(), -1);
-        statisticsService.updateStatistics(userProfile.getId(), StatisticType.FOLLOWING.label(), -1);
+            statisticsService.updateStatistics(followedUserProfile.getId(),
+                StatisticType.FOLLOWER.label(), -1);
+            statisticsService.updateStatistics(userProfile.getId(),
+                StatisticType.FOLLOWING.label(),
+                -1);
+        }
     }
 }
