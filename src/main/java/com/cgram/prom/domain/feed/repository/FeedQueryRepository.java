@@ -105,7 +105,7 @@ public class FeedQueryRepository {
             .from(QFeed.feed)
             .where(
                 QFeed.feed.isPresent.eq(true),
-                QFeed.feed.createdAt.gt(lastDate),
+                gtCreateAt(lastDate),
                 eqProfileId(dto.getProfileId()),
                 loeFeedId(dto.getNextId())
             )
@@ -143,5 +143,13 @@ public class FeedQueryRepository {
         }
 
         return QHashTag.hashTag.tag.eq(tag);
+    }
+
+    private BooleanExpression gtCreateAt(LocalDateTime lastDate) {
+        if (lastDate == null) {
+            return null;
+        }
+
+        return QFeed.feed.createdAt.gt(lastDate);
     }
 }

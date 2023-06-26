@@ -36,22 +36,30 @@ public class FeedQueryServiceImpl implements FeedQueryService {
     private final FeedImageQueryRepository feedImageQueryRepository;
     private final CommentQueryRepository commentQueryRepository;
 
+    /**
+     * 피드 목록 조회 (홈, 태그)
+     *
+     * @param dto
+     * @return FeedListResponse
+     */
     @Override
     public FeedListResponse getFeeds(GetFeedsDto dto) {
-
-        // 1) feeds 가져온다
         List<FeedDTO> feeds = getFeedDtoList(dto);
 
-        String nextId = null;
+        return getFeedListResponse(feeds, dto);
+    }
 
-        // nextId 저장, feed 리스트에서 nextData 제거
-        if (hasNext(feeds.size(), dto.getLimit())) {
-            int lastFeedIndex = feeds.size() - 1;
-            nextId = feeds.get(lastFeedIndex).getId().toString();
-            feeds.remove(lastFeedIndex);
-        }
+    /**
+     * 특정 프로필 피드 목록 조회
+     *
+     * @param dto
+     * @return FeedListResponse
+     */
+    @Override
+    public FeedListResponse getFeedsByUser(GetFeedsDto dto) {
+        List<FeedDTO> feeds = feedQueryRepository.getFeedsByUser(dto, null); // 작성일자 상관없이 전체 조회
 
-        return getFeedListResponse(feeds, nextId);
+        return getFeedListResponse(feeds, dto);
     }
 
     public List<FeedDTO> getFeedDtoList(GetFeedsDto dto) {
@@ -74,11 +82,24 @@ public class FeedQueryServiceImpl implements FeedQueryService {
         return feedQueryRepository.getFeedsByUser(dto, lastDate);
     }
 
+    public FeedListResponse getFeedListResponse(List<FeedDTO> feeds, GetFeedsDto dto) {
+        String nextId = null;
+
+        // nextId 저장, feed 리스트에서 nextData 제거
+        if (hasNext(feeds.size(), dto.getLimit())) {
+            int lastFeedIndex = feeds.size() - 1;
+            nextId = feeds.get(lastFeedIndex).getId().toString();
+            feeds.remove(lastFeedIndex);
+        }
+
+        return convertFeedListResponse(feeds, nextId);
+    }
+
     public boolean hasNext(int feedSize, int limit) {
         return feedSize == (limit + 1);
     }
 
-    public FeedListResponse getFeedListResponse(List<FeedDTO> feeds, String nextId) {
+    public FeedListResponse convertFeedListResponse(List<FeedDTO> feeds, String nextId) {
         List<UUID> feedIds = feeds.stream().map(FeedDTO::getId).toList();
         List<HashTag> hashTagsByFeedIds = hashTagQueryRepository.getAllHashTagsByFeedIds(
             feedIds);
