@@ -30,7 +30,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final FollowService followService;
     private final ProfileRepository profileRepository;
     private final ImageService imageService;
-    private final FileConverter fileConverter = new FileConverter();
+    private final FileConverter fileConverter;
 
     @Override
     public void follow(UUID followedProfileId, UUID userId) {

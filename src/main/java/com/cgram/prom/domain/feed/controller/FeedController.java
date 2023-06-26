@@ -43,7 +43,7 @@ public class FeedController {
 
     private final FeedCommandService feedCommandService;
     private final FeedQueryService feedQueryService;
-    private FileConverter fileConverter = new FileConverter();
+    private final FileConverter fileConverter;
 
     @GetMapping("")
     public ResponseEntity<FeedListResponse> getFeeds(

@@ -1,6 +1,7 @@
 package com.cgram.prom.domain.image.service;
 
 import com.cgram.prom.domain.image.domain.Image;
+import com.cgram.prom.domain.image.model.ImageProperties;
 import com.cgram.prom.domain.image.repository.ImageRepository;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -15,12 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class ImageServiceImpl implements ImageService {
 
     private final ImageRepository imageRepository;
-
-    private final String path = "/prom";
+    private final ImageProperties imageProperties;
 
     @Transactional
     public Image saveImage(File file) throws IOException {
-        Image image = imageRepository.save(Image.builder().path(path).isPresent(true).build());
+        Image image = imageRepository.save(Image.builder().path(imageProperties.getDirectory()).isPresent(true).build());
 
         String extension = file.getAbsoluteFile().getName().split("\\.")[1];
 
