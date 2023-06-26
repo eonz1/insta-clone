@@ -1,0 +1,47 @@
+### 조회하기
+GET {{baseUrl}}/api/v1/feeds/{{firstFeedId}}/comments?limit=3
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+> {%
+  client.global.set("firstCommentId", response.body.comments[0].id);
+  client.global.set("commentNextId", response.body.nextId);
+%}
+
+
+### 등록하기
+POST {{baseUrl}}/api/v1/feeds/{{firstFeedId}}/comments
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "content": "테스트"
+}
+
+
+### 수정하기
+PUT {{baseUrl}}/api/v1/feeds/{{firstFeedId}}/comments/{{firstCommentId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "content": "수정한 내용"
+}
+
+
+### 삭제하기
+DELETE {{baseUrl}}/api/v1/feeds/{{firstFeedId}}/comments/{{firstCommentId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+
+### 좋아요
+POST {{baseUrl}}/api/v1/feeds/{{firstFeedId}}/comments/{{firstCommentId}}/like
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+
+### 좋아요 취소
+DELETE {{baseUrl}}/api/v1/feeds/{{firstFeedId}}/comments/{{firstCommentId}}/like
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json

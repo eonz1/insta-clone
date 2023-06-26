@@ -1,0 +1,17 @@
+### 이메일로 코드 받기
+POST {{baseUrl}}/api/v1/verification
+Content-Type: application/json
+
+{
+  "email": "meonzzz1@gmail.com"
+}
+
+
+### 이메일로 받은 코드 검증
+POST {{baseUrl}}/api/v1/verification/code
+Content-Type: application/json
+
+{
+  "email": "meonzzz1@gmail.com",
+  "code": "KAO108"
+}

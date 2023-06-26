@@ -1,0 +1,8 @@
+### 토큰 재발급
+api/v1/token/reissue
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "refreshToken": "{{refreshToken}}"
+}

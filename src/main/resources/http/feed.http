@@ -1,0 +1,61 @@
+### 다건 조회하기
+GET {{baseUrl}}/api/v1/feeds?profile_id={{profileId}}&limit=3
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+> {%
+  client.global.set("firstFeedId", response.body.feeds[0].feedId);
+  client.global.set("feedNextId", response.body.nextId);
+%}
+
+
+### 피드 등록하기
+POST {{baseUrl}}/api/v1/feeds
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="images"; filename="mongja.png"
+Content-Type: image/jpeg
+
+< ../../../test/resources/mongja.png
+
+--boundary
+Content-Disposition: form-data; name="feed";
+Content-Type: application/json
+
+{
+  "content": "테스트",
+  "hashTags": ["tag1", "tag2", "tag3"]
+}
+
+--boundary--
+
+
+### 수정하기
+PATCH {{baseUrl}}/api/v1/feeds/{{firstFeedId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "content": "내용수정",
+  "hashTags": ["태그수정1", "태그수정2"]
+}
+
+
+### 삭제하기
+DELETE {{baseUrl}}/api/v1/feeds/{{firstFeedId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+
+### 좋아요
+POST {{baseUrl}}/api/v1/feeds/{{firstFeedId}}/like
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+
+### 좋아요 취소
+DELETE {{baseUrl}}/api/v1/feeds/{{firstFeedId}}/like
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json

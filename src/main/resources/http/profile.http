@@ -1,0 +1,24 @@
+### 프로필 조회하기
+GET {{baseUrl}}/api/v1/profile/{{userId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+
+### 프로필 수정하기
+PATCH {{baseUrl}}/api/v1/profile/{{userId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="image"; filename="mongja.png"
+Content-Type: image/jpeg
+
+< ../../../test/resources/mongja.png
+
+--boundary
+Content-Disposition: form-data; name="request";
+Content-Type: application/json
+
+{"intro": "bio 수정함", "isPublic": true}
+
+--boundary--

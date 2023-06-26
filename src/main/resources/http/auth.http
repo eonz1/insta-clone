@@ -1,0 +1,24 @@
+### 로그인
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "test1@test.com",
+  "password": "a123456!#"
+}
+
+> {%
+  client.global.set("accessToken", response.body.token.accessToken);
+  client.global.set("refreshToken", response.body.token.refreshToken.toString());
+  client.global.set("profileId", response.body.profileId);
+  client.global.set("userId", response.body.userId);
+%}
+
+### 로그아웃
+POST {{baseUrl}}/api/v1/auth/logout
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
