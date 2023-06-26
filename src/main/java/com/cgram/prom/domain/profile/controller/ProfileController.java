@@ -1,5 +1,7 @@
 package com.cgram.prom.domain.profile.controller;
 
+import com.cgram.prom.domain.feed.request.GetFeedsDto;
+import com.cgram.prom.domain.feed.response.FeedListResponse;
 import com.cgram.prom.domain.profile.request.UpdateProfileRequest;
 import com.cgram.prom.domain.profile.request.UpdateProfileServiceDto;
 import com.cgram.prom.domain.profile.response.ProfileResponse;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -62,16 +65,26 @@ public class ProfileController {
 
     @PostMapping("/{profileId}/following")
     public void follow(Authentication authentication, @PathVariable String profileId) {
-        profileService.follow(UUID.fromString(profileId), UUID.fromString(authentication.getName()));
+        profileService.follow(UUID.fromString(profileId),
+            UUID.fromString(authentication.getName()));
     }
 
     @DeleteMapping("/{profileId}/following")
     public void unfollow(Authentication authentication, @PathVariable String profileId) {
-        profileService.unfollow(UUID.fromString(profileId), UUID.fromString(authentication.getName()));
+        profileService.unfollow(UUID.fromString(profileId),
+            UUID.fromString(authentication.getName()));
     }
 
     @GetMapping("/{id}/feeds")
-    public void getFeeds(@PathVariable String id) {
-        profileService.getFeeds(id);
+    public FeedListResponse getFeeds(@PathVariable String id,
+        @RequestParam(defaultValue = "12") int limit,
+        @RequestParam(value = "next_id", required = false) String nextId) {
+
+        GetFeedsDto dto = GetFeedsDto.builder()
+            .profileId(id)
+            .limit(limit)
+            .nextId(nextId)
+            .build();
+        return profileService.getFeeds(dto);
     }
 }

@@ -1,5 +1,7 @@
 package com.cgram.prom.domain.profile.service;
 
+import com.cgram.prom.domain.feed.request.GetFeedsDto;
+import com.cgram.prom.domain.feed.response.FeedListResponse;
 import com.cgram.prom.domain.profile.request.UpdateProfileServiceDto;
 import com.cgram.prom.domain.profile.response.ProfileResponse;
 import java.util.UUID;
@@ -12,7 +14,7 @@ public interface ProfileService {
 
     void updateProfile(UpdateProfileServiceDto dto);
 
-    void getFeeds(String id);
+    FeedListResponse getFeeds(GetFeedsDto id);
 
     ProfileResponse getProfile(UUID userId, UUID loginProfileId);
 }

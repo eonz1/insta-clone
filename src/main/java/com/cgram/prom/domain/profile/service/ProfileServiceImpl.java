@@ -1,5 +1,8 @@
 package com.cgram.prom.domain.profile.service;
 
+import com.cgram.prom.domain.feed.request.GetFeedsDto;
+import com.cgram.prom.domain.feed.response.FeedListResponse;
+import com.cgram.prom.domain.feed.service.FeedQueryService;
 import com.cgram.prom.domain.following.service.FollowService;
 import com.cgram.prom.domain.image.domain.Image;
 import com.cgram.prom.domain.image.service.FileConverter;
@@ -30,6 +33,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final FollowService followService;
     private final ProfileRepository profileRepository;
     private final ImageService imageService;
+    private final FeedQueryService feedQueryService;
     private final FileConverter fileConverter;
 
     @Override
@@ -74,8 +78,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public void getFeeds(String id) {
-
+    public FeedListResponse getFeeds(GetFeedsDto dto) {
+        return feedQueryService.getFeedsByUser(dto);
     }
 
     @Override

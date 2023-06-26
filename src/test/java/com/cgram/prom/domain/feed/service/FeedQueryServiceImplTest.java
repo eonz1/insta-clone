@@ -221,7 +221,7 @@ class FeedQueryServiceImplTest {
         when(commentQueryRepository.findByFeedIdsAndLimit(ids, 3)).thenReturn(comments);
 
         // when
-        FeedListResponse feedListResponse = feedQueryService.getFeedListResponse(feeds, null);
+        FeedListResponse feedListResponse = feedQueryService.convertFeedListResponse(feeds, null);
 
         // then
         assertThat(feedListResponse.getFeeds().size()).isEqualTo(3);

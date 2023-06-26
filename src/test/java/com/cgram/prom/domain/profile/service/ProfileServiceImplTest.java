@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.cgram.prom.domain.feed.service.FeedQueryService;
 import com.cgram.prom.domain.following.service.FollowService;
 import com.cgram.prom.domain.image.domain.Image;
 import com.cgram.prom.domain.image.service.ImageService;
@@ -41,6 +42,8 @@ class ProfileServiceImplTest {
     UserService userService;
     @Mock
     ImageService imageService;
+    @Mock
+    FeedQueryService feedQueryService;
 
     @Test
     @DisplayName("회원 팔로잉")
