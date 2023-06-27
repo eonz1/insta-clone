@@ -9,7 +9,7 @@ server:
 spring:
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/{database}?serverTimezone=Asia/Seoul&verifyServerCertificate=false&useSSL=true
+    url: jdbc:mysql://{host}:3306/{database}?serverTimezone=Asia/Seoul&verifyServerCertificate=false&useSSL=true
     username:
     password:
     hikari:
@@ -55,4 +55,4 @@ jwt:
   secret-key:
 
 image:
-  directory:
+  directory: /prom

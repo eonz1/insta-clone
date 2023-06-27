@@ -5,17 +5,15 @@ services:
         restart: always
         container_name: mysql
         ports:
-            - "3306:3306"
+            - "3306:3306" # 컨테이너 외부:컨테이너 내부
         environment:
             MYSQL_ROOT_PASSWORD:
             TZ: Asia/Seoul
-        # 명령어 설정
         command:
             - --character-set-server=utf8mb4
             - --collation-server=utf8mb4_unicode_ci
-        # 볼륨 설정 (호스트 경로:컨테이너 경로)
         volumes:
-            - /home/mysql:/var/lib/mysql
+            - /home/mysql:/var/lib/mysql # 호스트 경로:컨테이너 경로
     spring:
         image: prom:0.0.1-SNAPSHOT
         container_name: spring
@@ -24,9 +22,5 @@ services:
             - mysql
         ports:
             - "8080:8080"
-        # 볼륨 설정 (호스트 경로:컨테이너 경로)
         volumes:
-            - /home/spring:/prom
-        environment:
-            SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/{database}?serverTimezone=Asia/Seoul&autoReconnect=true&verifyServerCertificate=false&useSSL=true
-            SPRING_PROFILES_ACTIVE: dev
+            - /home/spring:/prom # 호스트 경로:컨테이너 경로
