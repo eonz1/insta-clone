@@ -1,10 +1,86 @@
 # insta-clone
 
 인스타그램 클론 코딩 백엔드 프로젝트
-
 ---
 
 ## 커밋 컨벤션
+- Java17
+- MySQL8
+```
+/* mysql5.7 사용 시, function 추가 */
+
+CREATE FUNCTION BIN_TO_UUID(b BINARY(16))
+RETURNS CHAR(36)
+BEGIN
+   DECLARE hexStr CHAR(32);
+   SET hexStr = HEX(b);
+   RETURN LOWER(CONCAT(
+        SUBSTR(hexStr, 1, 8), '-',
+        SUBSTR(hexStr, 9, 4), '-',
+        SUBSTR(hexStr, 13, 4), '-',
+        SUBSTR(hexStr, 17, 4), '-',
+        SUBSTR(hexStr, 21)
+    ));
+END
+```
+
+## Configuration
+
+application.yml
+```
+spring:
+    datasource:
+        url:
+        username:
+        password:
+        
+letter:
+    id:
+    pwd:
+
+ncloud:
+    api:
+        accessKeyId:
+        secretAccessKey:
+        
+jwt:
+    secret-key:
+```
+
+위에 적힌 항목들을 환경에 맞춰 수정해야 합니다.
+
+## Installation
+
+### 1. Gradle
+```
+./gradlew bootBuildImage
+```
+
+### 2. Dockerfile
+```
+./gradlew bootJar
+```
+```
+// 플랫폼은 환경에 맞춰 수정합니다.
+
+docker build --platform=linux/amd64 -t prom:0.0.1-SNAPSHOT ./
+```
+
+## Usage
+
+### 1. java
+```
+cd /prom/build/libs
+
+java -jar prom-0.0.1-SNAPSHOT.jar
+```
+
+### 2. docker-compose
+```
+docker-compose -d up
+```
+
+## Commit Message Convention
 
 |    prefix    | description                                                            |
 | :----------: | ---------------------------------------------------------------------- |
