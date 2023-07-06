@@ -9,4 +9,6 @@ public interface ImageService {
     Image saveImage(File file) throws IOException;
 
     File resizeImage(File file, String prefix, int width, int height) throws IOException;
+
+    File getImage(String fileId);
 }

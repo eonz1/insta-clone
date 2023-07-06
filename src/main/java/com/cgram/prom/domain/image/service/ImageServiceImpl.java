@@ -1,11 +1,14 @@
 package com.cgram.prom.domain.image.service;
 
 import com.cgram.prom.domain.image.domain.Image;
+import com.cgram.prom.domain.image.exception.ImageException;
+import com.cgram.prom.domain.image.exception.ImageExceptionType;
 import com.cgram.prom.domain.image.model.ImageProperties;
 import com.cgram.prom.domain.image.repository.ImageRepository;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,13 @@ public class ImageServiceImpl implements ImageService {
             new File(image.getPath() + File.separator + image.getId() + ".jpg"));
 
         return image;
+    }
+
+    public File getImage(String fileId) {
+        Image image = imageRepository.findById(UUID.fromString(fileId))
+            .orElseThrow(() -> new ImageException(ImageExceptionType.NOT_FOUND));
+
+        return new File(image.getPath() + File.separator + image.getId() + ".jpg");
     }
 
     private BufferedImage newBufferedImageForSaveJpg(BufferedImage bufferedImage,

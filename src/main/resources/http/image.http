@@ -1,0 +1,5 @@
+### 이미지 조회
+
+GET {{baseUrl}}/api/v1/image/ac140003-8924-1659-8189-28e4630b0068
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
