@@ -56,8 +56,8 @@ public class ProfileController {
 
         UpdateProfileServiceDto dto = UpdateProfileServiceDto.builder()
             .userId(UUID.fromString(authentication.getName()))
-            .intro(request.getIntro())
-            .isPublic(request.getIsPublic())
+            .intro(request == null ? null : request.getIntro())
+            .isPublic(request == null ? null : request.getIsPublic())
             .image(image)
             .build();
         profileService.updateProfile(dto);
