@@ -56,3 +56,8 @@ jwt:
 
 image:
   directory: /prom
+
+
+logging:
+  level:
+    root: DEBUG
