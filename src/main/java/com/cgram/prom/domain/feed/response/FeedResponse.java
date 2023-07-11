@@ -42,6 +42,7 @@ public class FeedResponse {
         this.userId = dto.getUserId();
         this.userEmail = dto.getEmail();
         this.likes = dto.getLikesCount();
+        this.profileImageId = dto.getProfileImageId();
 
         this.images = images;
         this.coverImage = coverImage;
